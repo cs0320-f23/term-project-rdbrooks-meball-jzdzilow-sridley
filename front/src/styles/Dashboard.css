@@ -11,14 +11,32 @@
   background-position: center;
 }
 
-.join-time {
+.user-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   width: 100vw;
   background-color: rgba(255, 255, 255, 0.756);
   box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.4);
-  justify-content: center;
-  text-align: center;
   margin-bottom: 40px;
-  padding: 10px;
+  padding: 0px;
+}
+
+.join-time {
+  margin-left: 30px;
+}
+
+.pending-container {
+  width: 100px; /* for the text to not flicker */
+  white-space: nowrap;
+  justify-content: right;
+  align-items: flex-end;
+  margin-right: 45px;
+}
+
+.pending {
+  display: flex;
+  flex-direction: row;
 }
 
 .dashboard-container {

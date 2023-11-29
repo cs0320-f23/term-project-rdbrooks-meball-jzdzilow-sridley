@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/RoleSelection.css";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { userRoleState, userState } from "../recoil/atoms";
 import { UserRole } from "../recoil/atoms";
 import { IUser } from "../types/IUser";
