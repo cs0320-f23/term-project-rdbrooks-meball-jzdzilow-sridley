@@ -1,0 +1,87 @@
+@import "/src/styles/variables.css";
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+
+.login-body {
+  font-family: var(--main-font);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-image: url("/src/assets/backgrounds/flagsbackground.jpeg");
+  background-size: cover;
+  background-position: center;
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 70%;
+  width: 28%;
+  background: transparent;
+  backdrop-filter: blur(35px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 70px 10px rgba(0, 0, 0, 0.9);
+  color: #fff;
+  border-radius: 20px;
+  padding: 30px 30px;
+}
+
+.login-container h1 {
+  font-size: 39px;
+  text-align: center;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.login-container p {
+  text-align: center;
+  padding: 0px 50px 0px 50px;
+}
+
+.login-container .input-box {
+  margin: 12px;
+  width: 100%;
+  text-align: center;
+}
+
+.input-box input {
+  width: 80%;
+  background: transparent;
+  border: none;
+  outline: none;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 40px;
+  font-size: 16px;
+  color: #fff;
+  padding: 10px 20px 10px 20px;
+}
+
+.input-box input::placeholder {
+  color: #fff;
+}
+
+.login-container .btn {
+  text-align: center;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  color: #333;
+  border-radius: 40px;
+  font-size: 16px;
+  font-weight: 600;
+  width: 367px;
+  height: 42.5px;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+  transition: 0.5s ease;
+}
+
+.login-container .btn:hover {
+  background-color: var(--landing-background-color);
+  color: white;
+}
