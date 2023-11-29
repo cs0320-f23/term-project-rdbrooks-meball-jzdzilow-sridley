@@ -4,9 +4,11 @@ public class SessionState {
   private boolean running;
   private String beginTime;
   private String endTime;
+
   public SessionState(boolean running) {
     this.running = running;
   }
+
   public void setRunning(boolean newRunning) {
     running = newRunning;
   }

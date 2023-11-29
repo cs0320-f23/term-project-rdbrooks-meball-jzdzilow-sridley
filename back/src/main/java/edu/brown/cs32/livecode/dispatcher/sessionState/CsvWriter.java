@@ -1,4 +1,5 @@
 package edu.brown.cs32.livecode.dispatcher.sessionState;
+
 import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartner;
 import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartnerQueue;
 import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequester;
@@ -14,7 +15,10 @@ public class CsvWriter {
   private final DebuggingPartnerQueue debuggingPartnerQueue;
   private final SessionState sessionState;
 
-  public CsvWriter(HelpRequesterQueue helpRequesterQueue, DebuggingPartnerQueue debuggingPartnerQueue, SessionState sessionState) {
+  public CsvWriter(
+      HelpRequesterQueue helpRequesterQueue,
+      DebuggingPartnerQueue debuggingPartnerQueue,
+      SessionState sessionState) {
     this.helpRequesterQueue = helpRequesterQueue;
     this.debuggingPartnerQueue = debuggingPartnerQueue;
     this.sessionState = sessionState;
@@ -28,11 +32,13 @@ public class CsvWriter {
       List<HelpRequester> allHelpRequesters = helpRequesterQueue.getAllHelpRequesters();
       List<String> allHelpRequestersNames = new ArrayList<>();
       List<String> unseenHelpRequestersNames = new ArrayList<>();
-      List<DebuggingPartner> allDebuggingPartners = debuggingPartnerQueue.getAllDebuggingPartnerList();
+      List<DebuggingPartner> allDebuggingPartners =
+          debuggingPartnerQueue.getAllDebuggingPartnerList();
       List<String> allDebuggingPartnersNames = new ArrayList<>();
       List<String> unseenDebuggingPartnersNames = new ArrayList<>();
       for (DebuggingPartner debuggingPartner : allDebuggingPartners) {
-        allDebuggingPartnersNames.add(debuggingPartner.getName() + ": " + debuggingPartner.getStudentsHelped());
+        allDebuggingPartnersNames.add(
+            debuggingPartner.getName() + ": " + debuggingPartner.getStudentsHelped());
         if (debuggingPartner.getStudentsHelped() == 0) {
           unseenDebuggingPartnersNames.add(debuggingPartner.getName());
         }
@@ -42,7 +48,11 @@ public class CsvWriter {
         allHelpRequestersNames.add(helpRequester.getName());
         DebuggingPartner helper = helpRequester.getDebuggingPartner();
         if (helper != null) {
-          pairs.add("Help Requester: " + helpRequester.getName() + ", Debugging Partner: " + helper.getName());
+          pairs.add(
+              "Help Requester: "
+                  + helpRequester.getName()
+                  + ", Debugging Partner: "
+                  + helper.getName());
         } else {
           unseenHelpRequestersNames.add(helpRequester.getName());
         }
@@ -63,15 +73,19 @@ public class CsvWriter {
   public void writeSessionAttendance() {
     try {
       String dateTime = Utils.date();
-      FileWriter dpWriter = new FileWriter("data/sessions/debugging-partner-attendance-" + dateTime + ".csv", true);
-      FileWriter hrWriter = new FileWriter("data/sessions/help-requester-attendance-" + dateTime + ".csv", true);
+      FileWriter dpWriter =
+          new FileWriter("data/sessions/debugging-partner-attendance-" + dateTime + ".csv", true);
+      FileWriter hrWriter =
+          new FileWriter("data/sessions/help-requester-attendance-" + dateTime + ".csv", true);
       dpWriter.write("DebuggingPartnerName, HelpRequestersSeen\n");
       hrWriter.write("HelpRequesterName, AssignedDebuggingPartnerName\n");
 
       List<HelpRequester> allHelpRequesters = helpRequesterQueue.getAllHelpRequesters();
-      List<DebuggingPartner> allDebuggingPartners = debuggingPartnerQueue.getAllDebuggingPartnerList();
+      List<DebuggingPartner> allDebuggingPartners =
+          debuggingPartnerQueue.getAllDebuggingPartnerList();
       for (DebuggingPartner debuggingPartner : allDebuggingPartners) {
-        dpWriter.write(debuggingPartner.getName() + ", " + debuggingPartner.getStudentsHelped() + "\n");
+        dpWriter.write(
+            debuggingPartner.getName() + ", " + debuggingPartner.getStudentsHelped() + "\n");
       }
       dpWriter.close();
       for (HelpRequester helpRequester : allHelpRequesters) {
