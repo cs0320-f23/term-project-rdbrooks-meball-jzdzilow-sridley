@@ -1,6 +1,5 @@
 package edu.brown.cs32.livecode.dispatcher.helpRequester;
 
-import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequester;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -41,7 +40,9 @@ public class HelpRequesterQueue {
     return alreadyHelped;
   }
 
-  public List<HelpRequester> getAllHelpRequesters() {return allHelpRequesters;}
+  public List<HelpRequester> getAllHelpRequesters() {
+    return allHelpRequesters;
+  }
 
   public void addNeedsHelp(HelpRequester newHelpRequester) {
     needHelp.add(newHelpRequester);

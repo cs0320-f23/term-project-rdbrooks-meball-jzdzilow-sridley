@@ -1,11 +1,11 @@
 package edu.brown.cs32.livecode.dispatcher.handlers;
 
-import edu.brown.cs32.livecode.dispatcher.sessionState.CsvWriter;
 import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartnerQueue;
-import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequesterQueue;
-import edu.brown.cs32.livecode.dispatcher.sessionState.SessionState;
 import edu.brown.cs32.livecode.dispatcher.handlers.AddHelpRequesterHandler.FailureResponse;
 import edu.brown.cs32.livecode.dispatcher.handlers.AddHelpRequesterHandler.SuccessResponse;
+import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequesterQueue;
+import edu.brown.cs32.livecode.dispatcher.sessionState.CsvWriter;
+import edu.brown.cs32.livecode.dispatcher.sessionState.SessionState;
 import edu.brown.cs32.livecode.dispatcher.utils.Utils;
 import spark.Request;
 import spark.Response;
@@ -16,7 +16,10 @@ public class SessionHandler implements Route {
   private DebuggingPartnerQueue debuggingPartnerQueue;
   private SessionState sessionState;
 
-  public SessionHandler(HelpRequesterQueue helpRequesterQueue, DebuggingPartnerQueue debuggingPartnerQueue, SessionState sessionState) {
+  public SessionHandler(
+      HelpRequesterQueue helpRequesterQueue,
+      DebuggingPartnerQueue debuggingPartnerQueue,
+      SessionState sessionState) {
     this.helpRequesterQueue = helpRequesterQueue;
     this.debuggingPartnerQueue = debuggingPartnerQueue;
     this.sessionState = sessionState;
@@ -26,8 +29,7 @@ public class SessionHandler implements Route {
   public Object handle(Request request, Response response) throws Exception {
     String command = request.queryParams("command");
     if (command == null) {
-      return new FailureResponse(
-          "error_bad_request", "Missing required parameter: command")
+      return new FailureResponse("error_bad_request", "Missing required parameter: command")
           .serialize();
     } else if (command.equals("end")) {
       if (sessionState.getRunning()) {
@@ -37,8 +39,7 @@ public class SessionHandler implements Route {
         sessionState.setRunning(false);
         return new SuccessResponse("Ended session!").serialize();
       } else {
-        return new FailureResponse(
-            "error_bad_request", "Cannot end if no session is running.")
+        return new FailureResponse("error_bad_request", "Cannot end if no session is running.")
             .serialize();
       }
     } else if (command.equals("begin")) {
@@ -48,15 +49,14 @@ public class SessionHandler implements Route {
         helpRequesterQueue.reset();
         debuggingPartnerQueue.reset();
         return new SuccessResponse("Began new session!").serialize();
-      }
-      else {
+      } else {
         return new FailureResponse(
-            "error_bad_request", "Cannot begin if session is already running.")
+                "error_bad_request", "Cannot begin if session is already running.")
             .serialize();
       }
     } else {
       return new FailureResponse(
-          "error_bad_request", "Required parameter command must be end or begin.")
+              "error_bad_request", "Required parameter command must be end or begin.")
           .serialize();
     }
   }

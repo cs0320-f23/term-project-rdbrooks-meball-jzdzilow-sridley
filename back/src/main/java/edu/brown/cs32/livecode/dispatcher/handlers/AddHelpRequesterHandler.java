@@ -20,19 +20,15 @@ public class AddHelpRequesterHandler implements Route {
   @Override
   public Object handle(Request request, Response response) throws Exception {
     if (!sessionState.getRunning()) {
-      return new FailureResponse(
-          "error_bad_request", "No session is running.")
-          .serialize();
+      return new FailureResponse("error_bad_request", "No session is running.").serialize();
     }
     String name = request.queryParams("helpRequester");
     if (name == null) {
-      return new FailureResponse(
-          "error_bad_request", "Missing required parameter: helpRequester")
+      return new FailureResponse("error_bad_request", "Missing required parameter: helpRequester")
           .serialize();
     }
     helpRequesterQueue.addNeedsHelp(new HelpRequester(name));
-    return new SuccessResponse(
-        "success", "Help Requester " + name + " was added to the queue.")
+    return new SuccessResponse("success", "Help Requester " + name + " was added to the queue.")
         .serialize();
   }
 
