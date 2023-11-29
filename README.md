@@ -15,3 +15,7 @@ http://localhost:3333/addDebuggingPartner?debuggingPartner= --> add a debugging 
 http://localhost:3333/debuggingPartnerDone?debuggingPartner= --> remove a debugging partner by name
 
 http://localhost:3333/getInfo --> gets general information on the current state of the collab hours manager
+
+http://localhost:3333/getInfo?role=debuggingPartner&name= --> gets info on a specific debugging partner by name
+
+http://localhost:3333/getInfo?role=helpRequester&name= --> gets info on a specific help requester by name
