@@ -1,0 +1,14 @@
+# frontend ignored folders
+front/node_modules/
+
+.vscode
+.idea/
+
+# backend ignored folders
+backe/.idea/
+
+# Maven
+back/target/
+back/.mvn
+back/.mvn-classpath
+back/pom.xml.bak
