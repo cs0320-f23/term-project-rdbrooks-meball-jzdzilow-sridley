@@ -1,0 +1,40 @@
+@import "./variables.css";
+
+.landing {
+  text-align: center;
+  background-color: var(--landing-background-color);
+}
+
+.landing-header {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.pulsing-logo {
+  height: 30vh;
+  /* -webkit-filter: drop-shadow(5px 5px 5px #222); */
+  filter: drop-shadow(0px 0px 50px rgb(198, 187, 166));
+  animation: pulse 1.5s infinite; /* animation duration */
+}
+
+.landing.transition {
+  transition: all 1s ease; /* transition duration*/
+  transform: scale(2); /* scale factor*/
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
