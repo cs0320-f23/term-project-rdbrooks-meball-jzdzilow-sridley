@@ -5,7 +5,7 @@ front/node_modules/
 .idea/
 
 # backend ignored folders
-backe/.idea/
+back/.idea/
 
 # Maven
 back/target/
