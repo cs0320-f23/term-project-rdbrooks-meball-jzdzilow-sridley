@@ -28,11 +28,7 @@ public class GetInfoHandler implements Route {
     this.sessionState = sessionState;
   }
 
-  @Override
-  public Object handle(Request request, Response response) throws Exception {
-    if (!sessionState.getRunning()) {
-      return new FailureResponse("error_bad_request", "No session is running.").serialize();
-    }
+  public Object getAllInfo() {
     List<HelpRequester> waitingHelpRequesters = helpRequesterQueue.getNeedHelpList();
     List<String> waitingHRQs = new ArrayList<>();
     for (HelpRequester helpRequester : waitingHelpRequesters) {
@@ -62,24 +58,70 @@ public class GetInfoHandler implements Route {
       helpedNames.add(helpRequester.getName());
     }
 
-    return new InfoSuccessResponse(
-            "success",
-            "Here is the waiting Help Requester queue, open Debugging Partner queue, current pairings, and past Help Requesters!",
-            waitingHRQs,
-            openDBPs,
-            pairs,
-            helpedNames)
+    return new AllInfoSuccessResponse(
+        "Here is the waiting Help Requester queue, open Debugging Partner queue, current pairings, and past Help Requesters!",
+        waitingHRQs,
+        openDBPs,
+        pairs,
+        helpedNames)
         .serialize();
   }
 
-  public record InfoSuccessResponse(
+  public Object getSpecificInfo(String targetName, String role) {
+    if (role.equals("debuggingPartner")) {
+      List<DebuggingPartner> debuggingPartners = debuggingPartnerQueue.getAllDebuggingPartnerList();
+      for (DebuggingPartner debuggingPartner : debuggingPartners) {
+        String name = debuggingPartner.getName();
+        if (name.equals(targetName)) {
+          HelpRequester currentlyHelping = debuggingPartner.getCurrentHelpRequester();
+          String helpingName = "";
+          if (currentlyHelping != null) {
+            helpingName = currentlyHelping.getName();
+          }
+          return new DebuggingPartnerInfoSuccessResponse("Debugging Partner " + targetName + " found!",
+              targetName, helpingName, debuggingPartner.getStudentsHelped()).serialize();
+        }
+      }
+    } else {
+      List<HelpRequester> helpRequesters = helpRequesterQueue.getAllHelpRequesters();
+      for (HelpRequester helpRequester : helpRequesters) {
+        String name = helpRequester.getName();
+        if (name.equals(targetName)) {
+          DebuggingPartner gettingHelpFrom = helpRequester.getDebuggingPartner();
+          String helpFromName = "";
+          if (gettingHelpFrom != null) {
+            helpFromName = gettingHelpFrom.getName();
+          }
+          return new HelpRequesterInfoSuccessResponse("Help Requester " + targetName + " found!",
+              targetName, helpFromName).serialize();
+        }
+      }
+    }
+    return new FailureResponse("error_bad_request", "No " + role + " found named " + targetName).serialize();
+  }
+
+  @Override
+  public Object handle(Request request, Response response) throws Exception {
+    if (!sessionState.getRunning()) {
+      return new FailureResponse("error_bad_request", "No session is running.").serialize();
+    }
+    String name = request.queryParams("name");
+    String role = request.queryParams("role");
+    if (name == null || role == null) {
+      return getAllInfo();
+    } else {
+      return getSpecificInfo(name, role);
+    }
+  }
+
+  public record AllInfoSuccessResponse(
       String result,
       String message,
       List<String> waitingHRQs,
       List<String> openDBPs,
       List<String> pairs,
       List<String> helpedNames) {
-    public InfoSuccessResponse(
+    public AllInfoSuccessResponse(
         String message,
         List<String> waitingHRQs,
         List<String> openDBPs,
@@ -90,7 +132,45 @@ public class GetInfoHandler implements Route {
 
     String serialize() {
       Moshi moshi = new Moshi.Builder().build();
-      return moshi.adapter(InfoSuccessResponse.class).toJson(this);
+      return moshi.adapter(AllInfoSuccessResponse.class).toJson(this);
+    }
+  }
+
+  public record DebuggingPartnerInfoSuccessResponse(
+      String result,
+      String message,
+      String name,
+      String helpRequesterName,
+      int studentsHelped) {
+    public DebuggingPartnerInfoSuccessResponse(
+        String message,
+        String name,
+        String helpRequesterName,
+        int studentsHelped) {
+      this("success", message, name, helpRequesterName, studentsHelped);
+    }
+
+    String serialize() {
+      Moshi moshi = new Moshi.Builder().build();
+      return moshi.adapter(DebuggingPartnerInfoSuccessResponse.class).toJson(this);
+    }
+  }
+
+  public record HelpRequesterInfoSuccessResponse(
+      String result,
+      String message,
+      String name,
+      String debuggingPartnerName) {
+    public HelpRequesterInfoSuccessResponse(
+        String message,
+        String name,
+        String debuggingPartnerName) {
+      this("success", message, name, debuggingPartnerName);
+    }
+
+    String serialize() {
+      Moshi moshi = new Moshi.Builder().build();
+      return moshi.adapter(HelpRequesterInfoSuccessResponse.class).toJson(this);
     }
   }
 }

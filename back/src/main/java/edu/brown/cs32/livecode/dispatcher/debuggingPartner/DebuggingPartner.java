@@ -13,6 +13,7 @@ import edu.brown.cs32.livecode.dispatcher.utils.Utils;
 public class DebuggingPartner implements Runnable {
   private final String name;
   private int studentsHelped;
+  private HelpRequester helping = null;
 
   public DebuggingPartner(String name) {
     this.name = name;
@@ -31,7 +32,9 @@ public class DebuggingPartner implements Runnable {
     return this.studentsHelped;
   }
 
-  private HelpRequester helping = null;
+  public HelpRequester getCurrentHelpRequester() {
+    return helping;
+  }
 
   public void seeStudent(HelpRequester helpRequester) throws Exception {
     if (this.helping != null) throw new Exception();
