@@ -69,4 +69,16 @@ public class HelpRequesterQueue {
     gettingHelp.remove(toRemove);
     return debugged;
   }
+
+  public boolean setEscalated(String name) {
+    boolean escalated = false;
+    for (HelpRequester helpRequester : gettingHelp) {
+      String thisName = helpRequester.getName();
+      if (name.equals(thisName)) {
+        helpRequester.setEscalated();
+        escalated = true;
+      }
+    }
+    return escalated;
+  }
 }
