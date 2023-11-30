@@ -25,18 +25,15 @@ app.get("/getPartner", (req, res) => {
 });
 
 app.post("/submitForm", express.json(), (req, res) => {
-  const { data } = req.body;
-  if (!data) {
-    return res.status(400).json({ error: "Data is required." });
+  const { user, partner, bugCategory, debuggingProcess } = req.body.data;
+  if (!user || !partner || !bugCategory || !debuggingProcess) {
+    return res.status(400).json({ error: "Incomplete data received" });
   }
   // Convert data to CSV format (assuming data is an array of objects)
-  const csvContent = data
-    .map((item) => Object.values(item).join(","))
-    .join("\n");
+  const csvLine = `${user},${partner},${bugCategory},${debuggingProcess}`;
 
   const csvFilePath = join(__dirname, "/public/formData.csv");
-  fs.writeFileSync(csvFilePath, csvContent);
-
+  fs.appendFileSync(csvFilePath, csvLine + "\n");
   res.json({ success: true });
 });
 

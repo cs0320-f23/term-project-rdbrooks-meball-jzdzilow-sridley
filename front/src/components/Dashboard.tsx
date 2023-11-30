@@ -49,16 +49,18 @@ const Dashboard = () => {
     if (user && partner) {
       console.log(user.email, partner, bugCategory, debuggingProcess);
       try {
-        const response = await fetch("http://localhost:2000/submitForm", {
+        const response = await fetch("http://localhost:2000/submitForm/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            user: user.email,
-            partner: partner,
-            bugCategory: bugCategory,
-            debuggingProcess: debuggingProcess,
+            data: {
+              user: user.email,
+              partner: partner,
+              bugCategory: bugCategory,
+              debuggingProcess: debuggingProcess,
+            },
           }),
         });
 
