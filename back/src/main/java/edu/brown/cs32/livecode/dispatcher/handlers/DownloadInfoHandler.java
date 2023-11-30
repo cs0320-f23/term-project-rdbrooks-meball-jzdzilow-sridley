@@ -34,12 +34,19 @@ public class DownloadInfoHandler implements Route {
         if (info.equals("all")){
             String filePath = "data/all-attendance.csv";
             byte[] content = Files.readAllBytes(Paths.get(filePath));
+            response.header("Content-Disposition", "attachment; filename=all-attendance.csv");
+            response.status(200);
             try(OutputStream outputStream = response.raw().getOutputStream()){
                 outputStream.write(content);
+            } catch (Exception e){
+                return new FailureResponse(
+                        "error_bad_request", "File could not be downloaded")
+                        .serialize();
             }
-            // download csv
-            return new SuccessResponse("success", "All session information was downloaded" + filePath)
-                    .serialize();
+
+            // some way to allow both success response and the download
+//            return new SuccessResponse("success", "All session information was downloaded" + filePath)
+//                    .serialize();
 
         }
         if (info.equals("current")){
