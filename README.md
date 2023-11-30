@@ -20,4 +20,4 @@ http://localhost:3333/getInfo?role=debuggingPartner&name= --> gets info on a spe
 
 http://localhost:3333/getInfo?role=helpRequester&name= --> gets info on a specific help requester by name
 
-http://localhost:3333/escalate?helpRequester= --> escalate help requester by name
+http://localhost:3333/escalate?helpRequester= --> escalate a help requester by name
