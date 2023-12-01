@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { UserRole, userRoleState, userState } from "../recoil/atoms";
 import "../styles/Dashboard.css";
 import { useNavigate } from "react-router-dom";
@@ -7,16 +7,18 @@ import Timer from "./Timer";
 import "../styles/nightsky.scss";
 
 const Dashboard = () => {
-  const user = useRecoilValue(userState);
-  const userRole = useRecoilValue(userRoleState);
+  const [user, setUser] = useRecoilState(userState);
+  const [userRole, setUserRole] = useRecoilState(userRoleState);
   const navigate = useNavigate();
   const [partner, setPartner] = useState<string | null>(null);
   const [issue, setIssue] = useState<string | null>(null);
   const [bugCategory, setBugCategory] = useState("");
   const [debuggingProcess, setDebuggingProcess] = useState("");
+  const [timeRemaining, setTimeRemaining] = useState(calculateTimeRemaining());
 
   useEffect(() => {
     if (user === null) {
+      setUserRole({ role: UserRole.NoneSelected, time: null });
       navigate("/login");
     }
   }, [user]);
@@ -40,10 +42,36 @@ const Dashboard = () => {
     }
   }, [userRole.role]);
 
+  /* -------------------------------timer content ---------------------------------------*/
+
+  function calculateTimeRemaining() {
+    if (userRole?.time === null) {
+      return 0;
+    }
+
+    const oneHourInMillis = 20 * 1000; // 1 hour in milliseconds
+    const currentTime = new Date().getTime();
+    const elapsedTime = currentTime - userRole?.time.getTime();
+    const remainingTime = Math.max(oneHourInMillis - elapsedTime, 0);
+    return remainingTime;
+  }
+
+  useEffect(() => {
+    const timerInterval = setInterval(() => {
+      setTimeRemaining(calculateTimeRemaining());
+    }, 1000);
+
+    return () => clearInterval(timerInterval);
+  }, [userRole?.time]);
+
+  /* ---------------------------- end of timer content ------------------------------------*/
+
   const openResourcesWebsite = () => {
     const url: string = "https://hackmd.io/@brown-csci0320/BJKCtyxxs/";
     window.open(url, "_blank");
   };
+
+  /* ---------------------------------- handlers -----------------------------------------*/
 
   const handleSubmit = async () => {
     if (user && partner) {
@@ -66,7 +94,7 @@ const Dashboard = () => {
 
         if (!response.ok) {
           // If the server returns an error status
-          throw new Error(`Server error: ${response.status}`);
+          throw new Error("Server error: " + response.status);
         } else {
           const result = await response.json();
           if (result.success) {
@@ -88,6 +116,12 @@ const Dashboard = () => {
     console.log("escalated");
   };
 
+  const handleEndSession = () => {
+    setUser(null);
+  };
+
+  /* ----------------------- end of handlers / below rendering ---------------------------*/
+
   const renderHeaderBasedOnRole = (role: UserRole) => {
     switch (role) {
       case UserRole.Instructor:
@@ -98,13 +132,26 @@ const Dashboard = () => {
             <p className="join-time">
               Join time: {userRole?.time?.toLocaleTimeString()}
             </p>
-            <Timer joinTime={userRole?.time?.getTime()} />
+            {}
+            {renderTimerOrButton()}
           </header>
         );
       case UserRole.HelpRequester:
         return <p>help requester content here.</p>;
       default:
         return null;
+    }
+  };
+
+  const renderTimerOrButton = () => {
+    if (partner && timeRemaining > 0) {
+      return <Timer timeRemaining={timeRemaining} />;
+    } else if (!partner && timeRemaining === 0) {
+      return (
+        <button className="done-button" onClick={handleEndSession}>
+          I'm done!
+        </button>
+      );
     }
   };
 
