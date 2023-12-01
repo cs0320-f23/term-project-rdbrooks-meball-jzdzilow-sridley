@@ -15,8 +15,6 @@ public class CsvWriter {
   private final DebuggingPartnerQueue debuggingPartnerQueue;
   private final SessionState sessionState;
 
-  private String dateTime;
-
   public CsvWriter(
       HelpRequesterQueue helpRequesterQueue,
       DebuggingPartnerQueue debuggingPartnerQueue,
@@ -24,7 +22,6 @@ public class CsvWriter {
     this.helpRequesterQueue = helpRequesterQueue;
     this.debuggingPartnerQueue = debuggingPartnerQueue;
     this.sessionState = sessionState;
-    this.dateTime = Utils.date();
   }
 
   public void writeAllAttendance() {
@@ -73,12 +70,13 @@ public class CsvWriter {
     }
   }
 
-  public void writeSessionAttendance(String dateTime) {
+  public void writeSessionAttendance() {
+    String beginTime = sessionState.getBeginTime();
     try {
       FileWriter dpWriter =
-          new FileWriter("data/sessions/debugging-partner-attendance-" + dateTime + ".csv", true);
+          new FileWriter("data/sessions/debugging-partner-attendance-" + beginTime + ".csv", true);
       FileWriter hrWriter =
-          new FileWriter("data/sessions/help-requester-attendance-" + dateTime + ".csv", true);
+          new FileWriter("data/sessions/help-requester-attendance-" + beginTime + ".csv", true);
       dpWriter.write("DebuggingPartnerName, HelpRequestersSeen\n");
       hrWriter.write("HelpRequesterName, AssignedDebuggingPartnerName\n");
 
