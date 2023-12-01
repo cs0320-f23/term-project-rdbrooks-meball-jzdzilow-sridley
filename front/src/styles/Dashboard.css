@@ -1,12 +1,33 @@
+.body {
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  /* height: 110%;
+  width: 100%; */
+  /* background-image: url("/src/assets/backgrounds/gradient3.png");
+  background-blend-mode: overlay;
+  background-size: cover;
+  background-position: center; */
+}
+
+.stars-container {
+  position: absolute;
+  /* background-image: url("/src/assets/backgrounds/gradient3.png");
+  background-blend-mode: overlay;
+  background-size: cover;
+  background-position: center; */
+}
+
 .dashboard-body {
-  margin-top: -10px;
+  position: absolute;
+  box-sizing: border-box;
   font-family: var(--main-font);
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   align-items: center;
-  height: 110vh;
-  width: 100vw;
+  width: 100%;
   /* background-image: url("/src/assets/backgrounds/gradient3.png");
   background-blend-mode: overlay;
   background-size: cover;
@@ -18,7 +39,7 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 100vw;
+  width: 100%;
   background-color: rgba(255, 255, 255, 0.859);
   box-shadow: 0 0 10px 0px rgb(0, 0, 0);
   margin-bottom: 50px;
@@ -33,7 +54,7 @@
   width: 100px; /* for the text to not flicker */
   white-space: nowrap;
   justify-content: right;
-  align-items: flex-end;
+  align-content: flex-end;
   margin-right: 45px;
 }
 
@@ -45,23 +66,29 @@
 .dashboard-container {
   background-color: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(15px);
-  height: 76vh;
-  width: 75vw;
+  width: 80%;
+  height: max-content;
   border-radius: 30px;
   box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 20px;
+  padding: 0;
+  padding-top: 30px;
+  padding-bottom: 30px;
 }
 
 .welcome-container {
-  margin: 0px;
-  padding: 0px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.welcome-container h1 {
+  margin: 0px;
+  padding: 0px;
 }
 
 /* .welcome-container img {
@@ -76,32 +103,6 @@
   transition-duration: 0.5s;
 } */
 
-/* resources icon */
-.resources {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 50px;
-  border-radius: 10px;
-  border: none;
-  background-color: transparent;
-  position: relative;
-}
-
-.resources-icon {
-  width: 30px;
-  height: 30px;
-  transition: 0.2s linear;
-}
-
-.resources:hover > .resources-icon {
-  transform: scale(1.1);
-}
-
-/* end of icon content */
-
 .other-partner-info {
   display: flex;
   flex-direction: column;
@@ -110,7 +111,7 @@
   text-align: center;
   overflow: hidden;
   white-space: nowrap;
-  width: 1080px;
+  width: 100%;
   box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.4);
   background-color: white;
 }
@@ -139,8 +140,7 @@
   align-items: center;
   text-align: center;
   white-space: nowrap;
-  width: 100%;
-  width: 1080px;
+  width: fit-content;
   box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.4);
   background-color: white;
   margin-top: 30px;
@@ -174,4 +174,79 @@
 
 .debugging-form input::placeholder {
   color: #c8c8c8;
+}
+
+.submit-button {
+  text-align: center;
+  margin-top: 8px;
+  margin-bottom: 18px;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  background: #e9e9ea;
+  color: #333;
+  border-radius: 40px;
+  font-size: 16px;
+  font-weight: 600;
+  width: auto;
+  height: 40px;
+  padding: 10px 40px 10px 40px;
+  text-decoration: none;
+  transition: 0.5s ease;
+}
+
+.submit-button:hover {
+  background-color: var(--landing-background-color);
+  color: white;
+}
+
+/* resources icon */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  border: none;
+  background-color: transparent;
+}
+
+.tooltip-icon {
+  width: 30px;
+  height: 30px;
+  transition: 0.2s linear;
+}
+
+.tooltip:hover > .tooltip-icon {
+  transform: scale(1.1);
+}
+
+.tooltip .tooltiptext {
+  white-space: nowrap;
+  visibility: hidden;
+  width: auto;
+  background-color: #1a2129;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 5px;
+  position: absolute;
+  z-index: 1;
+  top: 25%;
+  left: 110%;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent #1a2129 transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
 }

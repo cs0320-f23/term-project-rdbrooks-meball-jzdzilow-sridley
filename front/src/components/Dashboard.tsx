@@ -19,7 +19,7 @@ const Dashboard = () => {
     if (user === null) {
       navigate("/login");
     }
-  }, [userState, userRoleState, user]);
+  }, [user]);
 
   useEffect(() => {
     const fetchPartner = async () => {
@@ -145,7 +145,7 @@ const Dashboard = () => {
                   onChange={(e) => setDebuggingProcess(e.target.value)}
                 />
               </div>
-              <button className="submit" onClick={handleSubmit}>
+              <button className="submit-button" onClick={handleSubmit}>
                 Submit!
               </button>
             </div>
@@ -164,33 +164,34 @@ const Dashboard = () => {
         <div id="stars"></div>
         <div id="stars2"></div>
         <div id="stars3"></div>
-        <div className="dashboard-body">
-          {renderHeaderBasedOnRole(userRole.role)}
-          <div className="dashboard-container">
-            <div className="welcome-container">
-              <h1>Welcome, {user?.name.split(" ")[0]}!</h1>
-              <button className="resources">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="resources-icon"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#000000"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  onClick={openResourcesWebsite}
-                >
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
-              </button>
-            </div>
-            {renderContentBasedOnRole(userRole.role)}
+      </div>
+      <div className="dashboard-body">
+        {renderHeaderBasedOnRole(userRole.role)}
+        <div className="dashboard-container">
+          <div className="welcome-container">
+            <h1>Welcome, {user?.name.split(" ")[0]}!</h1>
+            <button className="tooltip">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="tooltip-icon"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#000000"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                onClick={openResourcesWebsite}
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <span className="tooltiptext">Debugging Recipe</span>
+            </button>
           </div>
+          {renderContentBasedOnRole(userRole.role)}
         </div>
       </div>
     </div>
