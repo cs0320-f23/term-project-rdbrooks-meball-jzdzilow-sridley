@@ -72,7 +72,7 @@
   box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
-  align-items: center;
+  justify-content: center;
   padding: 0;
   padding-top: 30px;
   padding-bottom: 30px;
@@ -82,7 +82,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   margin-bottom: 20px;
 }
 
@@ -107,8 +107,8 @@
   display: flex;
   flex-direction: column;
   padding-top: 1%;
-  align-content: center;
   text-align: center;
+  align-items: center;
   overflow: hidden;
   white-space: nowrap;
   width: 100%;
@@ -138,9 +138,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
   white-space: nowrap;
-  width: fit-content;
+  width: 100%;
   box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.4);
   background-color: white;
   margin-top: 30px;
@@ -152,10 +153,7 @@
   flex-direction: row;
   align-items: center;
   text-align: center;
-  width: 800px;
-  margin-left: 0px;
-  padding-left: 120px;
-  padding-right: 120px;
+  width: 60%;
 }
 
 .debugging-form input {
