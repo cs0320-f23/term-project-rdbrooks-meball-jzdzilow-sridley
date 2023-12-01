@@ -17,7 +17,7 @@ public class Utils {
   public static String date() {
     Date today = new Date();
     Long now = today.getTime();
-    String dateTimeFormatted = new SimpleDateFormat("MM-dd-yyyy-hh:mm").format(now);
+    String dateTimeFormatted = new SimpleDateFormat("MM-dd-yyyy-hh-mm").format(now);
     return dateTimeFormatted;
   }
 

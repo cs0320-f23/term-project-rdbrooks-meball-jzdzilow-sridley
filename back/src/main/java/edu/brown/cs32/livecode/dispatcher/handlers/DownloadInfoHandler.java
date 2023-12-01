@@ -1,0 +1,85 @@
+package edu.brown.cs32.livecode.dispatcher.handlers;
+
+import edu.brown.cs32.livecode.dispatcher.handlers.AddHelpRequesterHandler.FailureResponse;
+import edu.brown.cs32.livecode.dispatcher.handlers.AddHelpRequesterHandler.SuccessResponse;
+import edu.brown.cs32.livecode.dispatcher.sessionState.CsvWriter;
+import edu.brown.cs32.livecode.dispatcher.sessionState.SessionState;
+import spark.Request;
+import spark.Response;
+import spark.Route;
+
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+public class DownloadInfoHandler implements Route {
+
+    private SessionState sessionState;
+    private CsvWriter csvWriter;
+
+    public DownloadInfoHandler(SessionState sessionState){
+        this.sessionState = sessionState;
+
+    }
+    @Override
+    public Object handle(Request request, Response response) throws Exception {
+        if (sessionState.getRunning()) {
+            return new FailureResponse("error_bad_request", "Download data after session has finished running.").serialize();
+        }
+        String info = request.queryParams("type");
+        if (info == null){
+            return new FailureResponse(
+                    "error_bad_request", "Missing required parameter: type")
+                    .serialize();
+
+        }
+        if (info.equals("all")){
+            String filePath = "data/all-attendance.csv";
+            byte[] content = Files.readAllBytes(Paths.get(filePath));
+            response.header("Content-Disposition", "attachment; filename=all-attendance.csv");
+            response.status(200);
+            try(OutputStream outputStream = response.raw().getOutputStream()){
+                outputStream.write(content);
+            } catch (Exception e){
+                return new FailureResponse(
+                        "error_bad_request", "File could not be downloaded")
+                        .serialize();
+            }
+        }
+        if (info.equals("debugging")){
+            String beginTime = this.sessionState.getBeginTime();
+            String filePath = "data/sessions/debugging-partner-attendance-" + beginTime + ".csv";
+
+            byte[] content = Files.readAllBytes(Paths.get(filePath));
+            response.header("Content-Disposition", "attachment; filename=debugging-attendance-" + beginTime + ".csv");
+            response.status(200);
+            try(OutputStream outputStream = response.raw().getOutputStream()){
+                outputStream.write(content);
+            } catch (Exception e){
+                return new FailureResponse(
+                        "error_bad_request", "File could not be downloaded")
+                        .serialize();
+            }
+
+        }
+
+        if (info.equals("help")){
+            String beginTime = this.sessionState.getBeginTime();
+            String filePath = "data/sessions/help-requester-attendance-" + beginTime + ".csv";
+
+            byte[] content = Files.readAllBytes(Paths.get(filePath));
+            response.header("Content-Disposition", "attachment; filename=help-requester-attendance-" + beginTime + ".csv");
+            response.status(200);
+            try(OutputStream outputStream = response.raw().getOutputStream()){
+                outputStream.write(content);
+            } catch (Exception e){
+                return new FailureResponse(
+                        "error_bad_request", "File could not be downloaded")
+                        .serialize();
+            }
+        }
+        return new FailureResponse("error_bad_request",
+                "Please enter what type of info you would like to download")
+                .serialize();
+    }
+}
