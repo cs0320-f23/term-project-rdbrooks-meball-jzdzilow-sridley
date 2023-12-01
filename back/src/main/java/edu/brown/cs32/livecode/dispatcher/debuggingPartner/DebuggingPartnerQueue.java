@@ -46,6 +46,23 @@ public class DebuggingPartnerQueue {
     return allDebuggingPartners;
   }
 
+  public boolean removeAndFlagDebuggingPartner(String name) {
+    boolean removed = false;
+    DebuggingPartner toRemove = null;
+    for (DebuggingPartner debuggingPartner : debuggingPartnerList) {
+      String thisName = debuggingPartner.getName();
+      if (name.equals(thisName)) {
+        toRemove = debuggingPartner;
+        removed = true;
+        toRemove.setFlagged();
+      }
+    }
+    if (toRemove != null) {
+      debuggingPartnerList.remove(toRemove);
+    }
+    return removed;
+  }
+
   public DebuggingPartner nextDebuggingPartner() {
     if (debuggingPartnerList.isEmpty()) {
       return null;
