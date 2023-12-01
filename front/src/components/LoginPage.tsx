@@ -39,11 +39,6 @@ const LoginPage = () => {
     const user = users.find((u) => u.email === email);
     console.log(email);
 
-    // if not brown.edu email then navigate to failure page
-    if (!user?.email.includes("brown.edu")) {
-      return navigate("/failed-login");
-    }
-
     if (user) {
       setUser(user);
       if (user.role === "student") {
@@ -79,14 +74,19 @@ const LoginPage = () => {
         const user: IUser = {
           email: email,
           name: name,
-          role: "instructor", // will need to determine from csv file
+          role: "instructor", // TODO: determine through call to backend
         };
+
+        if (!user?.email.includes("brown.edu")) {
+          return navigate("/failed-login");
+        }
 
         setUser(user);
         console.log(user);
         console.log(user.role);
 
         if (user.role === "student") {
+          // TODO: call endpoint on backend to add to help requester or debugging partner
           // pass user information to the further component
           return navigate("/role-selection", { state: { user } });
         } else if (user.role === "instructor") {
