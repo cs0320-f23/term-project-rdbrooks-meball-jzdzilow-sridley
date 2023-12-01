@@ -5,11 +5,13 @@ import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartner;
 public class HelpRequester {
   private final String name;
   private boolean debugged;
+  private boolean escalated;
   private DebuggingPartner debuggingPartner;
 
   public HelpRequester(String name) {
     this.name = name;
     this.debugged = false;
+    this.escalated = false;
     this.debuggingPartner = null;
   }
 
@@ -31,6 +33,14 @@ public class HelpRequester {
 
   public DebuggingPartner getDebuggingPartner() {
     return debuggingPartner;
+  }
+
+  public void setEscalated() {
+    this.escalated = true;
+  }
+
+  public boolean getEscalated() {
+    return this.escalated;
   }
 
   @Override

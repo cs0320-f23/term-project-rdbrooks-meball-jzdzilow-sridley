@@ -19,3 +19,7 @@ http://localhost:3333/getInfo --> gets general information on the current state 
 http://localhost:3333/getInfo?role=debuggingPartner&name= --> gets info on a specific debugging partner by name
 
 http://localhost:3333/getInfo?role=helpRequester&name= --> gets info on a specific help requester by name
+
+http://localhost:3333/escalate?helpRequester= --> escalate a help requester by name
+
+http://localhost:3333/flagAndRematch?helpRequester= &debuggingPartner= → rematch and flag debugging partner and help requester by name
