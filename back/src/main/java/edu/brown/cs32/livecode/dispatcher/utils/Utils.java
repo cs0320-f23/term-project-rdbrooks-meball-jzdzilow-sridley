@@ -20,4 +20,11 @@ public class Utils {
     String dateTimeFormatted = new SimpleDateFormat("MM-dd-yyyy-hh-mm").format(now);
     return dateTimeFormatted;
   }
+
+  public static String simpleTime() {
+    Date today = new Date();
+    Long now = today.getTime();
+    String dateTimeFormatted = new SimpleDateFormat("hh:mm").format(now);
+    return dateTimeFormatted;
+  }
 }

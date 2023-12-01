@@ -12,12 +12,12 @@ import edu.brown.cs32.livecode.dispatcher.utils.Utils;
  */
 public class DebuggingPartner implements Runnable {
   private final String name;
-  private int studentsHelped;
+  private int studentsHelped = 0;
   private HelpRequester helping = null;
+  private boolean flagged = false;
 
   public DebuggingPartner(String name) {
     this.name = name;
-    this.studentsHelped = 0;
   }
 
   public String getName() {
@@ -30,6 +30,14 @@ public class DebuggingPartner implements Runnable {
 
   public int getStudentsHelped() {
     return this.studentsHelped;
+  }
+
+  public void setFlagged() {
+    this.flagged = true;
+  }
+
+  public boolean getFlagged() {
+    return this.flagged;
   }
 
   public HelpRequester getCurrentHelpRequester() {
