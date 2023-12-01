@@ -8,6 +8,7 @@ import edu.brown.cs32.livecode.dispatcher.handlers.AddDebuggingPartnerHandler;
 import edu.brown.cs32.livecode.dispatcher.handlers.AddHelpRequesterHandler;
 import edu.brown.cs32.livecode.dispatcher.handlers.DebuggingPartnerDoneHandler;
 import edu.brown.cs32.livecode.dispatcher.handlers.EscalateHandler;
+import edu.brown.cs32.livecode.dispatcher.handlers.FlagAndRematchHandler;
 import edu.brown.cs32.livecode.dispatcher.handlers.GetInfoHandler;
 import edu.brown.cs32.livecode.dispatcher.handlers.HelpRequesterDoneHandler;
 import edu.brown.cs32.livecode.dispatcher.handlers.SessionHandler;
@@ -49,6 +50,8 @@ public class Server {
         "getInfo", new GetInfoHandler(helpRequesterQueue, debuggingPartnerQueue, sessionState));
     Spark.get(
         "escalate", new EscalateHandler(helpRequesterQueue, sessionState));
+    Spark.get(
+        "flagAndRematch", new FlagAndRematchHandler(helpRequesterQueue, debuggingPartnerQueue, sessionState));
     Spark.get(
         "session", new SessionHandler(helpRequesterQueue, debuggingPartnerQueue, sessionState));
     Spark.init();
