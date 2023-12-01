@@ -43,14 +43,10 @@ public class DownloadInfoHandler implements Route {
                         "error_bad_request", "File could not be downloaded")
                         .serialize();
             }
-
-            // some way to allow both success response and the download
-//            return new SuccessResponse("success", "All session information was downloaded" + filePath)
-//                    .serialize();
-
         }
         if (info.equals("current")){
-            //download csv
+            // figure out how to get date
+
             return new SuccessResponse("success", "This session's information was downloaded as a CSV")
                     .serialize();
 

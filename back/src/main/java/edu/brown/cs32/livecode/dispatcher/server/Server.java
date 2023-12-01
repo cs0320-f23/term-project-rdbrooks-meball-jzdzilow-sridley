@@ -42,6 +42,8 @@ public class Server {
     Spark.get(
         "getInfo", new GetInfoHandler(helpRequesterQueue, debuggingPartnerQueue, sessionState));
     Spark.get(
+        "escalate", new EscalateHandler(helpRequesterQueue, sessionState));
+    Spark.get(
         "session", new SessionHandler(helpRequesterQueue, debuggingPartnerQueue, sessionState));
     Spark.get("info", new DownloadInfoHandler(sessionState));
     Spark.init();

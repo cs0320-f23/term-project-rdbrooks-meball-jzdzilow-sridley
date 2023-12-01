@@ -37,10 +37,14 @@ public class GetInfoHandler implements Route {
 
     List<HelpRequester> pairedHelpRequesters = helpRequesterQueue.getGettingHelpList();
     List<String> pairs = new ArrayList<>();
+    List<String> escalatedPairs = new ArrayList<>();
     for (HelpRequester helpRequester : pairedHelpRequesters) {
       DebuggingPartner helper = helpRequester.getDebuggingPartner();
       pairs.add(
-          "Debugging Partner " + helper.getName() + " + Help Requester " + helpRequester.getName());
+          "Debugging Partner: " + helper.getName() + ", Help Requester: " + helpRequester.getName());
+      if (helpRequester.getEscalated()) {
+        escalatedPairs.add("Debugging Partner: " + helper.getName() + ", Help Requester: " + helpRequester.getName());
+      }
     }
 
     List<DebuggingPartner> allDebuggingPartners =
@@ -63,6 +67,7 @@ public class GetInfoHandler implements Route {
         waitingHRQs,
         openDBPs,
         pairs,
+        escalatedPairs,
         helpedNames)
         .serialize();
   }
@@ -120,14 +125,16 @@ public class GetInfoHandler implements Route {
       List<String> waitingHRQs,
       List<String> openDBPs,
       List<String> pairs,
+      List<String> escalatedPairs,
       List<String> helpedNames) {
     public AllInfoSuccessResponse(
         String message,
         List<String> waitingHRQs,
         List<String> openDBPs,
         List<String> pairs,
+        List<String> escalatedPairs,
         List<String> helpedNames) {
-      this("success", message, waitingHRQs, openDBPs, pairs, helpedNames);
+      this("success", message, waitingHRQs, openDBPs, pairs, escalatedPairs, helpedNames);
     }
 
     String serialize() {
