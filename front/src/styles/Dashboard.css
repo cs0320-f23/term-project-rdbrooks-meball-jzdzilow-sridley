@@ -28,6 +28,7 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
+  height: 100%;
   /* background-image: url("/src/assets/backgrounds/gradient3.png");
   background-blend-mode: overlay;
   background-size: cover;
@@ -76,6 +77,16 @@
   padding: 0;
   padding-top: 30px;
   padding-bottom: 30px;
+}
+
+.escalate-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-top: 30px;
 }
 
 .welcome-container {
@@ -194,7 +205,31 @@
 }
 
 .submit-button:hover {
-  background-color: var(--landing-background-color);
+  background-color: #bfd9aa;
+  color: white;
+}
+
+.escalate-button {
+  text-align: center;
+  margin-top: 8px;
+  margin-bottom: 18px;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  background: #e9e9ea;
+  color: #333;
+  border-radius: 40px;
+  font-size: 16px;
+  font-weight: 600;
+  width: auto;
+  height: 40px;
+  padding: 10px 40px 10px 40px;
+  text-decoration: none;
+  transition: 0.5s ease;
+}
+
+.escalate-button:hover {
+  background-color: #efb5df;
   color: white;
 }
 

@@ -84,6 +84,10 @@ const Dashboard = () => {
     }
   };
 
+  const handleEscalate = () => {
+    console.log("escalated");
+  };
+
   const renderHeaderBasedOnRole = (role: UserRole) => {
     switch (role) {
       case UserRole.Instructor:
@@ -147,6 +151,15 @@ const Dashboard = () => {
               </div>
               <button className="submit-button" onClick={handleSubmit}>
                 Submit!
+              </button>
+            </div>
+            <div className="escalate-container">
+              <b>
+                Once 15 minutes in a current session have passed, you may
+                escalate:
+              </b>
+              <button className="escalate-button" onClick={handleEscalate}>
+                Escalate!
               </button>
             </div>
           </div>
