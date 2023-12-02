@@ -14,7 +14,9 @@ const Dashboard = () => {
   const [issue, setIssue] = useState<string | null>(null);
   const [bugCategory, setBugCategory] = useState("");
   const [debuggingProcess, setDebuggingProcess] = useState("");
-  const [timeRemaining, setTimeRemaining] = useState(calculateTimeRemaining());
+  const [fullTimeRemaining, setFullTimeRemaining] = useState(
+    calculateFullTimeRemaining()
+  );
 
   useEffect(() => {
     if (user === null) {
@@ -44,7 +46,7 @@ const Dashboard = () => {
 
   /* -------------------------------timer content ---------------------------------------*/
 
-  function calculateTimeRemaining() {
+  function calculateFullTimeRemaining() {
     if (userRole?.time === null) {
       return 0;
     }
@@ -58,7 +60,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     const timerInterval = setInterval(() => {
-      setTimeRemaining(calculateTimeRemaining());
+      setFullTimeRemaining(calculateFullTimeRemaining());
     }, 1000);
 
     return () => clearInterval(timerInterval);
@@ -74,6 +76,9 @@ const Dashboard = () => {
   /* ---------------------------------- handlers -----------------------------------------*/
 
   const handleSubmit = async () => {
+    if (bugCategory === "" || debuggingProcess === "") {
+      return alert("Bug category and debugging process inputs required!");
+    }
     if (user && partner) {
       console.log(user.email, partner, bugCategory, debuggingProcess);
       try {
@@ -117,6 +122,8 @@ const Dashboard = () => {
   };
 
   const handleEndSession = () => {
+    setBugCategory("");
+    setDebuggingProcess("");
     setUser(null);
   };
 
@@ -144,9 +151,9 @@ const Dashboard = () => {
   };
 
   const renderTimerOrButton = () => {
-    if (partner && timeRemaining > 0) {
-      return <Timer timeRemaining={timeRemaining} />;
-    } else if (!partner && timeRemaining === 0) {
+    if (partner && fullTimeRemaining > 0) {
+      return <Timer fullTimeRemaining={fullTimeRemaining} />;
+    } else if (fullTimeRemaining === 0) {
       return (
         <button className="done-button" onClick={handleEndSession}>
           I'm done!

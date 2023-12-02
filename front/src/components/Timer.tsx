@@ -1,4 +1,8 @@
-const Timer = ({ timeRemaining }: { timeRemaining: number }) => {
+const Timer = ({
+  fullTimeRemaining: fullTimeRemaining,
+}: {
+  fullTimeRemaining: number;
+}) => {
   const formatTime = (milliseconds: number) => {
     const minutes = Math.floor(milliseconds / (60 * 1000));
     const seconds = Math.floor((milliseconds % (60 * 1000)) / 1000);
@@ -7,7 +11,7 @@ const Timer = ({ timeRemaining }: { timeRemaining: number }) => {
 
   return (
     <div className="pending-container">
-      <p className="pending">Pending: {formatTime(timeRemaining)}</p>
+      <p className="pending">Pending: {formatTime(fullTimeRemaining)}</p>
     </div>
   );
 };

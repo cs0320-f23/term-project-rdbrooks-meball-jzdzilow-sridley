@@ -40,11 +40,14 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
   width: 100%;
   background-color: rgba(255, 255, 255, 0.859);
   box-shadow: 0 0 10px 0px rgb(0, 0, 0);
   margin-bottom: 50px;
   padding: 0px;
+  padding-left: 10px;
+  padding-right: 40px;
 }
 
 .join-time {
@@ -76,7 +79,7 @@
   justify-content: center;
   padding: 0;
   padding-top: 30px;
-  padding-bottom: 30px;
+  padding-bottom: 15px;
   margin-top: 30px;
 }
 
@@ -157,6 +160,7 @@
   box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.4);
   background-color: white;
   margin-top: 30px;
+  padding-top: 10px;
 }
 
 .debugging-process,
@@ -199,14 +203,14 @@
   font-size: 16px;
   font-weight: 600;
   width: auto;
-  height: 40px;
-  padding: 10px 40px 10px 40px;
+  height: 30px;
+  padding: 0px 40px 0px 40px;
   text-decoration: none;
   transition: 0.5s ease;
 }
 
 .submit-button:hover {
-  background-color: #bfd9aa;
+  background-color: #afc899;
   color: white;
 }
 
@@ -223,21 +227,19 @@
   font-size: 16px;
   font-weight: 600;
   width: auto;
-  height: 40px;
-  padding: 10px 40px 10px 40px;
+  height: 30px;
+  padding: 0px 40px 0px 40px;
   text-decoration: none;
   transition: 0.5s ease;
 }
 
 .escalate-button:hover {
-  background-color: #efb5df;
+  background-color: #1a212a;
   color: white;
 }
 
 .done-button {
   text-align: center;
-  margin-top: 8px;
-  margin-bottom: 18px;
   border: none;
   outline: none;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -246,15 +248,15 @@
   border-radius: 40px;
   font-size: 16px;
   font-weight: 600;
+  height: 30px;
   width: auto;
-  height: 40px;
-  padding: 10px 40px 10px 40px;
+  padding: 0px 40px 0px 40px;
   text-decoration: none;
   transition: 0.5s ease;
 }
 
 .done-button:hover {
-  background-color: #efb5df;
+  background-color: #1a212a;
   color: white;
 }
 
