@@ -174,7 +174,7 @@ const Dashboard = () => {
         );
       case UserRole.HelpRequester:
         return (
-          <header className="user-header">
+          <header className="user-header" style={{ marginBottom: 170 }}>
             <p className="join-time">
               Join time: {userSession.time?.toLocaleTimeString()}
             </p>
