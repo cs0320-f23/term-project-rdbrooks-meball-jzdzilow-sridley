@@ -6,6 +6,7 @@ import LoginPage from "./LoginPage";
 import FailedLogin from "./FailedLogin";
 import RoleSelection from "./RoleSelection";
 import Dashboard from "./Dashboard";
+import IssueTypeSelection from "./IssueTypeSelection";
 
 const App: React.FC = () => {
   return (
@@ -15,6 +16,7 @@ const App: React.FC = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/failed-login" element={<FailedLogin />} />
         <Route path="/role-selection" element={<RoleSelection />} />
+        <Route path="/issue-type-selection" element={<IssueTypeSelection />} />
         <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </Router>

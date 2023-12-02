@@ -15,12 +15,15 @@ const RoleSelection = () => {
     if (user === null) {
       navigate("/login");
     }
-  }, [userState, user]);
+  }, [user]);
 
   const handleRoleSelection = (role: UserRole) => {
     setUserRole({ role: role, time: new Date() });
-    navigate("/dashboard");
-    // Do something based on the selected role (e.g., navigate to a specific page)
+    if (role === UserRole.DebuggingPartner) {
+      navigate("/dashboard");
+    } else if (role === UserRole.HelpRequester) {
+      navigate("/issue-type-selection");
+    }
   };
 
   return (

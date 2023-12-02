@@ -1,6 +1,6 @@
 @import "/src/styles/variables.css";
 
-.role-body {
+.issue-body {
   font-family: var(--main-font);
   display: flex;
   justify-content: center;
@@ -11,7 +11,7 @@
   background-position: center;
 }
 
-.role-container {
+.issue-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -27,19 +27,14 @@
   padding: 30px 30px;
 }
 
-.role-container h2 {
+.issue-container h2 {
   font-size: 30px;
   text-align: center;
   margin-bottom: 10px;
   margin-top: 10px;
 }
 
-.role-container p {
-  text-align: center;
-  padding: 0px 50px 0px 50px;
-}
-
-.role-container .btn {
+.issue-container .btn {
   text-align: center;
   margin-top: 12px;
   margin-bottom: 12px;
@@ -58,12 +53,12 @@
   transition: 0.5s ease;
 }
 
-.role-container .btn:hover {
+.issue-container .btn:hover {
   background-color: var(--landing-background-color);
   color: white;
 }
 
-.role-container .btn2 {
+.issue-container .btn2 {
   text-align: center;
   margin-top: 12px;
   margin-bottom: 12px;
@@ -81,7 +76,7 @@
   transition: 0.5s ease;
 }
 
-.role-container .btn2:hover {
+.issue-container .btn2:hover {
   background-color: var(--landing-background-color);
   background-color: black;
   border: 1px solid black;
