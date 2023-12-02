@@ -19,8 +19,8 @@ app.get("/login", (req, res) => {
   res.sendFile(filePath);
 });
 
-app.get("/getPartner", (req, res) => {
-  const filePath = join(__dirname, "/public/mockPartner.json");
+app.get("/getSession", (req, res) => {
+  const filePath = join(__dirname, "/public/mockSession.json");
   res.sendFile(filePath);
 });
 

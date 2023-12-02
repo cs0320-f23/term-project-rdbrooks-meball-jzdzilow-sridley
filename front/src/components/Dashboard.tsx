@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
-import { UserRole, userRoleState, userState } from "../recoil/atoms";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import {
+  IssueType,
+  UserRole,
+  singleSessionState,
+  userSessionState,
+} from "../recoil/atoms";
 import "../styles/Dashboard.css";
 import { useNavigate } from "react-router-dom";
 import Timer from "./Timer";
 import "../styles/nightsky.scss";
 
 const Dashboard = () => {
-  const [user, setUser] = useRecoilState(userState);
-  const [userRole, setUserRole] = useRecoilState(userRoleState);
+  const [userSession, setUserSession] = useRecoilState(userSessionState);
+  const [singleSession, setSingleSession] = useRecoilState(singleSessionState);
   const navigate = useNavigate();
-  const [partner, setPartner] = useState<string | null>(null);
-  const [issue, setIssue] = useState<string | null>(null);
   const [bugCategory, setBugCategory] = useState("");
   const [debuggingProcess, setDebuggingProcess] = useState("");
   const [fullTimeRemaining, setFullTimeRemaining] = useState(
@@ -19,41 +22,58 @@ const Dashboard = () => {
   );
 
   useEffect(() => {
-    if (user === null) {
-      setUserRole({ role: UserRole.NoneSelected, time: null });
+    if (userSession.user === null) {
+      setSingleSession({
+        partner: null,
+        issueType: IssueType.NoneSelected,
+      });
+      setUserSession({ user: null, role: UserRole.NoneSelected, time: null });
       navigate("/login");
     }
-  }, [user]);
+  }, [userSession.user]);
 
   useEffect(() => {
+    console.log("test");
     const fetchPartner = async () => {
       try {
-        const response = await fetch("http://localhost:2000/getPartner");
+        const response = await fetch("http://localhost:2000/getSession");
         const data = await response.json();
-        const partner = data.partner;
-        const issue = data.issue;
-        setPartner(partner);
-        setIssue(issue);
+        if (userSession.role === UserRole.DebuggingPartner) {
+          const sessionAsDP = data.pHelpRequester;
+          const partner = sessionAsDP.user;
+          const issue = sessionAsDP.issueType;
+          setSingleSession({ partner: partner, issueType: issue });
+        }
+        if (userSession.role === UserRole.HelpRequester) {
+          const sessionAsHR = data.pDebuggingPartner;
+          const partner = sessionAsHR.user;
+          setSingleSession({
+            partner: partner,
+            issueType: singleSession.issueType,
+          });
+        }
       } catch (error) {
         console.error("Error fetching partner:", error);
       }
     };
-
-    if (userRole.role === UserRole.DebuggingPartner) {
-      fetchPartner();
-    }
-  }, [userRole.role]);
+    fetchPartner();
+    console.log(
+      "issue " + singleSession.issueType,
+      "partner " + singleSession.partner
+    );
+  }, []);
 
   /* -------------------------------timer content ---------------------------------------*/
 
   function calculateFullTimeRemaining() {
-    if (userRole?.time === null) {
+    if (userSession.time === null) {
+      /* ------------- CHECK --------------- */
       return 0;
     }
 
-    const oneHourInMillis = 20 * 1000; // 1 hour in milliseconds
+    const oneHourInMillis = 60 * 60 * 1000; // 1 hour in milliseconds
     const currentTime = new Date().getTime();
-    const elapsedTime = currentTime - userRole?.time.getTime();
+    const elapsedTime = currentTime - userSession.time.getTime();
     const remainingTime = Math.max(oneHourInMillis - elapsedTime, 0);
     return remainingTime;
   }
@@ -64,7 +84,7 @@ const Dashboard = () => {
     }, 1000);
 
     return () => clearInterval(timerInterval);
-  }, [userRole?.time]);
+  }, [userSession.time]);
 
   /* ---------------------------- end of timer content ------------------------------------*/
 
@@ -79,8 +99,13 @@ const Dashboard = () => {
     if (bugCategory === "" || debuggingProcess === "") {
       return alert("Bug category and debugging process inputs required!");
     }
-    if (user && partner) {
-      console.log(user.email, partner, bugCategory, debuggingProcess);
+    if (userSession.user && singleSession.partner) {
+      console.log(
+        userSession.user.email,
+        singleSession.partner,
+        bugCategory,
+        debuggingProcess
+      );
       try {
         const response = await fetch("http://localhost:2000/submitForm/", {
           method: "POST",
@@ -89,8 +114,8 @@ const Dashboard = () => {
           },
           body: JSON.stringify({
             data: {
-              user: user.email,
-              partner: partner,
+              user: userSession.user.email,
+              partner: singleSession.partner.email,
               bugCategory: bugCategory,
               debuggingProcess: debuggingProcess,
             },
@@ -103,7 +128,10 @@ const Dashboard = () => {
         } else {
           const result = await response.json();
           if (result.success) {
-            setPartner(null);
+            setSingleSession({
+              partner: null,
+              issueType: IssueType.NoneSelected,
+            });
             setBugCategory("");
             setDebuggingProcess("");
           } else {
@@ -124,7 +152,7 @@ const Dashboard = () => {
   const handleEndSession = () => {
     setBugCategory("");
     setDebuggingProcess("");
-    setUser(null);
+    setUserSession({ user: null, role: UserRole.NoneSelected, time: null });
   };
 
   /* ----------------------- end of handlers / below rendering ---------------------------*/
@@ -137,21 +165,28 @@ const Dashboard = () => {
         return (
           <header className="user-header">
             <p className="join-time">
-              Join time: {userRole?.time?.toLocaleTimeString()}
+              Join time: {userSession.time?.toLocaleTimeString()}
             </p>
             {}
             {renderTimerOrButton()}
           </header>
         );
       case UserRole.HelpRequester:
-        return <p>help requester content here.</p>;
+        return (
+          <header className="user-header">
+            <p className="join-time">
+              Join time: {userSession.time?.toLocaleTimeString()}
+            </p>
+            {}
+          </header>
+        );
       default:
         return null;
     }
   };
 
   const renderTimerOrButton = () => {
-    if (partner && fullTimeRemaining > 0) {
+    if (singleSession.partner && fullTimeRemaining > 0) {
       return <Timer fullTimeRemaining={fullTimeRemaining} />;
     } else if (fullTimeRemaining === 0) {
       return (
@@ -172,11 +207,16 @@ const Dashboard = () => {
             <div className="other-partner-info">
               <p>
                 Your help requester is:{" "}
-                <b> {partner ? partner : "No one yet!"}</b>
+                <b>
+                  {" "}
+                  {singleSession.partner
+                    ? singleSession.partner.name
+                    : "No one yet!"}
+                </b>
               </p>
-              {partner && (
+              {singleSession.partner && (
                 <p>
-                  Issue category: <b>{issue}</b>
+                  Issue category: <b>{singleSession.issueType}</b>
                 </p>
               )}
             </div>
@@ -219,7 +259,24 @@ const Dashboard = () => {
           </div>
         );
       case UserRole.HelpRequester:
-        return <p>help requester content here.</p>;
+        return (
+          <div
+            className="debugging-partner-content"
+            style={{ marginBottom: 20 }}
+          >
+            <div className="other-partner-info">
+              <p>
+                Your debugging partner is:{" "}
+                <b>
+                  {" "}
+                  {singleSession.partner
+                    ? singleSession.partner.name
+                    : "No one yet!"}
+                </b>{" "}
+              </p>
+            </div>
+          </div>
+        );
       default:
         return null;
     }
@@ -233,10 +290,10 @@ const Dashboard = () => {
         <div id="stars3"></div>
       </div>
       <div className="dashboard-body">
-        {renderHeaderBasedOnRole(userRole.role)}
+        {renderHeaderBasedOnRole(userSession.role)}
         <div className="dashboard-container">
           <div className="welcome-container">
-            <h1>Welcome, {user?.name.split(" ")[0]}!</h1>
+            <h1>Welcome, {userSession.user?.name.split(" ")[0]}!</h1>
             <button className="tooltip">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -258,7 +315,7 @@ const Dashboard = () => {
               <span className="tooltiptext">Debugging Recipe</span>
             </button>
           </div>
-          {renderContentBasedOnRole(userRole.role)}
+          {renderContentBasedOnRole(userSession.role)}
         </div>
       </div>
     </div>

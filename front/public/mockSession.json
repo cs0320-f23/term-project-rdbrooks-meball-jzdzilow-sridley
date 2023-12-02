@@ -1,0 +1,19 @@
+{
+  "pHelpRequester": {
+    "user": {
+      "email": "sarah_ridley@brown.edu",
+      "password": "sarah",
+      "name": "Sarah Ridley",
+      "role": "student"
+    },
+    "issueType": "bug"
+  },
+  "pDebuggingPartner": {
+    "user": {
+      "email": "rachel_brooks@brown.edu",
+      "password": "rachel",
+      "name": "Rachel Brooks",
+      "role": "student"
+    }
+  }
+}

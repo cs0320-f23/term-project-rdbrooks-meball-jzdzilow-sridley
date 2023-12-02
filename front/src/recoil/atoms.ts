@@ -14,17 +14,16 @@ export enum IssueType {
   NoneSelected = "",
 }
 
-export const userState = atom({
-  key: "userState",
-  default: null as IUser | null,
+export const userSessionState = atom({
+  key: "userSessionState",
+  default: {
+    user: null as IUser | null,
+    role: UserRole.NoneSelected,
+    time: null as Date | null,
+  },
 });
 
-export const userRoleState = atom({
-  key: "userRoleState",
-  default: { role: UserRole.NoneSelected, time: null as Date | null },
-});
-
-export const issueTypeState = atom({
-  key: "issueType",
-  default: IssueType.NoneSelected,
+export const singleSessionState = atom({
+  key: "singleSessionState",
+  default: { partner: null as IUser | null, issueType: IssueType.NoneSelected },
 });

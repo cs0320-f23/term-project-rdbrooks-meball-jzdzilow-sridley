@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/LoginPage.css";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { userRoleState, userState } from "../recoil/atoms";
+import { useSetRecoilState } from "recoil";
+import { userSessionState } from "../recoil/atoms";
 import { UserRole } from "../recoil/atoms";
 import { IUser } from "../types/IUser";
 
@@ -10,12 +10,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useRecoilState(userState);
-  const [userRole, setUserRole] = useRecoilState(userRoleState);
-
-  useEffect(() => {
-    console.log("user" + user, "user role" + userRole.role, userRole.time);
-  });
+  const setUserSession = useSetRecoilState(userSessionState);
 
   const handleLogin = async () => {
     const response = await fetch("http://localhost:2000/login/");
@@ -23,19 +18,16 @@ const LoginPage = () => {
     const users: IUser[] = data.users;
 
     const user = users.find((u) => u.email === email);
-    console.log(email);
-
     if (user) {
-      setUser(user);
       if (user.role === "student") {
         // pass user information to the further component
-        return navigate("/role-selection", { state: { user } });
+        setUserSession({ user: user, role: UserRole.NoneSelected, time: null });
+        return navigate("/role-selection");
       } else if (user.role === "instructor") {
-        setUserRole({ role: UserRole.Instructor, time: null });
+        setUserSession({ user: user, role: UserRole.Instructor, time: null });
         return navigate("/dashboard");
       }
     } else {
-      // Mocking login failure
       return navigate("/failed-login");
     }
   };
