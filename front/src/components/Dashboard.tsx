@@ -152,6 +152,7 @@ const Dashboard = () => {
   const handleEndSession = () => {
     setBugCategory("");
     setDebuggingProcess("");
+    setSingleSession({ partner: null, issueType: IssueType.NoneSelected });
     setUserSession({ user: null, role: UserRole.NoneSelected, time: null });
   };
 
@@ -178,6 +179,9 @@ const Dashboard = () => {
               Join time: {userSession.time?.toLocaleTimeString()}
             </p>
             {}
+            <button className="done-button" onClick={handleEndSession}>
+              I'm done!
+            </button>
           </header>
         );
       default:
