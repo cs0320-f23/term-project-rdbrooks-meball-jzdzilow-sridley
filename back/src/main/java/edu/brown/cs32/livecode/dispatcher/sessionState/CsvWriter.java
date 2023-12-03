@@ -71,12 +71,12 @@ public class CsvWriter {
   }
 
   public void writeSessionAttendance() {
+    String beginTime = sessionState.getBeginTime();
     try {
-      String dateTime = Utils.date();
       FileWriter dpWriter =
-          new FileWriter("data/sessions/debugging-partner-attendance-" + dateTime + ".csv", true);
+          new FileWriter("data/sessions/debugging-partner-attendance-" + beginTime + ".csv", true);
       FileWriter hrWriter =
-          new FileWriter("data/sessions/help-requester-attendance-" + dateTime + ".csv", true);
+          new FileWriter("data/sessions/help-requester-attendance-" + beginTime + ".csv", true);
       dpWriter.write("DebuggingPartnerName, HelpRequestersSeen\n");
       hrWriter.write("HelpRequesterName, AssignedDebuggingPartnerName\n");
 

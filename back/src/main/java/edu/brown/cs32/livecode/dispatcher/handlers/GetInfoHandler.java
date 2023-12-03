@@ -84,7 +84,7 @@ public class GetInfoHandler implements Route {
             helpingName = currentlyHelping.getName();
           }
           return new DebuggingPartnerInfoSuccessResponse("Debugging Partner " + targetName + " found!",
-              targetName, helpingName, debuggingPartner.getStudentsHelped()).serialize();
+              targetName, helpingName, debuggingPartner.getFlagged(), debuggingPartner.getStudentsHelped()).serialize();
         }
       }
     } else {
@@ -148,13 +148,15 @@ public class GetInfoHandler implements Route {
       String message,
       String name,
       String helpRequesterName,
+      boolean flagged,
       int studentsHelped) {
     public DebuggingPartnerInfoSuccessResponse(
         String message,
         String name,
         String helpRequesterName,
+        boolean flagged,
         int studentsHelped) {
-      this("success", message, name, helpRequesterName, studentsHelped);
+      this("success", message, name, helpRequesterName, flagged, studentsHelped);
     }
 
     String serialize() {

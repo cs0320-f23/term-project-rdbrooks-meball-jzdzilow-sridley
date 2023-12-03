@@ -4,14 +4,7 @@ import static spark.Spark.after;
 
 import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartner;
 import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartnerQueue;
-import edu.brown.cs32.livecode.dispatcher.handlers.AddDebuggingPartnerHandler;
-import edu.brown.cs32.livecode.dispatcher.handlers.AddHelpRequesterHandler;
-import edu.brown.cs32.livecode.dispatcher.handlers.DebuggingPartnerDoneHandler;
-import edu.brown.cs32.livecode.dispatcher.handlers.EscalateHandler;
-import edu.brown.cs32.livecode.dispatcher.handlers.GetInfoHandler;
-import edu.brown.cs32.livecode.dispatcher.handlers.HelpRequesterDoneHandler;
-import edu.brown.cs32.livecode.dispatcher.handlers.IsTAHandler;
-import edu.brown.cs32.livecode.dispatcher.handlers.SessionHandler;
+import edu.brown.cs32.livecode.dispatcher.handlers.*;
 import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequester;
 import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequesterQueue;
 import edu.brown.cs32.livecode.dispatcher.sessionState.SessionState;
@@ -59,8 +52,10 @@ public class Server {
     Spark.get(
         "escalate", new EscalateHandler(helpRequesterQueue, sessionState));
     Spark.get(
+        "flagAndRematch", new FlagAndRematchHandler(helpRequesterQueue, debuggingPartnerQueue, sessionState));
+    Spark.get(
         "session", new SessionHandler(helpRequesterQueue, debuggingPartnerQueue, sessionState));
-    Spark.get("isTA", new IsTAHandler(listTAs));
+    Spark.get("info", new DownloadInfoHandler(sessionState));
     Spark.init();
     Spark.awaitInitialization();
   }

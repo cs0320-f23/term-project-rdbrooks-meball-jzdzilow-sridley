@@ -81,4 +81,22 @@ public class HelpRequesterQueue {
     }
     return escalated;
   }
+
+  public boolean moveBackToQueue(String name) {
+    boolean moved = false;
+    HelpRequester toMove = null;
+    for (HelpRequester helpRequester : gettingHelp) {
+      String thisName = helpRequester.getName();
+      if (name.equals(thisName)) {
+        helpRequester.setDebuggingPartner(null);
+        toMove = helpRequester;
+        moved = true;
+      }
+    }
+    if (toMove != null) {
+      gettingHelp.remove(toMove);
+      needHelp.add(toMove);
+    }
+    return moved;
+  }
 }
