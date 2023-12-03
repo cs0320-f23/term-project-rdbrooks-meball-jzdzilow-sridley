@@ -20,6 +20,6 @@ http://localhost:3333/getInfo?role=debuggingPartner&name=_&email=_ → gets info
 
 http://localhost:3333/getInfo?role=helpRequester&name=_&email=_ → gets info on a specific help requester by name
 
-http://localhost:3333/escalate?helpRequesterName=_&helpRequesterEmail=_&debuggingPartnerName=_&debuggingPartnerEmail=_ → escalate a help requester by name
+http://localhost:3333/escalate?helpRequesterName=_&helpRequesterEmail=_ → escalate a help requester by name
 
 http://localhost:3333/flagAndRematch?helpRequesterName=_&helpRequesterEmail=_&debuggingPartnerName=_&debuggingPartnerEmail=_ → rematch and flag debugging partner and help requester by name
