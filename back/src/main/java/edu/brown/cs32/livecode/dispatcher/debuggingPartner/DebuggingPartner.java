@@ -12,17 +12,28 @@ import edu.brown.cs32.livecode.dispatcher.utils.Utils;
  */
 public class DebuggingPartner implements Runnable {
   private final String name;
+  private final String email;
+  private final String joinedTime;
+  private String pairedAtTime;
   private int studentsHelped = 0;
   private HelpRequester helping = null;
   private boolean flagged = false;
 
-  public DebuggingPartner(String name) {
+  public DebuggingPartner(String name, String email) {
     this.name = name;
+    this.email = email;
+    this.joinedTime = Utils.simpleTime();
   }
 
   public String getName() {
     return name;
   }
+
+  public String getEmail() { return email; }
+
+  public String getJoinedTime() { return joinedTime; }
+
+  public String getPairedAtTime() { return pairedAtTime; }
 
   public void incrementStudentsHelper() {
     this.studentsHelped += 1;
@@ -46,6 +57,7 @@ public class DebuggingPartner implements Runnable {
 
   public void seeStudent(HelpRequester helpRequester) throws Exception {
     if (this.helping != null) throw new Exception();
+    this.pairedAtTime = Utils.simpleTime();
     this.helping = helpRequester;
 
     // *** Only uncomment one of these at a time ***
