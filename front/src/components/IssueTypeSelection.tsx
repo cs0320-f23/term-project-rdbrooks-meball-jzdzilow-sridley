@@ -47,7 +47,7 @@ const IssueTypeSelection = () => {
       navigate("/login");
     }
   }, [userSession.user]);
-
+  
   const handleIssueSelection = async (issueType: IssueType) => {
     setSingleSessionState({ partner: null, issueType: issueType });
     console.log("set single session state");

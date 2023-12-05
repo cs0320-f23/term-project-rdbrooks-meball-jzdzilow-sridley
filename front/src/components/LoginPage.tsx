@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/LoginPage.css";
 import { useRecoilState, useSetRecoilState } from "recoil";
@@ -49,8 +49,6 @@ const LoginPage = () => {
     const users: IUser[] = data.users;
 
     const user = users.find((u) => u.email === email);
-    console.log(email);
-
     if (user) {
       //setUser(user);
       if (user.role === "student") {
@@ -63,7 +61,6 @@ const LoginPage = () => {
         return navigate("/dashboard");
       }
     } else {
-      // Mocking login failure
       return navigate("/failed-login");
     }
   };

@@ -21,8 +21,9 @@ function addUserToQueue(email: string, name: string): Promise<string> {
 
 const RoleSelection = () => {
   const navigate = useNavigate();
-  const user = useRecoilValue(userState);
-  const setUserRole = useSetRecoilState(userRoleState);
+
+//   const user = useRecoilValue(userState);
+//   const setUserRole = useSetRecoilState(userRoleState);
   const [userSession, setUserSession] = useRecoilState(userSessionState);
 
   useEffect(() => {
@@ -44,7 +45,6 @@ const RoleSelection = () => {
     } else if (role === UserRole.HelpRequester) {
       navigate("/issue-type-selection");
     }
-    // Do something based on the selected role (e.g., navigate to a specific page)
   };
 
   return (

@@ -1,34 +1,312 @@
+.body {
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  /* height: 110%;
+  width: 100%; */
+  /* background-image: url("/src/assets/backgrounds/gradient3.png");
+  background-blend-mode: overlay;
+  background-size: cover;
+  background-position: center; */
+}
+
+.stars-container {
+  position: absolute;
+  /* background-image: url("/src/assets/backgrounds/gradient3.png");
+  background-blend-mode: overlay;
+  background-size: cover;
+  background-position: center; */
+}
+
 .dashboard-body {
+  position: absolute;
+  box-sizing: border-box;
   font-family: var(--main-font);
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   align-items: center;
-  height: 100vh;
-  width: 100vw;
-  background-image: url("/src/assets/backgrounds/gradient2.png");
+  width: 100%;
+  height: 100%;
+  /* background-image: url("/src/assets/backgrounds/gradient3.png");
+  background-blend-mode: overlay;
   background-size: cover;
-  background-position: center;
+  background-position: center; */
+}
+
+.user-header {
+  backdrop-filter: blur(15px);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.859);
+  box-shadow: 0 0 10px 0px rgb(0, 0, 0);
+  margin-bottom: 50px;
+  padding: 0px;
+  padding-left: 10px;
+  padding-right: 40px;
 }
 
 .join-time {
-  width: 100vw;
-  background-color: rgba(255, 255, 255, 0.756);
-  box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.4);
-  justify-content: center;
-  text-align: center;
-  margin-bottom: 40px;
-  padding: 10px;
+  margin-left: 30px;
+}
+
+.pending-container {
+  width: 100px; /* for the text to not flicker */
+  white-space: nowrap;
+  justify-content: right;
+  align-content: flex-end;
+  margin-right: 45px;
+}
+
+.pending {
+  display: flex;
+  flex-direction: row;
 }
 
 .dashboard-container {
   background-color: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(15px);
-  height: 82vh;
-  width: 75vw;
+  width: 80%;
+  height: max-content;
   border-radius: 30px;
   box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  padding: 0;
+  padding-top: 30px;
+  padding-bottom: 15px;
+  margin-top: 30px;
+}
+
+.escalate-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.welcome-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.welcome-container h1 {
+  margin: 0px;
+  padding: 0px;
+}
+
+/* .welcome-container img {
+  height: 25px;
+  width: auto;
+  margin-left: 10px;
+}
+
+.welcome-container img:hover {
+  height: 32px;
+  width: auto;
+  transition-duration: 0.5s;
+} */
+
+.other-partner-info {
+  display: flex;
+  flex-direction: column;
+  padding-top: 1%;
+  text-align: center;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.4);
+  background-color: white;
+}
+
+.other-partner-info p {
+  margin-top: 0px;
+  margin-bottom: 10px;
+}
+
+.other-partner-info p b {
+  animation: fadeIn 2s ease; /* You can adjust the duration and timing function */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.debugging-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+  width: 100%;
+  box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.4);
+  background-color: white;
+  margin-top: 30px;
+  padding-top: 10px;
+}
+
+.debugging-process,
+.bug-category {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: center;
+  width: 60%;
+}
+
+.debugging-form input {
+  margin-left: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+  background: transparent;
+  outline: none;
+  border: none;
+  border-bottom: 2px solid #c8c8c8;
+  padding-bottom: 5px;
+  font-size: 16px;
+  color: #000000;
+}
+
+.debugging-form input::placeholder {
+  color: #c8c8c8;
+}
+
+.submit-button {
+  text-align: center;
+  margin-top: 8px;
+  margin-bottom: 18px;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  background: #e9e9ea;
+  color: #333;
+  border-radius: 40px;
+  font-size: 16px;
+  font-weight: 600;
+  width: auto;
+  height: 30px;
+  padding: 0px 40px 0px 40px;
+  text-decoration: none;
+  transition: 0.5s ease;
+}
+
+.submit-button:hover {
+  background-color: #afc899;
+  color: white;
+}
+
+.escalate-button {
+  text-align: center;
+  margin-top: 8px;
+  margin-bottom: 18px;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  background: #e9e9ea;
+  color: #333;
+  border-radius: 40px;
+  font-size: 16px;
+  font-weight: 600;
+  width: auto;
+  height: 30px;
+  padding: 0px 40px 0px 40px;
+  text-decoration: none;
+  transition: 0.5s ease;
+}
+
+.escalate-button:hover {
+  background-color: #1a212a;
+  color: white;
+}
+
+.done-button {
+  text-align: center;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  background: #e9e9ea;
+  color: #333;
+  border-radius: 40px;
+  font-size: 16px;
+  font-weight: 600;
+  height: 30px;
+  width: auto;
+  padding: 0px 40px 0px 40px;
+  text-decoration: none;
+  transition: 0.5s ease;
+}
+
+.done-button:hover {
+  background-color: #1a212a;
+  color: white;
+}
+
+/* resources icon */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  border: none;
+  background-color: transparent;
+}
+
+.tooltip-icon {
+  width: 30px;
+  height: 30px;
+  transition: 0.2s linear;
+}
+
+.tooltip:hover > .tooltip-icon {
+  transform: scale(1.1);
+}
+
+.tooltip .tooltiptext {
+  white-space: nowrap;
+  visibility: hidden;
+  width: auto;
+  background-color: #1a2129;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 5px;
+  position: absolute;
+  z-index: 1;
+  top: 25%;
+  left: 110%;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent #1a2129 transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
 }
