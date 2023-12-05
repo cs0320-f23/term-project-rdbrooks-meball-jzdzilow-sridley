@@ -24,7 +24,7 @@ public class DebuggingPartner implements Runnable {
 
   /**
    * Constructor for DebuggingPartner class
-   * 
+   *
    * @param name String representing the name of the DebuggingPartner
    * @param email String representing the email of the DebuggingPartner
    */
@@ -43,11 +43,17 @@ public class DebuggingPartner implements Runnable {
     return name;
   }
 
-  public String getEmail() { return email; }
+  public String getEmail() {
+    return email;
+  }
 
-  public String getJoinedTime() { return joinedTime; }
+  public String getJoinedTime() {
+    return joinedTime;
+  }
 
-  public String getPairedAtTime() { return pairedAtTime; }
+  public String getPairedAtTime() {
+    return pairedAtTime;
+  }
 
   /** Updater to increment the DebuggingPartner's students helped */
   public void incrementStudentsHelper() {

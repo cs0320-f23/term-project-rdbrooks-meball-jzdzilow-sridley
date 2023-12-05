@@ -53,9 +53,9 @@ public class AddHelpRequesterHandler implements Route {
     } else if (email == null) {
       return new FailureResponse("error_bad_request", "Missing required parameter: email")
           .serialize();
-    } else if (bugType == null){
+    } else if (bugType == null) {
       return new FailureResponse("error_bad_request", "Missing required parameter: bugType")
-              .serialize();
+          .serialize();
     }
     helpRequesterQueue.addNeedsHelp(new HelpRequester(name, email, bugType));
     System.out.println("bug type: " + bugType);

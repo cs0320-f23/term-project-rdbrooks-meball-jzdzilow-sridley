@@ -14,8 +14,11 @@ public class TestHelpRequester {
   /** Testing creating a help requester with default state */
   @Test
   public void createHelpRequester() {
-    HelpRequester testHelpRequester = new HelpRequester("Sarah");
+    HelpRequester testHelpRequester =
+        new HelpRequester("Sarah", "sarah_ridley@brown.edu", "conceptual");
     Assertions.assertEquals(testHelpRequester.getName(), "Sarah");
+    Assertions.assertEquals(testHelpRequester.getEmail(), "sarah_ridley@brown.edu");
+    Assertions.assertEquals(testHelpRequester.getBugType(), "conceptual");
     Assertions.assertEquals(testHelpRequester.getDebugged(), false);
     Assertions.assertEquals(testHelpRequester.getEscalated(), false);
     Assertions.assertEquals(testHelpRequester.getDebuggingPartner(), null);

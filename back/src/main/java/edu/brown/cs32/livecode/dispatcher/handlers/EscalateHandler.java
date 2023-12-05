@@ -48,21 +48,27 @@ public class EscalateHandler implements Route {
     String helpRequesterName = request.queryParams("helpRequesterName");
     String helpRequesterEmail = request.queryParams("helpRequesterEmail");
     if (helpRequesterName == null) {
-      return new FailureResponse("error_bad_request", "Missing required parameter: helpRequesterName")
+      return new FailureResponse(
+              "error_bad_request", "Missing required parameter: helpRequesterName")
           .serialize();
     } else if (helpRequesterEmail == null) {
-      return new FailureResponse("error_bad_request", "Missing required parameter: helpRequesterEmail")
+      return new FailureResponse(
+              "error_bad_request", "Missing required parameter: helpRequesterEmail")
           .serialize();
     }
     boolean setSuccess = helpRequesterQueue.setEscalated(helpRequesterName, helpRequesterEmail);
     if (setSuccess) {
       return new SuccessResponse(
-          "success", "Help Requester " + helpRequesterName + " has been escalated!")
+              "success", "Help Requester " + helpRequesterName + " has been escalated!")
           .serialize();
     } else {
       return new FailureResponse(
-          "error_bad_request", "Help Requester " + helpRequesterName +
-          " with email " + helpRequesterEmail + " not found in queue.")
+              "error_bad_request",
+              "Help Requester "
+                  + helpRequesterName
+                  + " with email "
+                  + helpRequesterEmail
+                  + " not found in queue.")
           .serialize();
     }
   }

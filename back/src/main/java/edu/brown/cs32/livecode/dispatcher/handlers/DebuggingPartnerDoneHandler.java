@@ -48,12 +48,10 @@ public class DebuggingPartnerDoneHandler implements Route {
     String name = request.queryParams("name");
     String email = request.queryParams("email");
     if (name == null) {
-      return new FailureResponse(
-              "error_bad_request", "Missing required parameter: name")
+      return new FailureResponse("error_bad_request", "Missing required parameter: name")
           .serialize();
     } else if (email == null) {
-      return new FailureResponse(
-          "error_bad_request", "Missing required parameter: email")
+      return new FailureResponse("error_bad_request", "Missing required parameter: email")
           .serialize();
     }
     boolean setSuccess = debuggingPartnerQueue.removeDebuggingPartner(name, email);

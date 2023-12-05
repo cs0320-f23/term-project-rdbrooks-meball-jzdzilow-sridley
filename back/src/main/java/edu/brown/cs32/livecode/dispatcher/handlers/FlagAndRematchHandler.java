@@ -59,37 +59,57 @@ public class FlagAndRematchHandler implements Route {
     String helpRequesterEmail = request.queryParams("helpRequesterEmail");
     if (debuggingPartnerName == null) {
       return new FailureResponse(
-          "error_bad_request", "Missing some required parameter: debuggingPartnerName")
+              "error_bad_request", "Missing some required parameter: debuggingPartnerName")
           .serialize();
     } else if (debuggingPartnerEmail == null) {
       return new FailureResponse(
-          "error_bad_request", "Missing some required parameter: debuggingPartnerEmail")
+              "error_bad_request", "Missing some required parameter: debuggingPartnerEmail")
           .serialize();
     } else if (helpRequesterName == null) {
       return new FailureResponse(
-          "error_bad_request", "Missing some required parameter: helpRequesterName")
+              "error_bad_request", "Missing some required parameter: helpRequesterName")
           .serialize();
     } else if (helpRequesterEmail == null) {
       return new FailureResponse(
-          "error_bad_request", "Missing some required parameter: helpRequesterEmail")
+              "error_bad_request", "Missing some required parameter: helpRequesterEmail")
           .serialize();
     }
     boolean paired = helpRequesterQueue.checkPaired(debuggingPartnerName, helpRequesterName);
     if (!paired) {
       return new FailureResponse(
-          "error_bad_request", "Debugging Partner " + debuggingPartnerName + " with email " +
-          debuggingPartnerEmail + " is not paired with Help Requester " + helpRequesterName + " with email " + helpRequesterEmail)
+              "error_bad_request",
+              "Debugging Partner "
+                  + debuggingPartnerName
+                  + " with email "
+                  + debuggingPartnerEmail
+                  + " is not paired with Help Requester "
+                  + helpRequesterName
+                  + " with email "
+                  + helpRequesterEmail)
           .serialize();
     }
-    boolean flagSuccess = debuggingPartnerQueue.removeAndFlagDebuggingPartner(debuggingPartnerName, debuggingPartnerEmail);
-    boolean rematchSuccess = helpRequesterQueue.moveBackToQueue(helpRequesterName, helpRequesterEmail);
+    boolean flagSuccess =
+        debuggingPartnerQueue.removeAndFlagDebuggingPartner(
+            debuggingPartnerName, debuggingPartnerEmail);
+    boolean rematchSuccess =
+        helpRequesterQueue.moveBackToQueue(helpRequesterName, helpRequesterEmail);
     if (!flagSuccess) {
       return new FailureResponse(
-          "error_bad_request", "Debugging Partner " + debuggingPartnerName + " with email " + debuggingPartnerEmail + " not found in queue.")
+              "error_bad_request",
+              "Debugging Partner "
+                  + debuggingPartnerName
+                  + " with email "
+                  + debuggingPartnerEmail
+                  + " not found in queue.")
           .serialize();
     } else if (!rematchSuccess) {
       return new FailureResponse(
-          "error_bad_request", "Help Requester " + helpRequesterName + " with email " + helpRequesterEmail +  "not found in queue.")
+              "error_bad_request",
+              "Help Requester "
+                  + helpRequesterName
+                  + " with email "
+                  + helpRequesterEmail
+                  + "not found in queue.")
           .serialize();
     } else {
       return new SuccessResponse(

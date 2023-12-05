@@ -9,7 +9,6 @@ import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequester;
 import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequesterQueue;
 import edu.brown.cs32.livecode.dispatcher.sessionState.SessionState;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -100,6 +99,7 @@ public class Server {
 
   /**
    * Method to parse the csv of TAs into a list of lists.
+   *
    * @return parsed csv
    */
   private static List<List<String>> parseCsvTA() {
@@ -119,8 +119,7 @@ public class Server {
         line = bufferedFile.readLine();
       }
       return parsed;
-    }
-    catch (IOException e){
+    } catch (IOException e) {
       System.out.println("ERROR: " + e.getMessage());
       // decided to print error message as relevant to developer
       System.exit(0);

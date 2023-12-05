@@ -18,7 +18,7 @@ public class TestHelpRequesterQueue {
     HelpRequesterQueue helpRequesterQueue = new HelpRequesterQueue(List.of());
     Assertions.assertEquals(helpRequesterQueue.getAllHelpRequesters(), List.of());
     Assertions.assertEquals(helpRequesterQueue.getGettingHelpList(), List.of());
-    Assertions.assertEquals(helpRequesterQueue.getNeedHelp(), List.of());
+    Assertions.assertEquals(helpRequesterQueue.getNeedHelp().hasNext(), false);
     Assertions.assertEquals(helpRequesterQueue.getHelpedList(), List.of());
   }
 }
