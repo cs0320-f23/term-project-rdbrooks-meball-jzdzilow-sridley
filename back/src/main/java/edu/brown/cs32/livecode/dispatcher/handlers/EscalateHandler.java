@@ -8,16 +8,38 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/**
+ * This class is the EscalateHandler class, implements the Route interface such that it can be
+ * attached to the endpoint /escalate.
+ *
+ * <p>A call to the /escalate endpoint allows a DebuggingPartner to escalate their HelpRequester.
+ *
+ * @author sarahridley juliazdzilowska rachelbrooks meganball
+ * @version 1.0
+ */
 public class EscalateHandler implements Route {
 
   private HelpRequesterQueue helpRequesterQueue;
   private SessionState sessionState;
 
+  /**
+   * Constructor for the EscalateHandler class
+   *
+   * @param helpRequesterQueue HelpRequesterQueue containing all HelpRequester info
+   * @param sessionState SessionState representing the current state of the session
+   */
   public EscalateHandler(HelpRequesterQueue helpRequesterQueue, SessionState sessionState) {
     this.helpRequesterQueue = helpRequesterQueue;
     this.sessionState = sessionState;
   }
 
+  /**
+   * Handler for a call to the /escalate endpoint
+   *
+   * @param request Request object containing parameters
+   * @param response Response object that is unused
+   * @return Json Object containing result of this request
+   */
   @Override
   public Object handle(Request request, Response response) throws Exception {
     if (!sessionState.getRunning()) {

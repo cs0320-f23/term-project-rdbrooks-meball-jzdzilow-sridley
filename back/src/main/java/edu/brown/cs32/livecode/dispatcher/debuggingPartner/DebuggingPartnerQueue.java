@@ -1,29 +1,56 @@
 package edu.brown.cs32.livecode.dispatcher.debuggingPartner;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+/**
+ * This class is the DebuggingPartnerQueue class, which a structure that contains DebuggingPartners
+ * a maintains the order that they are selected next to help students.
+ *
+ * @author sarahridley juliazdzilowska rachelbrooks meganball
+ * @version 1.0
+ */
 public class DebuggingPartnerQueue {
   private List<DebuggingPartner> debuggingPartnerList;
-  private int index;
-  private List<DebuggingPartner> allDebuggingPartners;
+  private int index = 0;
+  private List<DebuggingPartner> allDebuggingPartners = new ArrayList<>();
 
+  /**
+   * Constructor for the DebuggingPartnerList class
+   *
+   * @param DebuggingPartnerList list of DebuggingPartners to start with
+   */
   public DebuggingPartnerQueue(List<DebuggingPartner> DebuggingPartnerList) {
     this.debuggingPartnerList = DebuggingPartnerList;
-    this.index = 0;
-    this.allDebuggingPartners = new ArrayList<>();
   }
 
+  /**
+   * Clears the list of debugging partners and restores the index. Called once a session ends (after
+   * data has been written to attendance CSVs).
+   */
   public void reset() {
     debuggingPartnerList.clear();
     index = 0;
   }
 
+  /**
+   * Adds a DebuggingPartner to the queue.
+   *
+   * @param newDebuggingPartner DebuggingPartner representing new student joining queue
+   */
   public void addDebuggingPartner(DebuggingPartner newDebuggingPartner) {
     allDebuggingPartners.add(newDebuggingPartner);
     debuggingPartnerList.add(newDebuggingPartner);
   }
 
+  /**
+   * Removes a DebuggingPartner from the queue by name.
+   *
+   * @param name String name of DebuggingPartner to remove from the queue
+   * @param email String email of DebuggingPartner to remove from the queue
+   * @return boolean representing whether the DebuggingPartner was removed successfully
+   */
   public boolean removeDebuggingPartner(String name, String email) {
     boolean foundDebuggingPartner = false;
     List<DebuggingPartner> newDebuggingPartners = new ArrayList<>();
@@ -38,15 +65,33 @@ public class DebuggingPartnerQueue {
     return foundDebuggingPartner;
   }
 
+  /**
+   * Getter for an unmodifiable copy of the list of the current DebuggingPartners
+   *
+   * @return list of current DebuggingPartners
+   */
   public List<DebuggingPartner> getDebuggingPartnerList() {
-    return debuggingPartnerList;
+    return Collections.unmodifiableList(debuggingPartnerList);
   }
 
+  /**
+   * Getter for an unmodifiable copy of the list of all DebuggingPartners for this session
+   *
+   * @return list of all DebuggingPartners
+   */
   public List<DebuggingPartner> getAllDebuggingPartnerList() {
-    return allDebuggingPartners;
+    return Collections.unmodifiableList(allDebuggingPartners);
   }
 
-  public boolean removeAndFlagDebuggingPartner(String name, String email) {
+  /**
+   * Removes and flags a DebuggingPartner, given that they did not show up for the session but
+   * joined the queue and were assigned to a student.
+   *
+   * @param name String representing name of DebuggingPartner to flag
+   * @param email String representing email of DebuggingPartner to flag
+   * @return boolean representing whether DebuggingPartner was successfully flagged and removed
+   */
+  public boolean removeAndFlagDebuggingPartner(String name) {
     boolean removed = false;
     DebuggingPartner toRemove = null;
     for (DebuggingPartner debuggingPartner : debuggingPartnerList) {
@@ -64,6 +109,11 @@ public class DebuggingPartnerQueue {
     return removed;
   }
 
+  /**
+   * Gets the next DebuggingPartner in the queue and updates the index
+   *
+   * @return DebuggingPartner that is next in the queue
+   */
   public DebuggingPartner nextDebuggingPartner() {
     if (debuggingPartnerList.isEmpty()) {
       return null;
