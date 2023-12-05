@@ -13,14 +13,22 @@ import java.util.List;
 import spark.Spark;
 
 /**
- * This is an extended version of the prior queue-manager example. Here we focus on concurrency, not
- * on defensive programming.
+ * This class is the Server class that handles incoming requests to the endpoints as well as
+ * creating the Dispatcher to pair DebuggingPartners with HelpRequesters.
+ *
+ * @author sarahridley juliazdzilowska rachelbrooks meganball
+ * @version 1.0
  */
 public class Server {
-
   static final int port = 3333;
   static SessionState sessionState;
 
+  /**
+   * Constructor for the Server class
+   *
+   * @param helpRequesterQueue HelpRequesterQueue containing all HelpRequester info
+   * @param debuggingPartnerQueue DebuggingPartnerQueue containing all DebuggingPartner info
+   */
   public Server(
       HelpRequesterQueue helpRequesterQueue, DebuggingPartnerQueue debuggingPartnerQueue) {
     this.sessionState = new SessionState(false);
@@ -41,10 +49,10 @@ public class Server {
         new DebuggingPartnerDoneHandler(debuggingPartnerQueue, sessionState));
     Spark.get(
         "getInfo", new GetInfoHandler(helpRequesterQueue, debuggingPartnerQueue, sessionState));
+    Spark.get("escalate", new EscalateHandler(helpRequesterQueue, sessionState));
     Spark.get(
-        "escalate", new EscalateHandler(helpRequesterQueue, sessionState));
-    Spark.get(
-        "flagAndRematch", new FlagAndRematchHandler(helpRequesterQueue, debuggingPartnerQueue, sessionState));
+        "flagAndRematch",
+        new FlagAndRematchHandler(helpRequesterQueue, debuggingPartnerQueue, sessionState));
     Spark.get(
         "session", new SessionHandler(helpRequesterQueue, debuggingPartnerQueue, sessionState));
     Spark.get("info", new DownloadInfoHandler(sessionState));
@@ -52,6 +60,11 @@ public class Server {
     Spark.awaitInitialization();
   }
 
+  /**
+   * The main method that creates an instance of the Server class and the HoursDispatcher class
+   *
+   * @param args array of String arguments to main (unused)
+   */
   public static void main(String[] args) {
 
     List<HelpRequester> queue = new ArrayList<>();

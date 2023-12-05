@@ -4,17 +4,31 @@ import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartner;
 import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartnerQueue;
 import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequester;
 import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequesterQueue;
-import edu.brown.cs32.livecode.dispatcher.utils.Utils;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is the CsvWriter class that handles writing attendance information to the data
+ * directory. It writes to CSVs for session HelpRequester data, session DebuggingPartner data, and
+ * contributes to a running all-attendance.csv file that keeps data from all sessions.
+ *
+ * @author sarahridley juliazdzilowska rachelbrooks meganball
+ * @version 1.0
+ */
 public class CsvWriter {
   private final HelpRequesterQueue helpRequesterQueue;
   private final DebuggingPartnerQueue debuggingPartnerQueue;
   private final SessionState sessionState;
 
+  /**
+   * Constructor for the CSVWriter class
+   *
+   * @param helpRequesterQueue HelpRequesterQueue containing all HelpRequester info
+   * @param debuggingPartnerQueue DebuggingPartnerQueue containing all DebuggingPartner info
+   * @param sessionState SessionState representing the current state of the session
+   */
   public CsvWriter(
       HelpRequesterQueue helpRequesterQueue,
       DebuggingPartnerQueue debuggingPartnerQueue,
@@ -24,6 +38,7 @@ public class CsvWriter {
     this.sessionState = sessionState;
   }
 
+  /** Helper function that writes to the all-attendance.csv file in the data directory */
   public void writeAllAttendance() {
     try {
       FileWriter myWriter = new FileWriter("data/all-attendance.csv", true);
@@ -70,6 +85,10 @@ public class CsvWriter {
     }
   }
 
+  /**
+   * Helper function that writes to a new HelpRequester file and a new DebuggingPartner file in the
+   * sessions directory inside the data directory
+   */
   public void writeSessionAttendance() {
     String beginTime = sessionState.getBeginTime();
     try {
@@ -97,6 +116,7 @@ public class CsvWriter {
     }
   }
 
+  /** Main function that calls the helper functions to write all attendance information */
   public void write() {
     writeAllAttendance();
     writeSessionAttendance();

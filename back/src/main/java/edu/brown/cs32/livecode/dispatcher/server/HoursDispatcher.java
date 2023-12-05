@@ -8,38 +8,57 @@ import edu.brown.cs32.livecode.dispatcher.sessionState.SessionState;
 import edu.brown.cs32.livecode.dispatcher.utils.Utils;
 
 /**
- * Revised version of the prior dispatcher example. This focuses on concurrency, *NOT* on defensive
- * programming, and so I simplified out some of the proxy example code.
+ * Revised version of the prior dispatcher example from Tim's lecture. This dispatcher handles
+ * matching DebuggingPartners with HelpRequesters.
+ *
+ * @author timnelson sarahridley juliazdzilowska rachelbrooks meganball
+ * @version 1.1
  */
 public class HoursDispatcher {
-  private final HelpRequesterQueue queue;
+  private final HelpRequesterQueue helpRequesterQueue;
   private final DebuggingPartnerQueue debuggingPartnerQueue;
   private final String statusMessage;
 
-  HoursDispatcher(
-      HelpRequesterQueue signups,
+  /**
+   * Constructor for the HoursDispatcher class
+   *
+   * @param helpRequesterQueue HelpRequesterQueue containing all HelpRequester info
+   * @param debuggingPartnerQueue DebuggingPartnerQueue containing all DebuggingPartner info
+   * @param statusMessage String representing current status
+   */
+  public HoursDispatcher(
+      HelpRequesterQueue helpRequesterQueue,
       DebuggingPartnerQueue debuggingPartnerQueue,
       String statusMessage) {
-    this.queue = signups;
+    this.helpRequesterQueue = helpRequesterQueue;
     this.debuggingPartnerQueue = debuggingPartnerQueue;
     this.statusMessage = statusMessage;
   }
 
+  /**
+   * Getter for the statusMessage field
+   *
+   * @return String representing the statusMessage field
+   */
   public String getStatusMessage() {
     return statusMessage;
   }
 
+  /**
+   * Dispatches free DebuggingPartners to waiting HelpRequesters
+   *
+   * @param sessionState SessionState representing the current state of the session
+   */
   public void dispatch(SessionState sessionState) {
     System.out.println(
         Utils.timestamp()
             + " Dispatcher: Welcome to edu.brown.cs32.livecode.threads.TA hours! Today we're discussing "
             + this.getStatusMessage());
-    //noinspection InfiniteLoopStatement
+    // Only loop while the session is still running
     while (sessionState.getRunning()) {
-      if (queue.getNeedHelp().hasNext()) {
+      if (helpRequesterQueue.getNeedHelp().hasNext()) {
         // Who will help this student?
         DebuggingPartner helper = null;
-        // while(true) {
         while (sessionState.getRunning()) {
           synchronized (debuggingPartnerQueue) {
             DebuggingPartner debuggingPartner = this.debuggingPartnerQueue.nextDebuggingPartner();
@@ -52,12 +71,9 @@ public class HoursDispatcher {
         }
         if (helper == null) continue; // no available TA
 
-        // Who to see next?
-        //  (Question: why set this here, rather than before the edu.brown.cs32.livecode.threads.TA
-        // loop?)
-        HelpRequester nextHelpRequester = queue.getNeedHelp().next();
+        HelpRequester nextHelpRequester = helpRequesterQueue.getNeedHelp().next();
         nextHelpRequester.setDebuggingPartner(helper);
-        queue.claimHelpRequester(nextHelpRequester);
+        helpRequesterQueue.claimHelpRequester(nextHelpRequester);
 
         // Help the student
         System.out.println(
@@ -71,8 +87,6 @@ public class HoursDispatcher {
         } catch (Exception e) {
           System.out.println(
               "Unexpected behavior: edu.brown.cs32.livecode.threads.TA timed out while assigning student!");
-          // TODO Return student to queue
-          // ...
         }
       } else {
         try {
