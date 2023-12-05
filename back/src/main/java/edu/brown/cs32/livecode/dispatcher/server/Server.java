@@ -63,7 +63,7 @@ public class Server {
         new FlagAndRematchHandler(helpRequesterQueue, debuggingPartnerQueue, sessionState));
     Spark.get(
         "session", new SessionHandler(helpRequesterQueue, debuggingPartnerQueue, sessionState));
-    Spark.get("info", new DownloadInfoHandler(sessionState));
+    Spark.get("downloadInfo", new DownloadInfoHandler(sessionState));
     Spark.get("isTA", new IsTAHandler(listTAs));
 
     Spark.init();
