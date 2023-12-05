@@ -1,5 +1,6 @@
 package edu.brown.cs32.livecode.dispatcher.helpRequester;
 
+import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartner;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -111,14 +112,16 @@ public class HelpRequesterQueue {
    * Modifier that sets a HelpRequester as being done with being debugged
    *
    * @param name String name of the HelpRequester that is done
+   * @param email String email of the HelpRequester that is done
    * @return boolean representing whether the HelpRequester was found and removed
    */
-  public boolean setDoneDebugging(String name) {
+  public boolean setDoneDebugging(String name, String email) {
     boolean debugged = false;
     HelpRequester toRemove = null;
     for (HelpRequester helpRequester : gettingHelp) {
       String thisName = helpRequester.getName();
-      if (name.equals(thisName)) {
+      String thisEmail = helpRequester.getEmail();
+      if (name.equals(thisName) && email.equals(thisEmail)) {
         helpRequester.setDebugged(true);
         alreadyHelped.add(helpRequester);
         toRemove = helpRequester;
@@ -132,14 +135,16 @@ public class HelpRequesterQueue {
   /**
    * Modifier that sets a HelpRequester as being escalated by name
    *
-   * @param name String name of the HelpRequester to escalate
+   * @param helpRequesterName String name of the HelpRequester to escalate
+   * @param helpRequesterEmail String email of the HelpRequester to escalate
    * @return boolean representing whether the HelpRequester was successfully set as escalated
    */
-  public boolean setEscalated(String name) {
+  public boolean setEscalated(String helpRequesterName, String helpRequesterEmail) {
     boolean escalated = false;
     for (HelpRequester helpRequester : gettingHelp) {
       String thisName = helpRequester.getName();
-      if (name.equals(thisName)) {
+      String thisEmail = helpRequester.getEmail();
+      if (helpRequesterName.equals(thisName) && helpRequesterEmail.equals(thisEmail)) {
         helpRequester.setEscalated();
         escalated = true;
       }
@@ -151,15 +156,33 @@ public class HelpRequesterQueue {
    * Modifier that moves a HelpRequester back to the queue needing help if their assigned
    * DebuggingPartner was flagged
    *
-   * @param name String name representing the name of the HelpRequester
+   * @param debuggingPartnerName String name representing the name of the DebuggingPartner
+   * @param helpRequesterName String name representing the name of the HelpRequester
    * @return boolean representing whether the HelpRequester was moved back to the queue
    */
-  public boolean moveBackToQueue(String name) {
+  public boolean checkPaired(String debuggingPartnerName, String helpRequesterName) {
+    for (HelpRequester helpRequester : gettingHelp) {
+      String thisHelpRequesterName = helpRequester.getName();
+      if (thisHelpRequesterName.equals(helpRequesterName)) {
+        DebuggingPartner debuggingPartner = helpRequester.getDebuggingPartner();
+        if (debuggingPartner != null) {
+          String thisDebuggingPartnerName = debuggingPartner.getName();
+          if (thisDebuggingPartnerName.equals(debuggingPartnerName)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  public boolean moveBackToQueue(String name, String email) {
     boolean moved = false;
     HelpRequester toMove = null;
     for (HelpRequester helpRequester : gettingHelp) {
       String thisName = helpRequester.getName();
-      if (name.equals(thisName)) {
+      String thisEmail = helpRequester.getEmail();
+      if (name.equals(thisName) && email.equals(thisEmail)) {
         helpRequester.setDebuggingPartner(null);
         toMove = helpRequester;
         moved = true;

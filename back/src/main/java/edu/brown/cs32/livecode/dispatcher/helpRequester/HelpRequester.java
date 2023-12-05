@@ -1,6 +1,7 @@
 package edu.brown.cs32.livecode.dispatcher.helpRequester;
 
 import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartner;
+import edu.brown.cs32.livecode.dispatcher.utils.Utils;
 
 /**
  * This class is the HelpRequester class which represents a student that is requesting help.
@@ -11,6 +12,9 @@ import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartner;
  */
 public class HelpRequester {
   private final String name;
+  private final String email;
+  private final String joinedTime;
+  private String pairedAtTime;
   private boolean debugged = false;
   private boolean escalated = false;
   private DebuggingPartner debuggingPartner = null;
@@ -19,9 +23,12 @@ public class HelpRequester {
    * Constructor for the HelpRequester class
    *
    * @param name String representing the name of the HelpRequester
+   * @param email String representing the email of the HelpRequester
    */
-  public HelpRequester(String name) {
+  public HelpRequester(String name, String email) {
     this.name = name;
+    this.email = email;
+    this.joinedTime = Utils.simpleTime();
   }
 
   /**
@@ -42,6 +49,13 @@ public class HelpRequester {
     this.debugged = newDebugged;
   }
 
+  public String getEmail() {
+    return email;
+  }
+  public String getJoinedTime() { return joinedTime; }
+
+  public String getPairedAtTime() { return pairedAtTime; }
+
   /**
    * Getter for the HelpRequester's debugged field
    *
@@ -58,6 +72,7 @@ public class HelpRequester {
    */
   public void setDebuggingPartner(DebuggingPartner debuggingPartnerHelper) {
     this.debuggingPartner = debuggingPartnerHelper;
+    this.pairedAtTime = Utils.simpleTime();
   }
 
   /**

@@ -48,13 +48,14 @@ public class DebuggingPartnerQueue {
    * Removes a DebuggingPartner from the queue by name.
    *
    * @param name String name of DebuggingPartner to remove from the queue
+   * @param email String email of DebuggingPartner to remove from the queue
    * @return boolean representing whether the DebuggingPartner was removed successfully
    */
-  public boolean removeDebuggingPartner(String name) {
+  public boolean removeDebuggingPartner(String name, String email) {
     boolean foundDebuggingPartner = false;
     List<DebuggingPartner> newDebuggingPartners = new ArrayList<>();
     for (DebuggingPartner debuggingPartner : debuggingPartnerList) {
-      if (!debuggingPartner.getName().equals(name)) {
+      if (!debuggingPartner.getName().equals(name) || !debuggingPartner.getEmail().equals(email)) {
         newDebuggingPartners.add(debuggingPartner);
       } else {
         foundDebuggingPartner = true;
@@ -87,6 +88,7 @@ public class DebuggingPartnerQueue {
    * joined the queue and were assigned to a student.
    *
    * @param name String representing name of DebuggingPartner to flag
+   * @param email String representing email of DebuggingPartner to flag
    * @return boolean representing whether DebuggingPartner was successfully flagged and removed
    */
   public boolean removeAndFlagDebuggingPartner(String name) {
@@ -94,7 +96,8 @@ public class DebuggingPartnerQueue {
     DebuggingPartner toRemove = null;
     for (DebuggingPartner debuggingPartner : debuggingPartnerList) {
       String thisName = debuggingPartner.getName();
-      if (name.equals(thisName)) {
+      String thisEmail = debuggingPartner.getEmail();
+      if (name.equals(thisName) && email.equals(thisEmail)) {
         toRemove = debuggingPartner;
         removed = true;
         toRemove.setFlagged();

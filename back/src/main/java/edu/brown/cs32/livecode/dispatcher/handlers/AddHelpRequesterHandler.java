@@ -44,12 +44,16 @@ public class AddHelpRequesterHandler implements Route {
     if (!sessionState.getRunning()) {
       return new FailureResponse("error_bad_request", "No session is running.").serialize();
     }
-    String name = request.queryParams("helpRequester");
+    String name = request.queryParams("name");
+    String email = request.queryParams("email");
     if (name == null) {
-      return new FailureResponse("error_bad_request", "Missing required parameter: helpRequester")
+      return new FailureResponse("error_bad_request", "Missing required parameter: name")
+          .serialize();
+    } else if (email == null) {
+      return new FailureResponse("error_bad_request", "Missing required parameter: email")
           .serialize();
     }
-    helpRequesterQueue.addNeedsHelp(new HelpRequester(name));
+    helpRequesterQueue.addNeedsHelp(new HelpRequester(name, email));
     return new SuccessResponse("success", "Help Requester " + name + " was added to the queue.")
         .serialize();
   }

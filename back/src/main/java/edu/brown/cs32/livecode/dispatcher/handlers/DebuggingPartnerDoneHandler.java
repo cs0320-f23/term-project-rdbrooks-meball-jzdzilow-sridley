@@ -45,13 +45,18 @@ public class DebuggingPartnerDoneHandler implements Route {
     if (!sessionState.getRunning()) {
       return new FailureResponse("error_bad_request", "No session is running.").serialize();
     }
-    String name = request.queryParams("debuggingPartner");
+    String name = request.queryParams("name");
+    String email = request.queryParams("email");
     if (name == null) {
       return new FailureResponse(
-              "error_bad_request", "Missing required parameter: debuggingPartner")
+              "error_bad_request", "Missing required parameter: name")
+          .serialize();
+    } else if (email == null) {
+      return new FailureResponse(
+          "error_bad_request", "Missing required parameter: email")
           .serialize();
     }
-    boolean setSuccess = debuggingPartnerQueue.removeDebuggingPartner(name);
+    boolean setSuccess = debuggingPartnerQueue.removeDebuggingPartner(name, email);
     if (setSuccess) {
       return new SuccessResponse("success", "Debugging Partner " + name + " has left!").serialize();
     } else {
