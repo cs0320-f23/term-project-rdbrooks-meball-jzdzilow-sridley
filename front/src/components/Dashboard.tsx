@@ -1,19 +1,33 @@
-import React, { useEffect } from "react";
-import { useRecoilValue } from "recoil";
-import { UserRole, userRoleState, userState } from "../recoil/atoms";
+import React, { useEffect, useState } from "react";
+import { useRecoilValue, useRecoilState } from "recoil";
+import { IssueType, UserRole, userRoleState, userState, singleSessionState, userSessionState } from "../recoil/atoms";
 import "../styles/Dashboard.css";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const [userSession, setUserSession] = useRecoilState(userSessionState);
+  const [singleSession, setSingleSession] = useRecoilState(singleSessionState);
+  const navigate = useNavigate();
+  const [bugCategory, setBugCategory] = useState("");
   const user = useRecoilValue(userState);
   const userRole = useRecoilValue(userRoleState);
-  const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   if (user === null) {
+  //     navigate("/login");
+  //   }
+  // }, [userState, userRoleState, user]);
 
   useEffect(() => {
-    if (user === null) {
+    if (userSession.user === null) {
+      setSingleSession({
+        partner: null,
+        issueType: IssueType.NoneSelected,
+      });
+      setUserSession({ user: null, role: UserRole.NoneSelected, time: null });
       navigate("/login");
     }
-  }, [userState, userRoleState, user]);
+  }, [userSession.user]);
 
   const renderContentBasedOnRole = (role: UserRole) => {
     switch (role) {
@@ -35,7 +49,7 @@ const Dashboard = () => {
       </header>
       <div className="dashboard-container">
         <div>
-          <h1>Welcome, {user?.name.split(" ")[0]}!</h1>
+          <h1>Welcome, {userSession.user?.name.split(" ")[0]}!</h1>
         </div>
         {renderContentBasedOnRole(userRole.role)}
       </div>

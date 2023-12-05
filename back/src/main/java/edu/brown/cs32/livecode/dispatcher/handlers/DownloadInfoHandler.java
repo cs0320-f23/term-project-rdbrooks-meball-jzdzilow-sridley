@@ -76,7 +76,7 @@ public class DownloadInfoHandler implements Route {
       }
     }
 
-    if (info.equals("help")) {
+    if (info.equals("helpRequester")) {
       String beginTime = this.sessionState.getBeginTime();
       String filePath = "data/sessions/help-requester-attendance-" + beginTime + ".csv";
 

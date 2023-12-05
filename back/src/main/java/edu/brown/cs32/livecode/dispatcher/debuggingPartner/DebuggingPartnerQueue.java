@@ -91,7 +91,7 @@ public class DebuggingPartnerQueue {
    * @param email String representing email of DebuggingPartner to flag
    * @return boolean representing whether DebuggingPartner was successfully flagged and removed
    */
-  public boolean removeAndFlagDebuggingPartner(String name) {
+  public boolean removeAndFlagDebuggingPartner(String name, String email) {
     boolean removed = false;
     DebuggingPartner toRemove = null;
     for (DebuggingPartner debuggingPartner : debuggingPartnerList) {

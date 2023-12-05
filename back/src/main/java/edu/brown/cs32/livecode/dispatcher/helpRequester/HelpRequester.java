@@ -13,6 +13,7 @@ import edu.brown.cs32.livecode.dispatcher.utils.Utils;
 public class HelpRequester {
   private final String name;
   private final String email;
+  private final String bugType;
   private final String joinedTime;
   private String pairedAtTime;
   private boolean debugged = false;
@@ -25,9 +26,10 @@ public class HelpRequester {
    * @param name String representing the name of the HelpRequester
    * @param email String representing the email of the HelpRequester
    */
-  public HelpRequester(String name, String email) {
+  public HelpRequester(String name, String email, String bugType) {
     this.name = name;
     this.email = email;
+    this.bugType = bugType;
     this.joinedTime = Utils.simpleTime();
   }
 
