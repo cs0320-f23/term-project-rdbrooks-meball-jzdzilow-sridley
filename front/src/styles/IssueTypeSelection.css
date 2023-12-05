@@ -1,0 +1,83 @@
+@import "/src/styles/variables.css";
+
+.issue-body {
+  font-family: var(--main-font);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-image: url("/src/assets/backgrounds/flagsbackground.jpeg");
+  background-size: cover;
+  background-position: center;
+}
+
+.issue-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 70%;
+  width: 28%;
+  background: transparent;
+  backdrop-filter: blur(35px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 70px 10px rgba(0, 0, 0, 0.9);
+  color: #fff;
+  border-radius: 20px;
+  padding: 30px 30px;
+}
+
+.issue-container h2 {
+  font-size: 30px;
+  text-align: center;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.issue-container .btn {
+  text-align: center;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  color: #333;
+  border-radius: 40px;
+  font-size: 16px;
+  font-weight: 600;
+  width: 91%;
+  height: 8%;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+  transition: 0.5s ease;
+}
+
+.issue-container .btn:hover {
+  background-color: var(--landing-background-color);
+  color: white;
+}
+
+.issue-container .btn2 {
+  text-align: center;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background: transparent;
+  color: white;
+  border: 1px solid white;
+  border-radius: 40px;
+  font-size: 16px;
+  font-weight: 600;
+  width: 91%;
+  height: 8%;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+  transition: 0.5s ease;
+}
+
+.issue-container .btn2:hover {
+  background-color: var(--landing-background-color);
+  background-color: black;
+  border: 1px solid black;
+}

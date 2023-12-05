@@ -3,30 +3,54 @@ import { useNavigate } from "react-router-dom";
 import "../styles/RoleSelection.css";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { userRoleState, userState } from "../recoil/atoms";
-import { UserRole } from "../recoil/atoms";
+import { UserRole, userSessionState } from "../recoil/atoms";
 import { IUser } from "../types/IUser";
+
+function addUserToQueue(email: string, name: string): Promise<string> {
+  return fetch(
+    "http://localhost:3333/addDebuggingPartner?name=" + name + "&email=" + email
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      return data["result"];
+    })
+    .catch((e) => {
+      return "ERROR: " + e;
+    });
+}
 
 const RoleSelection = () => {
   const navigate = useNavigate();
   const user = useRecoilValue(userState);
   const setUserRole = useSetRecoilState(userRoleState);
+  const [userSession, setUserSession] = useRecoilState(userSessionState);
 
   useEffect(() => {
-    if (user === null) {
+    if (userSession.user === null) {
+      setUserSession({ user: null, role: UserRole.NoneSelected, time: null });
       navigate("/login");
     }
-  }, [userState, user]);
+  }, [userSession, user]);
 
   const handleRoleSelection = (role: UserRole) => {
-    setUserRole({ role: role, time: new Date() });
+    setUserSession({ user: userSession.user, role: role, time: new Date() });
     navigate("/dashboard");
+    if (role === UserRole.DebuggingPartner) {
+      // need to add a check if the session is not running
+      if (userSession.user) {
+        addUserToQueue(userSession.user.email, userSession.user.name);
+      }
+      navigate("/dashboard");
+    } else if (role === UserRole.HelpRequester) {
+      navigate("/issue-type-selection");
+    }
     // Do something based on the selected role (e.g., navigate to a specific page)
   };
 
   return (
     <div className="role-body">
       <div className="role-container">
-        <h2>Welcome, {user?.name}!</h2>
+        <h2>Welcome, {userSession.user?.name}!</h2>
         <p>Please select your role:</p>
         <button
           onClick={() => handleRoleSelection(UserRole.HelpRequester)}
@@ -40,7 +64,17 @@ const RoleSelection = () => {
         >
           Debugging Partner
         </button>
-        <button className="btn2" onClick={() => navigate("/login")}>
+        <button
+          className="btn2"
+          onClick={() => {
+            setUserSession({
+              user: null,
+              role: UserRole.NoneSelected,
+              time: null,
+            });
+            navigate("/login");
+          }}
+        >
           Back to Login
         </button>
       </div>

@@ -46,14 +46,19 @@ public class AddHelpRequesterHandler implements Route {
     }
     String name = request.queryParams("name");
     String email = request.queryParams("email");
+    String bugType = request.queryParams("bugType");
     if (name == null) {
       return new FailureResponse("error_bad_request", "Missing required parameter: name")
           .serialize();
     } else if (email == null) {
       return new FailureResponse("error_bad_request", "Missing required parameter: email")
           .serialize();
+    } else if (bugType == null){
+      return new FailureResponse("error_bad_request", "Missing required parameter: bugType")
+              .serialize();
     }
-    helpRequesterQueue.addNeedsHelp(new HelpRequester(name, email));
+    helpRequesterQueue.addNeedsHelp(new HelpRequester(name, email, bugType));
+    System.out.println("bug type: " + bugType);
     return new SuccessResponse("success", "Help Requester " + name + " was added to the queue.")
         .serialize();
   }

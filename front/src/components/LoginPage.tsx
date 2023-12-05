@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/LoginPage.css";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { mockedMode, userRoleState, userState } from "../recoil/atoms";
+import { mockedMode, userRoleState, userSessionState, userState } from "../recoil/atoms";
 import { UserRole } from "../recoil/atoms";
 import { IUser } from "../types/IUser";
 
@@ -39,8 +39,9 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const setUser = useSetRecoilState(userState);
-  const [userRole, setUserRole] = useRecoilState(userRoleState);
+  const setUserSession = useSetRecoilState(userSessionState);
+  //const setUser = useSetRecoilState(userState);
+  //const [userRole, setUserRole] = useRecoilState(userRoleState);
 
   const handleLoginMocked = async () => {
     const response = await fetch("http://localhost:2000/login/");
@@ -51,12 +52,14 @@ const LoginPage = () => {
     console.log(email);
 
     if (user) {
-      setUser(user);
+      //setUser(user);
       if (user.role === "student") {
         // pass user information to the further component
-        return navigate("/role-selection", { state: { user } });
+        setUserSession({user: user, role: UserRole.NoneSelected, time: null});
+        return navigate("/role-selection");
       } else if (user.role === "instructor") {
-        setUserRole({ role: UserRole.Instructor, time: null });
+        setUserSession({user: user, role: UserRole.Instructor, time: null});
+        //setUserRole({ role: UserRole.Instructor, time: null });
         return navigate("/dashboard");
       }
     } else {
@@ -101,11 +104,13 @@ const LoginPage = () => {
           return navigate("/failed-login");
         }
 
-        setUser(user);
+        //setUser(user);
         if (user.role === "student") {
-          return navigate("/role-selection", { state: { user } });
+          setUserSession({user: user, role: UserRole.NoneSelected, time: null});
+          return navigate("/role-selection");
         } else if (user.role === "instructor") {
-          setUserRole({ role: UserRole.Instructor, time: null });
+          setUserSession({user: user, role: UserRole.Instructor, time: null});
+          //setUserRole({ role: UserRole.Instructor, time: null });
           return navigate("/dashboard");
         }
       }
