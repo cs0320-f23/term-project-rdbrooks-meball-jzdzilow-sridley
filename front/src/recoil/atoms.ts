@@ -16,3 +16,6 @@ export const userRoleState = atom({
   key: "userRoleState",
   default: { role: UserRole.NoneSelected, time: null as Date | null },
 });
+
+// allows changing between modes
+export const mockedMode: boolean = false;

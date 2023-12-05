@@ -8,7 +8,12 @@ import edu.brown.cs32.livecode.dispatcher.handlers.*;
 import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequester;
 import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequesterQueue;
 import edu.brown.cs32.livecode.dispatcher.sessionState.SessionState;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import spark.Spark;
 
@@ -39,6 +44,9 @@ public class Server {
           response.header("Access-Control-Allow-Methods", "*");
         });
 
+    // parse csv of TAs (to avoid repetition everytime endpoint called)
+    List<List<String>> listTAs = new ArrayList<>(Server.parseCsvTA()); // making defensive copy
+
     // Setting up the handler for the GET endpoints
     Spark.get("addHelpRequester", new AddHelpRequesterHandler(helpRequesterQueue, sessionState));
     Spark.get(
@@ -56,6 +64,8 @@ public class Server {
     Spark.get(
         "session", new SessionHandler(helpRequesterQueue, debuggingPartnerQueue, sessionState));
     Spark.get("info", new DownloadInfoHandler(sessionState));
+    Spark.get("isTA", new IsTAHandler(listTAs));
+
     Spark.init();
     Spark.awaitInitialization();
   }
@@ -86,5 +96,35 @@ public class Server {
       }
       System.out.print("");
     }
+  }
+
+  /**
+   * Method to parse the csv of TAs into a list of lists.
+   * @return parsed csv
+   */
+  private static List<List<String>> parseCsvTA() {
+    try {
+      BufferedReader bufferedFile = new BufferedReader(new FileReader("./data/ta-list.csv"));
+
+      List<List<String>> parsed = new ArrayList<>();
+
+      String line = bufferedFile.readLine();
+      // while there are lines left to read
+      while (line != null) {
+        String[] splitRowArray = line.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*(?![^\\\"]*\\\"))");
+        List<String> splitRowList = Arrays.asList(splitRowArray);
+        parsed.add(splitRowList);
+
+        // read the next line
+        line = bufferedFile.readLine();
+      }
+      return parsed;
+    }
+    catch (IOException e){
+      System.out.println("ERROR: " + e.getMessage());
+      // decided to print error message as relevant to developer
+      System.exit(0);
+    }
+    return null; // required return statement outside of block
   }
 }
