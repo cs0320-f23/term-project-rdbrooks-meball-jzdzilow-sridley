@@ -13,12 +13,29 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/**
+ * This class is the GetInfoHandler class, implements the Route interface such that it can be
+ * attached to the endpoint /getInfo.
+ *
+ * <p>A call to the /getInfo endpoint allows the frontend to get information about the entire
+ * session or about a specific DebuggingPartner or HelpRequester.
+ *
+ * @author sarahridley juliazdzilowska rachelbrooks meganball
+ * @version 1.0
+ */
 public class GetInfoHandler implements Route {
 
   private HelpRequesterQueue helpRequesterQueue;
   private DebuggingPartnerQueue debuggingPartnerQueue;
   private SessionState sessionState;
 
+  /**
+   * Constructor for the GetInfoHandler class
+   *
+   * @param helpRequesterQueue HelpRequesterQueue containing all HelpRequester info
+   * @param debuggingPartnerQueue DebuggingPartnerQueue containing all DebuggingPartner info
+   * @param sessionState SessionState representing the current state of the session
+   */
   public GetInfoHandler(
       HelpRequesterQueue helpRequesterQueue,
       DebuggingPartnerQueue debuggingPartnerQueue,
@@ -28,11 +45,12 @@ public class GetInfoHandler implements Route {
     this.sessionState = sessionState;
   }
 
-  @Override
-  public Object handle(Request request, Response response) throws Exception {
-    if (!sessionState.getRunning()) {
-      return new FailureResponse("error_bad_request", "No session is running.").serialize();
-    }
+  /**
+   * Helper function that accesses all information about the current Collab Hours Session
+   *
+   * @return Json Object containing result of this request
+   */
+  public Object getAllInfo() {
     List<HelpRequester> waitingHelpRequesters = helpRequesterQueue.getNeedHelpList();
     List<String> waitingHRQs = new ArrayList<>();
     for (HelpRequester helpRequester : waitingHelpRequesters) {
@@ -40,11 +58,14 @@ public class GetInfoHandler implements Route {
     }
 
     List<HelpRequester> pairedHelpRequesters = helpRequesterQueue.getGettingHelpList();
-    List<String> pairs = new ArrayList<>();
+    List<List<String>> pairs = new ArrayList<>();
+    List<List<String>> escalatedPairs = new ArrayList<>();
     for (HelpRequester helpRequester : pairedHelpRequesters) {
       DebuggingPartner helper = helpRequester.getDebuggingPartner();
-      pairs.add(
-          "Debugging Partner " + helper.getName() + " + Help Requester " + helpRequester.getName());
+      pairs.add(List.of(helper.getName(), helpRequester.getName()));
+      if (helpRequester.getEscalated()) {
+        escalatedPairs.add(List.of(helper.getName(), helpRequester.getName()));
+      }
     }
 
     List<DebuggingPartner> allDebuggingPartners =
@@ -62,35 +83,180 @@ public class GetInfoHandler implements Route {
       helpedNames.add(helpRequester.getName());
     }
 
-    return new InfoSuccessResponse(
-            "success",
+    return new AllInfoSuccessResponse(
             "Here is the waiting Help Requester queue, open Debugging Partner queue, current pairings, and past Help Requesters!",
             waitingHRQs,
             openDBPs,
             pairs,
+            escalatedPairs,
             helpedNames)
         .serialize();
   }
 
-  public record InfoSuccessResponse(
+  /**
+   * Helper function that accesses all information about the current Collab Hours Session
+   *
+   * @param targetName String representing the name of the student to get info for
+   * @param role String representing role of the student to get info for
+   * @param targetEmail String representing the email of the student to get info for
+   * @return Json Object containing result of this request
+   */
+  public Object getSpecificInfo(String targetName, String role, String targetEmail) {
+    if (role.equals("debuggingPartner")) {
+      List<DebuggingPartner> debuggingPartners = debuggingPartnerQueue.getAllDebuggingPartnerList();
+      for (DebuggingPartner debuggingPartner : debuggingPartners) {
+        String name = debuggingPartner.getName();
+        String email = debuggingPartner.getEmail();
+        if (name.equals(targetName) && email.equals(targetEmail)) {
+          HelpRequester currentlyHelping = debuggingPartner.getCurrentHelpRequester();
+          String helpingName = "";
+          if (currentlyHelping != null) {
+            helpingName = currentlyHelping.getName();
+          }
+          return new DebuggingPartnerInfoSuccessResponse("Debugging Partner " + targetName + " found!",
+              helpingName, debuggingPartner).serialize();
+        }
+      }
+    } else if (role.equals("helpRequester")) {
+      List<HelpRequester> helpRequesters = helpRequesterQueue.getAllHelpRequesters();
+      for (HelpRequester helpRequester : helpRequesters) {
+        String name = helpRequester.getName();
+        String email = helpRequester.getEmail();
+        if (name.equals(targetName) && email.equals(targetEmail)) {
+          DebuggingPartner gettingHelpFrom = helpRequester.getDebuggingPartner();
+          String helpFromName = "";
+          if (gettingHelpFrom != null) {
+            helpFromName = gettingHelpFrom.getName();
+          }
+          return new HelpRequesterInfoSuccessResponse("Help Requester " + targetName + " found!",
+              helpFromName, helpRequester).serialize();
+        }
+      }
+    }
+    return new FailureResponse("error_bad_request", "No " + role + " found named "
+        + targetName + " with email " + targetEmail).serialize();
+  }
+
+  /**
+   * Handler for a call to the /flagAndRematch endpoint
+   *
+   * @param request Request object containing parameters
+   * @param response Response object that is unused
+   * @return Json Object containing result of this request
+   */
+  @Override
+  public Object handle(Request request, Response response) throws Exception {
+    if (!sessionState.getRunning()) {
+      return new FailureResponse("error_bad_request", "No session is running.").serialize();
+    }
+    String name = request.queryParams("name");
+    String role = request.queryParams("role");
+    String email = request.queryParams("email");
+    if (name == null || role == null || email == null) {
+      return getAllInfo();
+    } else {
+      return getSpecificInfo(name, role, email);
+    }
+  }
+
+  /**
+   * Record representing a success response to request for all info
+   *
+   * @param result String brief success response
+   * @param message String verbose success response
+   * @param waitingHRQs list of String of names of waiting HelpRequesters
+   * @param openDBPs list of String of free DebuggingPartners
+   * @param pairs nested list of String of pairs (DP first, then HR)
+   * @param escalatedPairs nested list of String of escalated pairs (DP first, then HR)
+   * @param helpedNames list of String of helped HelpRequesters
+   */
+  public record AllInfoSuccessResponse(
       String result,
       String message,
       List<String> waitingHRQs,
       List<String> openDBPs,
-      List<String> pairs,
+      List<List<String>> pairs,
+      List<List<String>> escalatedPairs,
       List<String> helpedNames) {
-    public InfoSuccessResponse(
+    public AllInfoSuccessResponse(
         String message,
         List<String> waitingHRQs,
         List<String> openDBPs,
-        List<String> pairs,
+        List<List<String>> pairs,
+        List<List<String>> escalatedPairs,
         List<String> helpedNames) {
-      this("success", message, waitingHRQs, openDBPs, pairs, helpedNames);
+      this("success", message, waitingHRQs, openDBPs, pairs, escalatedPairs, helpedNames);
     }
 
     String serialize() {
       Moshi moshi = new Moshi.Builder().build();
-      return moshi.adapter(InfoSuccessResponse.class).toJson(this);
+      return moshi.adapter(AllInfoSuccessResponse.class).toJson(this);
+    }
+  }
+
+  /**
+   * Record representing a success request for accessing info of a DebuggingPartner
+   *
+   * @param result String brief success message
+   * @param message String verbose success message
+   * @param name String representing DebuggingPartner's name
+   * @param helpRequesterName String representing current HelpRequester's name
+   * @param flagged boolean representing whether DebuggingPartner was flagged
+   * @param studentsHelped int representing how many students the DebuggingPartner has helped
+   */
+  public record DebuggingPartnerInfoSuccessResponse(
+      String result,
+      String message,
+      String name,
+      String email,
+      String joinedTime,
+      String pairedAtTime,
+      String helpRequesterName,
+      boolean flagged,
+      int studentsHelped) {
+    public DebuggingPartnerInfoSuccessResponse(
+        String message,
+        String currentlyHelping,
+        DebuggingPartner debuggingPartner) {
+      this("success", message, debuggingPartner.getName(), debuggingPartner.getEmail(),
+          debuggingPartner.getJoinedTime(), debuggingPartner.getPairedAtTime(),
+          currentlyHelping, debuggingPartner.getFlagged(),
+          debuggingPartner.getStudentsHelped());
+    }
+
+    String serialize() {
+      Moshi moshi = new Moshi.Builder().build();
+      return moshi.adapter(DebuggingPartnerInfoSuccessResponse.class).toJson(this);
+    }
+  }
+
+  /**
+   * Record representing a successful request for accessing info of a HelpRequester
+   *
+   * @param result String brief success message
+   * @param message String verbose success message
+   * @param name String representing the HelpRequester's name
+   * @param debuggingPartnerName String representing the DebuggingPartner helping this student
+   */
+  public record HelpRequesterInfoSuccessResponse(
+      String result,
+      String message,
+      String name,
+      String email,
+      String joinedTime,
+      String pairedAtTime,
+      String debuggingPartnerName) {
+    public HelpRequesterInfoSuccessResponse(
+        String message,
+        String debuggingPartnerName,
+        HelpRequester helpRequester) {
+      this("success", message, helpRequester.getName(), helpRequester.getEmail(),
+          helpRequester.getJoinedTime(), helpRequester.getPairedAtTime(), debuggingPartnerName);
+    }
+
+    String serialize() {
+      Moshi moshi = new Moshi.Builder().build();
+      return moshi.adapter(HelpRequesterInfoSuccessResponse.class).toJson(this);
     }
   }
 }

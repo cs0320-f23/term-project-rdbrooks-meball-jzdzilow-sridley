@@ -27,3 +27,26 @@ export const singleSessionState = atom({
   key: "singleSessionState",
   default: { partner: null as IUser | null, issueType: IssueType.NoneSelected },
 });
+
+export enum IssueType {
+  Bug = "bug",
+  ConceptualQuestion = "conceptual question",
+  NoneSelected = "",
+}
+
+export const userSessionState = atom({
+  key: "userSessionState",
+  default: {
+    user: null as IUser | null,
+    role: UserRole.NoneSelected,
+    time: null as Date | null,
+  },
+});
+
+export const singleSessionState = atom({
+  key: "singleSessionState",
+  default: { partner: null as IUser | null, issueType: IssueType.NoneSelected },
+});
+
+// allows changing between modes
+export const mockedMode: boolean = false;

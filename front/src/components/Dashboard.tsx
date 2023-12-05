@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import {
-  IssueType,
-  UserRole,
-  singleSessionState,
-  userSessionState,
-} from "../recoil/atoms";
+import { useRecoilValue, useRecoilState } from "recoil";
+import { IssueType, UserRole, userRoleState, userState, singleSessionState, userSessionState } from "../recoil/atoms";
 import "../styles/Dashboard.css";
 import { useNavigate } from "react-router-dom";
 import Timer from "./Timer";
@@ -20,6 +16,14 @@ const Dashboard = () => {
   const [fullTimeRemaining, setFullTimeRemaining] = useState(
     calculateFullTimeRemaining()
   );
+//   const user = useRecoilValue(userState);
+//   const userRole = useRecoilValue(userRoleState);
+
+  // useEffect(() => {
+  //   if (user === null) {
+  //     navigate("/login");
+  //   }
+  // }, [userState, userRoleState, user]);
 
   useEffect(() => {
     if (userSession.user === null) {
@@ -32,6 +36,7 @@ const Dashboard = () => {
     }
   }, [userSession.user]);
 
+  /* MOCKED BACKEND -------------------------------------- */ 
   useEffect(() => {
     console.log("test");
     const fetchPartner = async () => {
@@ -62,6 +67,8 @@ const Dashboard = () => {
       "partner " + singleSession.partner
     );
   }, []);
+
+    /* end of MOCKED BACKEND -------------------------------------- */ 
 
   /* -------------------------------timer content ---------------------------------------*/
 
