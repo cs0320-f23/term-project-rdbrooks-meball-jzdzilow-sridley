@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/LoginPage.css";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { mockedMode, userRoleState, userSessionState, userState } from "../recoil/atoms";
+import { mockedMode, userSessionState } from "../recoil/atoms";
 import { UserRole } from "../recoil/atoms";
 import { IUser } from "../types/IUser";
 
@@ -53,10 +53,10 @@ const LoginPage = () => {
       //setUser(user);
       if (user.role === "student") {
         // pass user information to the further component
-        setUserSession({user: user, role: UserRole.NoneSelected, time: null});
+        setUserSession({ user: user, role: UserRole.NoneSelected, time: null });
         return navigate("/role-selection");
       } else if (user.role === "instructor") {
-        setUserSession({user: user, role: UserRole.Instructor, time: null});
+        setUserSession({ user: user, role: UserRole.Instructor, time: null });
         //setUserRole({ role: UserRole.Instructor, time: null });
         return navigate("/dashboard");
       }
@@ -103,10 +103,14 @@ const LoginPage = () => {
 
         //setUser(user);
         if (user.role === "student") {
-          setUserSession({user: user, role: UserRole.NoneSelected, time: null});
+          setUserSession({
+            user: user,
+            role: UserRole.NoneSelected,
+            time: null,
+          });
           return navigate("/role-selection");
         } else if (user.role === "instructor") {
-          setUserSession({user: user, role: UserRole.Instructor, time: null});
+          setUserSession({ user: user, role: UserRole.Instructor, time: null });
           //setUserRole({ role: UserRole.Instructor, time: null });
           return navigate("/dashboard");
         }
