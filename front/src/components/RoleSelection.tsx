@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/RoleSelection.css";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { userRoleState, userState } from "../recoil/atoms";
 import { UserRole, userSessionState } from "../recoil/atoms";
 import { IUser } from "../types/IUser";
 
@@ -22,8 +21,8 @@ function addUserToQueue(email: string, name: string): Promise<string> {
 const RoleSelection = () => {
   const navigate = useNavigate();
 
-//   const user = useRecoilValue(userState);
-//   const setUserRole = useSetRecoilState(userRoleState);
+  //   const user = useRecoilValue(userState);
+  //   const setUserRole = useSetRecoilState(userRoleState);
   const [userSession, setUserSession] = useRecoilState(userSessionState);
 
   useEffect(() => {
@@ -31,7 +30,7 @@ const RoleSelection = () => {
       setUserSession({ user: null, role: UserRole.NoneSelected, time: null });
       navigate("/login");
     }
-  }, [userSession, user]);
+  }, [userSession.user]);
 
   const handleRoleSelection = (role: UserRole) => {
     setUserSession({ user: userSession.user, role: role, time: new Date() });

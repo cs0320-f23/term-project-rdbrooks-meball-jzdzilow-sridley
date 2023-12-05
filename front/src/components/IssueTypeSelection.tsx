@@ -6,7 +6,6 @@ import {
   IssueType,
   userSessionState,
   singleSessionState,
-  userState,
 } from "../recoil/atoms";
 
 function addUserToQueue(
@@ -39,7 +38,7 @@ const IssueTypeSelection = () => {
 
   useEffect(() => {
     if (userSession.user === null) {
-        console.log("user session null");
+      console.log("user session null");
       setSingleSessionState({
         partner: null,
         issueType: IssueType.NoneSelected,
@@ -47,11 +46,11 @@ const IssueTypeSelection = () => {
       navigate("/login");
     }
   }, [userSession.user]);
-  
+
   const handleIssueSelection = async (issueType: IssueType) => {
     setSingleSessionState({ partner: null, issueType: issueType });
     console.log("set single session state");
-    console.log(issueType)
+    console.log(issueType);
     if (userSession.user) {
       await addUserToQueue(
         userSession.user.email,

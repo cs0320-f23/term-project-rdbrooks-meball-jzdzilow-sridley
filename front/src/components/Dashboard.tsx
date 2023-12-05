@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { useRecoilValue, useRecoilState } from "recoil";
-import { IssueType, UserRole, userRoleState, userState, singleSessionState, userSessionState } from "../recoil/atoms";
+import { useRecoilValue, useRecoilState, useSetRecoilState } from "recoil";
+import {
+  IssueType,
+  UserRole,
+  singleSessionState,
+  userSessionState,
+} from "../recoil/atoms";
 import "../styles/Dashboard.css";
 import { useNavigate } from "react-router-dom";
 import Timer from "./Timer";
@@ -16,8 +20,8 @@ const Dashboard = () => {
   const [fullTimeRemaining, setFullTimeRemaining] = useState(
     calculateFullTimeRemaining()
   );
-//   const user = useRecoilValue(userState);
-//   const userRole = useRecoilValue(userRoleState);
+  //   const user = useRecoilValue(userState);
+  //   const userRole = useRecoilValue(userRoleState);
 
   // useEffect(() => {
   //   if (user === null) {
@@ -36,7 +40,7 @@ const Dashboard = () => {
     }
   }, [userSession.user]);
 
-  /* MOCKED BACKEND -------------------------------------- */ 
+  /* MOCKED BACKEND -------------------------------------- */
   useEffect(() => {
     console.log("test");
     const fetchPartner = async () => {
@@ -68,7 +72,7 @@ const Dashboard = () => {
     );
   }, []);
 
-    /* end of MOCKED BACKEND -------------------------------------- */ 
+  /* end of MOCKED BACKEND -------------------------------------- */
 
   /* -------------------------------timer content ---------------------------------------*/
 
