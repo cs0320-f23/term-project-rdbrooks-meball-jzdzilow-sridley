@@ -20,9 +20,9 @@ public class IsTAHandler implements Route {
 
     for (List<String> ta : listTAs) {
       if (ta.get(1).equals(email)) {
-        return new SuccessResponse("success", "true").serialize();
+        return new SuccessResponse("success", "instructor").serialize();
       }
     }
-    return new SuccessResponse("success", "false").serialize();
+    return new SuccessResponse("success", "student").serialize();
   }
 }

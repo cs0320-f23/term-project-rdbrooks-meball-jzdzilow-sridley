@@ -24,6 +24,17 @@ const firebaseConfig = {
   measurementId: "G-1FFWDE2HTT",
 };
 
+function getRoleFromBackend(email: string): Promise<string> {
+  return fetch("http://localhost:3333/isTA?email=" + email)
+    .then((response) => response.json())
+    .then((data) => {
+      return data["message"];
+    })
+    .catch((e) => {
+      return "ERROR: " + e;
+    });
+}
+
 const LoginPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -71,23 +82,27 @@ const LoginPage = () => {
       if (name == null || email == null) {
         console.log("error: name of email is null");
       } else {
-        const user: IUser = {
+        let user: IUser = {
           email: email,
           name: name,
-          role: "instructor", // TODO: determine through call to backend
+          role: "",
         };
 
         if (!user?.email.includes("brown.edu")) {
           return navigate("/failed-login");
         }
 
-        setUser(user);
-        console.log(user);
-        console.log(user.role);
+        try {
+          const roleFromBackend = await getRoleFromBackend(user.email);
+          user.role = roleFromBackend;
+        } catch (error) {
+          console.error("Error fetching role from backend:", error);
+          // Determine what to do with the error, handle it as needed
+          return navigate("/failed-login");
+        }
 
+        setUser(user);
         if (user.role === "student") {
-          // TODO: call endpoint on backend to add to help requester or debugging partner
-          // pass user information to the further component
           return navigate("/role-selection", { state: { user } });
         } else if (user.role === "instructor") {
           setUserRole({ role: UserRole.Instructor, time: null });
