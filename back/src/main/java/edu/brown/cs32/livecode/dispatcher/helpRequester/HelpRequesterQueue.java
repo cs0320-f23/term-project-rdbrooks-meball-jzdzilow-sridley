@@ -1,5 +1,6 @@
 package edu.brown.cs32.livecode.dispatcher.helpRequester;
 
+import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartner;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -54,12 +55,13 @@ public class HelpRequesterQueue {
     gettingHelp.add(helpRequester);
   }
 
-  public boolean setDoneDebugging(String name) {
+  public boolean setDoneDebugging(String name, String email) {
     boolean debugged = false;
     HelpRequester toRemove = null;
     for (HelpRequester helpRequester : gettingHelp) {
       String thisName = helpRequester.getName();
-      if (name.equals(thisName)) {
+      String thisEmail = helpRequester.getEmail();
+      if (name.equals(thisName) && email.equals(thisEmail)) {
         helpRequester.setDebugged(true);
         alreadyHelped.add(helpRequester);
         toRemove = helpRequester;
@@ -70,11 +72,12 @@ public class HelpRequesterQueue {
     return debugged;
   }
 
-  public boolean setEscalated(String name) {
+  public boolean setEscalated(String helpRequesterName, String helpRequesterEmail) {
     boolean escalated = false;
     for (HelpRequester helpRequester : gettingHelp) {
       String thisName = helpRequester.getName();
-      if (name.equals(thisName)) {
+      String thisEmail = helpRequester.getEmail();
+      if (helpRequesterName.equals(thisName) && helpRequesterEmail.equals(thisEmail)) {
         helpRequester.setEscalated();
         escalated = true;
       }
@@ -82,12 +85,29 @@ public class HelpRequesterQueue {
     return escalated;
   }
 
-  public boolean moveBackToQueue(String name) {
+  public boolean checkPaired(String debuggingPartnerName, String helpRequesterName) {
+    for (HelpRequester helpRequester : gettingHelp) {
+      String thisHelpRequesterName = helpRequester.getName();
+      if (thisHelpRequesterName.equals(helpRequesterName)) {
+        DebuggingPartner debuggingPartner = helpRequester.getDebuggingPartner();
+        if (debuggingPartner != null) {
+          String thisDebuggingPartnerName = debuggingPartner.getName();
+          if (thisDebuggingPartnerName.equals(debuggingPartnerName)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  public boolean moveBackToQueue(String name, String email) {
     boolean moved = false;
     HelpRequester toMove = null;
     for (HelpRequester helpRequester : gettingHelp) {
       String thisName = helpRequester.getName();
-      if (name.equals(thisName)) {
+      String thisEmail = helpRequester.getEmail();
+      if (name.equals(thisName) && email.equals(thisEmail)) {
         helpRequester.setDebuggingPartner(null);
         toMove = helpRequester;
         moved = true;

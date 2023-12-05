@@ -72,37 +72,40 @@ public class GetInfoHandler implements Route {
         .serialize();
   }
 
-  public Object getSpecificInfo(String targetName, String role) {
+  public Object getSpecificInfo(String targetName, String role, String targetEmail) {
     if (role.equals("debuggingPartner")) {
       List<DebuggingPartner> debuggingPartners = debuggingPartnerQueue.getAllDebuggingPartnerList();
       for (DebuggingPartner debuggingPartner : debuggingPartners) {
         String name = debuggingPartner.getName();
-        if (name.equals(targetName)) {
+        String email = debuggingPartner.getEmail();
+        if (name.equals(targetName) && email.equals(targetEmail)) {
           HelpRequester currentlyHelping = debuggingPartner.getCurrentHelpRequester();
           String helpingName = "";
           if (currentlyHelping != null) {
             helpingName = currentlyHelping.getName();
           }
           return new DebuggingPartnerInfoSuccessResponse("Debugging Partner " + targetName + " found!",
-              targetName, helpingName, debuggingPartner.getFlagged(), debuggingPartner.getStudentsHelped()).serialize();
+              helpingName, debuggingPartner).serialize();
         }
       }
     } else {
       List<HelpRequester> helpRequesters = helpRequesterQueue.getAllHelpRequesters();
       for (HelpRequester helpRequester : helpRequesters) {
         String name = helpRequester.getName();
-        if (name.equals(targetName)) {
+        String email = helpRequester.getEmail();
+        if (name.equals(targetName) && email.equals(targetEmail)) {
           DebuggingPartner gettingHelpFrom = helpRequester.getDebuggingPartner();
           String helpFromName = "";
           if (gettingHelpFrom != null) {
             helpFromName = gettingHelpFrom.getName();
           }
           return new HelpRequesterInfoSuccessResponse("Help Requester " + targetName + " found!",
-              targetName, helpFromName).serialize();
+              helpFromName, helpRequester).serialize();
         }
       }
     }
-    return new FailureResponse("error_bad_request", "No " + role + " found named " + targetName).serialize();
+    return new FailureResponse("error_bad_request", "No " + role + " found named "
+        + targetName + " with email " + targetEmail).serialize();
   }
 
   @Override
@@ -112,10 +115,11 @@ public class GetInfoHandler implements Route {
     }
     String name = request.queryParams("name");
     String role = request.queryParams("role");
-    if (name == null || role == null) {
+    String email = request.queryParams("email");
+    if (name == null || role == null || email == null) {
       return getAllInfo();
     } else {
-      return getSpecificInfo(name, role);
+      return getSpecificInfo(name, role, email);
     }
   }
 
@@ -147,16 +151,20 @@ public class GetInfoHandler implements Route {
       String result,
       String message,
       String name,
+      String email,
+      String joinedTime,
+      String pairedAtTime,
       String helpRequesterName,
       boolean flagged,
       int studentsHelped) {
     public DebuggingPartnerInfoSuccessResponse(
         String message,
-        String name,
-        String helpRequesterName,
-        boolean flagged,
-        int studentsHelped) {
-      this("success", message, name, helpRequesterName, flagged, studentsHelped);
+        String currentlyHelping,
+        DebuggingPartner debuggingPartner) {
+      this("success", message, debuggingPartner.getName(), debuggingPartner.getEmail(),
+          debuggingPartner.getJoinedTime(), debuggingPartner.getPairedAtTime(),
+          currentlyHelping, debuggingPartner.getFlagged(),
+          debuggingPartner.getStudentsHelped());
     }
 
     String serialize() {
@@ -169,12 +177,16 @@ public class GetInfoHandler implements Route {
       String result,
       String message,
       String name,
+      String email,
+      String joinedTime,
+      String pairedAtTime,
       String debuggingPartnerName) {
     public HelpRequesterInfoSuccessResponse(
         String message,
-        String name,
-        String debuggingPartnerName) {
-      this("success", message, name, debuggingPartnerName);
+        String debuggingPartnerName,
+        HelpRequester helpRequester) {
+      this("success", message, helpRequester.getName(), helpRequester.getEmail(),
+          helpRequester.getJoinedTime(), helpRequester.getPairedAtTime(), debuggingPartnerName);
     }
 
     String serialize() {

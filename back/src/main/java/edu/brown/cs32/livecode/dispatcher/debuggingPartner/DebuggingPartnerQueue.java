@@ -24,11 +24,11 @@ public class DebuggingPartnerQueue {
     debuggingPartnerList.add(newDebuggingPartner);
   }
 
-  public boolean removeDebuggingPartner(String name) {
+  public boolean removeDebuggingPartner(String name, String email) {
     boolean foundDebuggingPartner = false;
     List<DebuggingPartner> newDebuggingPartners = new ArrayList<>();
     for (DebuggingPartner debuggingPartner : debuggingPartnerList) {
-      if (!debuggingPartner.getName().equals(name)) {
+      if (!debuggingPartner.getName().equals(name) || !debuggingPartner.getEmail().equals(email)) {
         newDebuggingPartners.add(debuggingPartner);
       } else {
         foundDebuggingPartner = true;
@@ -46,12 +46,13 @@ public class DebuggingPartnerQueue {
     return allDebuggingPartners;
   }
 
-  public boolean removeAndFlagDebuggingPartner(String name) {
+  public boolean removeAndFlagDebuggingPartner(String name, String email) {
     boolean removed = false;
     DebuggingPartner toRemove = null;
     for (DebuggingPartner debuggingPartner : debuggingPartnerList) {
       String thisName = debuggingPartner.getName();
-      if (name.equals(thisName)) {
+      String thisEmail = debuggingPartner.getEmail();
+      if (name.equals(thisName) && email.equals(thisEmail)) {
         toRemove = debuggingPartner;
         removed = true;
         toRemove.setFlagged();

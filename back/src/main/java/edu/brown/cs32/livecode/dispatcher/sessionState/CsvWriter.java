@@ -77,19 +77,20 @@ public class CsvWriter {
           new FileWriter("data/sessions/debugging-partner-attendance-" + beginTime + ".csv", true);
       FileWriter hrWriter =
           new FileWriter("data/sessions/help-requester-attendance-" + beginTime + ".csv", true);
-      dpWriter.write("DebuggingPartnerName, HelpRequestersSeen\n");
-      hrWriter.write("HelpRequesterName, AssignedDebuggingPartnerName\n");
+      dpWriter.write("DebuggingPartnerName, DebuggingPartnerEmail, JoinedTime, LastPairedAtTime, HelpRequestersSeen\n");
+      hrWriter.write("HelpRequesterName, HelpRequesterEmail, JoinedTime, PairAtTime, AssignedDebuggingPartnerName\n");
 
       List<HelpRequester> allHelpRequesters = helpRequesterQueue.getAllHelpRequesters();
       List<DebuggingPartner> allDebuggingPartners =
           debuggingPartnerQueue.getAllDebuggingPartnerList();
       for (DebuggingPartner debuggingPartner : allDebuggingPartners) {
-        dpWriter.write(
-            debuggingPartner.getName() + ", " + debuggingPartner.getStudentsHelped() + "\n");
+        dpWriter.write(debuggingPartner.getName() + ", " + debuggingPartner.getEmail() + ", " + debuggingPartner.getJoinedTime()
+            + ", " + debuggingPartner.getPairedAtTime() + ", " + debuggingPartner.getStudentsHelped() + "\n");
       }
       dpWriter.close();
       for (HelpRequester helpRequester : allHelpRequesters) {
-        hrWriter.write(helpRequester.getName() + ", " + helpRequester.getDebuggingPartner() + "\n");
+        hrWriter.write(helpRequester.getName() + ", " + helpRequester.getEmail() + ", " + helpRequester.getJoinedTime()
+            + ", " + helpRequester.getPairedAtTime() + ", " + helpRequester.getDebuggingPartner() + "\n");
       }
       hrWriter.close();
     } catch (IOException e) {
