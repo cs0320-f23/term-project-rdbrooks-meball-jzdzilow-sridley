@@ -54,9 +54,18 @@ public class HelpRequester {
   public String getEmail() {
     return email;
   }
-  public String getJoinedTime() { return joinedTime; }
 
-  public String getPairedAtTime() { return pairedAtTime; }
+  public String getJoinedTime() {
+    return joinedTime;
+  }
+
+  public String getPairedAtTime() {
+    return pairedAtTime;
+  }
+
+  public String getBugType() {
+    return bugType;
+  }
 
   /**
    * Getter for the HelpRequester's debugged field

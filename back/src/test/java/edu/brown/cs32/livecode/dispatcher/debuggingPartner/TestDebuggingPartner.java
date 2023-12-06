@@ -15,8 +15,9 @@ public class TestDebuggingPartner {
   /** Tests the creation of a Debugging Partner and default state */
   @Test
   public void createDebuggingPartner() {
-    DebuggingPartner testDebuggingPartner = new DebuggingPartner("Sarah");
+    DebuggingPartner testDebuggingPartner = new DebuggingPartner("Sarah", "sarah_ridley@brown.edu");
     Assertions.assertEquals(testDebuggingPartner.getName(), "Sarah");
+    Assertions.assertEquals(testDebuggingPartner.getEmail(), "sarah_ridley@brown.edu");
     Assertions.assertEquals(testDebuggingPartner.getCurrentHelpRequester(), null);
     Assertions.assertEquals(testDebuggingPartner.getFlagged(), false);
     Assertions.assertEquals(testDebuggingPartner.getStudentsHelped(), 0);

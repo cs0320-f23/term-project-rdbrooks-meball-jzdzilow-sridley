@@ -113,8 +113,9 @@ public class GetInfoHandler implements Route {
           if (currentlyHelping != null) {
             helpingName = currentlyHelping.getName();
           }
-          return new DebuggingPartnerInfoSuccessResponse("Debugging Partner " + targetName + " found!",
-              helpingName, debuggingPartner).serialize();
+          return new DebuggingPartnerInfoSuccessResponse(
+                  "Debugging Partner " + targetName + " found!", helpingName, debuggingPartner)
+              .serialize();
         }
       }
     } else if (role.equals("helpRequester")) {
@@ -128,13 +129,16 @@ public class GetInfoHandler implements Route {
           if (gettingHelpFrom != null) {
             helpFromName = gettingHelpFrom.getName();
           }
-          return new HelpRequesterInfoSuccessResponse("Help Requester " + targetName + " found!",
-              helpFromName, helpRequester).serialize();
+          return new HelpRequesterInfoSuccessResponse(
+                  "Help Requester " + targetName + " found!", helpFromName, helpRequester)
+              .serialize();
         }
       }
     }
-    return new FailureResponse("error_bad_request", "No " + role + " found named "
-        + targetName + " with email " + targetEmail).serialize();
+    return new FailureResponse(
+            "error_bad_request",
+            "No " + role + " found named " + targetName + " with email " + targetEmail)
+        .serialize();
   }
 
   /**
@@ -215,12 +219,16 @@ public class GetInfoHandler implements Route {
       boolean flagged,
       int studentsHelped) {
     public DebuggingPartnerInfoSuccessResponse(
-        String message,
-        String currentlyHelping,
-        DebuggingPartner debuggingPartner) {
-      this("success", message, debuggingPartner.getName(), debuggingPartner.getEmail(),
-          debuggingPartner.getJoinedTime(), debuggingPartner.getPairedAtTime(),
-          currentlyHelping, debuggingPartner.getFlagged(),
+        String message, String currentlyHelping, DebuggingPartner debuggingPartner) {
+      this(
+          "success",
+          message,
+          debuggingPartner.getName(),
+          debuggingPartner.getEmail(),
+          debuggingPartner.getJoinedTime(),
+          debuggingPartner.getPairedAtTime(),
+          currentlyHelping,
+          debuggingPartner.getFlagged(),
           debuggingPartner.getStudentsHelped());
     }
 
@@ -245,13 +253,23 @@ public class GetInfoHandler implements Route {
       String email,
       String joinedTime,
       String pairedAtTime,
-      String debuggingPartnerName) {
+      String debuggingPartnerName,
+      String bugType,
+      boolean escalated,
+      boolean debugged) {
     public HelpRequesterInfoSuccessResponse(
-        String message,
-        String debuggingPartnerName,
-        HelpRequester helpRequester) {
-      this("success", message, helpRequester.getName(), helpRequester.getEmail(),
-          helpRequester.getJoinedTime(), helpRequester.getPairedAtTime(), debuggingPartnerName);
+        String message, String debuggingPartnerName, HelpRequester helpRequester) {
+      this(
+          "success",
+          message,
+          helpRequester.getName(),
+          helpRequester.getEmail(),
+          helpRequester.getJoinedTime(),
+          helpRequester.getPairedAtTime(),
+          debuggingPartnerName,
+          helpRequester.getBugType(),
+          helpRequester.getEscalated(),
+          helpRequester.getDebugged());
     }
 
     String serialize() {
