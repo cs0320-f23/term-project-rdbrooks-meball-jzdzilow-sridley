@@ -3,6 +3,7 @@ package edu.brown.cs32.livecode.dispatcher.handlers;
 import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartnerQueue;
 import edu.brown.cs32.livecode.dispatcher.handlers.AddHelpRequesterHandler.FailureResponse;
 import edu.brown.cs32.livecode.dispatcher.handlers.AddHelpRequesterHandler.SuccessResponse;
+import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequesterQueue;
 import edu.brown.cs32.livecode.dispatcher.sessionState.SessionState;
 import spark.Request;
 import spark.Response;
@@ -18,17 +19,20 @@ import spark.Route;
  * @version 1.0
  */
 public class DebuggingPartnerDoneHandler implements Route {
+  private final HelpRequesterQueue helpRequesterQueue;
   private final DebuggingPartnerQueue debuggingPartnerQueue;
   private SessionState sessionState;
 
   /**
    * Constructor for the DebuggingPartnerDoneHandler class
    *
+   * @param helpRequesterQueue DebuggingPartnerQueue containing all HelpRequester info
    * @param debuggingPartnerQueue DebuggingPartnerQueue containing all DebuggingPartner info
    * @param sessionState SessionState representing the current state of the session
    */
   public DebuggingPartnerDoneHandler(
-      DebuggingPartnerQueue debuggingPartnerQueue, SessionState sessionState) {
+      HelpRequesterQueue helpRequesterQueue, DebuggingPartnerQueue debuggingPartnerQueue, SessionState sessionState) {
+    this.helpRequesterQueue = helpRequesterQueue;
     this.debuggingPartnerQueue = debuggingPartnerQueue;
     this.sessionState = sessionState;
   }
@@ -47,6 +51,7 @@ public class DebuggingPartnerDoneHandler implements Route {
     }
     String name = request.queryParams("name");
     String email = request.queryParams("email");
+    String record = request.queryParams("record");
     if (name == null) {
       return new FailureResponse("error_bad_request", "Missing required parameter: name")
           .serialize();
@@ -55,6 +60,10 @@ public class DebuggingPartnerDoneHandler implements Route {
           .serialize();
     }
     boolean setSuccess = debuggingPartnerQueue.removeDebuggingPartner(name, email);
+    if (record != null && record.equals("no")) {
+      debuggingPartnerQueue.removeFromAttendanceList(name, email);
+      helpRequesterQueue.rematchByDebuggingPartner(name, email);
+    }
     if (setSuccess) {
       return new SuccessResponse("success", "Debugging Partner " + name + " has left!").serialize();
     } else {

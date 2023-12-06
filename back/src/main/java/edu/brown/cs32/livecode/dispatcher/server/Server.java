@@ -53,7 +53,7 @@ public class Server {
     Spark.get("helpRequesterDone", new HelpRequesterDoneHandler(helpRequesterQueue, sessionState));
     Spark.get(
         "debuggingPartnerDone",
-        new DebuggingPartnerDoneHandler(debuggingPartnerQueue, sessionState));
+        new DebuggingPartnerDoneHandler(helpRequesterQueue, debuggingPartnerQueue, sessionState));
     Spark.get(
         "getInfo", new GetInfoHandler(helpRequesterQueue, debuggingPartnerQueue, sessionState));
     Spark.get("escalate", new EscalateHandler(helpRequesterQueue, sessionState));

@@ -66,6 +66,24 @@ public class DebuggingPartnerQueue {
   }
 
   /**
+   * Removes a DebuggingPartner from the list of all debugging partners, used for attendance.
+   *
+   * @param name String name of DebuggingPartner to remove from the queue
+   * @param email String email of DebuggingPartner to remove from the queue
+   */
+  public void removeFromAttendanceList(String name, String email) {
+    List<DebuggingPartner> newDebuggingPartners = new ArrayList<>();
+    for (DebuggingPartner debuggingPartner : allDebuggingPartners) {
+      if (!debuggingPartner.getName().equals(name) || !debuggingPartner.getEmail().equals(email)) {
+        newDebuggingPartners.add(debuggingPartner);
+      } else {
+        break;
+      }
+    }
+    allDebuggingPartners = newDebuggingPartners;
+  }
+
+  /**
    * Getter for an unmodifiable copy of the list of the current DebuggingPartners
    *
    * @return list of current DebuggingPartners

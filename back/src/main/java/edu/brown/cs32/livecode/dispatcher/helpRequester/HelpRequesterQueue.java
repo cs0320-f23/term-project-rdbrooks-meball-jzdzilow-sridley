@@ -176,6 +176,21 @@ public class HelpRequesterQueue {
     return false;
   }
 
+  public void rematchByDebuggingPartner(String debuggingPartnerName, String debuggingPartnerEmail) {
+    HelpRequester toMove = null;
+    for (HelpRequester helpRequester : gettingHelp) {
+      DebuggingPartner helper = helpRequester.getDebuggingPartner();
+      if (helper != null && (helper.getName().equals(debuggingPartnerName)) &&
+      helper.getEmail().equals(debuggingPartnerEmail)) {
+        toMove = helpRequester;
+      }
+    }
+    if (toMove != null) {
+      gettingHelp.remove(toMove);
+      needHelp.add(toMove);
+    }
+  }
+
   public boolean moveBackToQueue(String name, String email) {
     boolean moved = false;
     HelpRequester toMove = null;
