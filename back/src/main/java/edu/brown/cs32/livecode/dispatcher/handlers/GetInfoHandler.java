@@ -253,7 +253,10 @@ public class GetInfoHandler implements Route {
       String email,
       String joinedTime,
       String pairedAtTime,
-      String debuggingPartnerName) {
+      String debuggingPartnerName,
+      String bugType,
+      boolean escalated,
+      boolean debugged) {
     public HelpRequesterInfoSuccessResponse(
         String message, String debuggingPartnerName, HelpRequester helpRequester) {
       this(
@@ -263,7 +266,10 @@ public class GetInfoHandler implements Route {
           helpRequester.getEmail(),
           helpRequester.getJoinedTime(),
           helpRequester.getPairedAtTime(),
-          debuggingPartnerName);
+          debuggingPartnerName,
+          helpRequester.getBugType(),
+          helpRequester.getEscalated(),
+          helpRequester.getDebugged());
     }
 
     String serialize() {
