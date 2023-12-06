@@ -180,8 +180,9 @@ public class HelpRequesterQueue {
     HelpRequester toMove = null;
     for (HelpRequester helpRequester : gettingHelp) {
       DebuggingPartner helper = helpRequester.getDebuggingPartner();
-      if (helper != null && (helper.getName().equals(debuggingPartnerName)) &&
-      helper.getEmail().equals(debuggingPartnerEmail)) {
+      if (helper != null
+          && (helper.getName().equals(debuggingPartnerName))
+          && helper.getEmail().equals(debuggingPartnerEmail)) {
         toMove = helpRequester;
       }
     }

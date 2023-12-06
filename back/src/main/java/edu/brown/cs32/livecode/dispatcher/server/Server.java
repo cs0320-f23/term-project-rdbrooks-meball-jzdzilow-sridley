@@ -91,7 +91,7 @@ public class Server {
 
     while (true) {
       if (sessionState.getRunning()) {
-        dispatcher.dispatch(sessionState);
+        dispatcher.dispatch(sessionState, false);
       }
       System.out.print("");
     }
@@ -102,7 +102,7 @@ public class Server {
    *
    * @return parsed csv
    */
-  private static List<List<String>> parseCsvTA() {
+  public static List<List<String>> parseCsvTA() {
     try {
       BufferedReader bufferedFile = new BufferedReader(new FileReader("./data/ta-list.csv"));
 
