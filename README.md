@@ -14,6 +14,8 @@ http://localhost:3333/addDebuggingPartner?name=_&email=_ → add a debugging par
 
 http://localhost:3333/debuggingPartnerDone?name=_&email=_ → remove a debugging partner by name
 
+http://localhost:3333/debuggingPartnerDone?name=_&email=_&record=no → remove a debugging partner by name and remove them from the list tracking attendance
+
 http://localhost:3333/getInfo → gets general information on the current state of the collab hours manager
 
 http://localhost:3333/getInfo?role=debuggingPartner&name=_&email=_ → gets info on a specific debugging partner by name
