@@ -26,6 +26,7 @@ public class SessionState {
    * Constructor for the SessionState class
    *
    * @param running boolean representing value of running field
+   * @param answersFileName String representing name of file to write answers to (if not default)
    */
   public SessionState(boolean running, String answersFileName) {
     this.running = running;
