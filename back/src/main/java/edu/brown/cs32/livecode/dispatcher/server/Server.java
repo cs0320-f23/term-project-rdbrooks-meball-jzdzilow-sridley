@@ -64,6 +64,7 @@ public class Server {
         "session", new SessionHandler(helpRequesterQueue, debuggingPartnerQueue, sessionState));
     Spark.get("downloadInfo", new DownloadInfoHandler(sessionState));
     Spark.get("isTA", new IsTAHandler(listTAs));
+    Spark.get("submitDebuggingQuestions", new SubmitDebuggingQuestionsHandler(sessionState));
 
     Spark.init();
     Spark.awaitInitialization();
