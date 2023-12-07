@@ -92,7 +92,7 @@ public class DebuggingPartnerQueue {
    * @return list of current DebuggingPartners
    */
   public List<DebuggingPartner> getDebuggingPartnerList() {
-    return debuggingPartnerList;
+    return Collections.unmodifiableList(debuggingPartnerList);
   }
 
   /**
@@ -101,7 +101,7 @@ public class DebuggingPartnerQueue {
    * @return list of all DebuggingPartners
    */
   public List<DebuggingPartner> getAllDebuggingPartnerList() {
-    return allDebuggingPartners;
+    return Collections.unmodifiableList(allDebuggingPartners);
   }
 
   /**

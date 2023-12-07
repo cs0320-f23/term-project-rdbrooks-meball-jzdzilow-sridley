@@ -71,7 +71,7 @@ public class GetInfoHandler implements Route {
     List<DebuggingPartner> allDebuggingPartners =
         debuggingPartnerQueue.getAllDebuggingPartnerList();
     List<String> openDBPs = new ArrayList<>();
-    for (DebuggingPartner debuggingPartner : allDebuggingPartners) {
+    for (DebuggingPartner debuggingPartner : debuggingPartnerQueue.getDebuggingPartnerList()) {
       if (debuggingPartner.isFree()) {
         openDBPs.add(debuggingPartner.getName());
       }
