@@ -25,10 +25,10 @@ public class TestServer {
     Assertions.assertEquals(server.getClass(), Server.class);
   }
 
-  /** Test parse CSV TA */
+  /** Test parse CSV Instructors */
   @Test
-  public void testParseCsvTAEmpty() {
-    List<List<String>> tas = Server.parseCsvTA();
-    Assertions.assertEquals(List.of("Name", "Email"), tas.get(0));
+  public void testParseCsvInstructorsEmpty() {
+    List<List<String>> instructors = Server.parseCsvInstructors();
+    Assertions.assertEquals(List.of("Name", "Email"), instructors.get(0));
   }
 }
