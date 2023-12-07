@@ -43,8 +43,8 @@ public class Server {
           response.header("Access-Control-Allow-Methods", "*");
         });
 
-    // parse csv of TAs (to avoid repetition everytime endpoint called)
-    List<List<String>> listTAs = new ArrayList<>(Server.parseCsvTA()); // making defensive copy
+    // parse csv of instructors (to avoid repetition everytime endpoint called)
+    List<List<String>> listInstructors = new ArrayList<>(Server.parseCsvInstructors()); // defensive copy
 
     // Setting up the handler for the GET endpoints
     Spark.get("addHelpRequester", new AddHelpRequesterHandler(helpRequesterQueue, sessionState));
@@ -63,7 +63,7 @@ public class Server {
     Spark.get(
         "session", new SessionHandler(helpRequesterQueue, debuggingPartnerQueue, sessionState));
     Spark.get("downloadInfo", new DownloadInfoHandler(sessionState));
-    Spark.get("isTA", new IsTAHandler(listTAs));
+    Spark.get("isInstructor", new IsInstructorHandler(listInstructors));
 
     Spark.init();
     Spark.awaitInitialization();
@@ -98,19 +98,20 @@ public class Server {
   }
 
   /**
-   * Method to parse the csv of TAs into a list of lists.
+   * This method parses the csv of instructors into a list of lists. It is done in the Server class
+   * so this action is not repeated everytime somebody calls the isInstructor endpoint.
    *
    * @return parsed csv
    */
-  public static List<List<String>> parseCsvTA() {
+  public static List<List<String>> parseCsvInstructors() {
     try {
-      BufferedReader bufferedFile = new BufferedReader(new FileReader("./data/ta-list.csv"));
-
+      BufferedReader bufferedFile = new BufferedReader(new FileReader("./data/instructor-list.csv"));
       List<List<String>> parsed = new ArrayList<>();
 
       String line = bufferedFile.readLine();
       // while there are lines left to read
       while (line != null) {
+        // regex that splits on commas (from CSV sprint)
         String[] splitRowArray = line.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*(?![^\\\"]*\\\"))");
         List<String> splitRowList = Arrays.asList(splitRowArray);
         parsed.add(splitRowList);
