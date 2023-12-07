@@ -29,3 +29,5 @@ http://localhost:3333/escalate?helpRequesterName=_&helpRequesterEmail=_ → esca
 http://localhost:3333/flagAndRematch?helpRequesterName=_&helpRequesterEmail=_&debuggingPartnerName=_&debuggingPartnerEmail=_ → rematch and flag debugging partner and help requester by name
 
 http://localhost:3333/isInstructor?email= → determine if a given email is considered a TA based on csv
+
+http://localhost:3333/submitDebuggingQuestions?debuggingPartnerName=_&debuggingPartnerEmail=_&helpRequesterName=_&helpRequesterEmail=_&bugCategory=_&debuggingProcess=_ → submit debugging questions
