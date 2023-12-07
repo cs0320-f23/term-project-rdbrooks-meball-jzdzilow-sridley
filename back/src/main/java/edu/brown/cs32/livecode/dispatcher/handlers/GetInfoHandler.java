@@ -52,35 +52,37 @@ public class GetInfoHandler implements Route {
    */
   public Object getAllInfo() {
     List<HelpRequester> waitingHelpRequesters = helpRequesterQueue.getNeedHelpList();
-    List<String> waitingHRQs = new ArrayList<>();
+    List<List<String>> waitingHRQs = new ArrayList<>();
     for (HelpRequester helpRequester : waitingHelpRequesters) {
-      waitingHRQs.add(helpRequester.getName());
+      waitingHRQs.add(List.of(helpRequester.getName(), helpRequester.getEmail()));
     }
 
     List<HelpRequester> pairedHelpRequesters = helpRequesterQueue.getGettingHelpList();
-    List<List<String>> pairs = new ArrayList<>();
-    List<List<String>> escalatedPairs = new ArrayList<>();
+    List<List<List<String>>> pairs = new ArrayList<>();
+    List<List<List<String>>> escalatedPairs = new ArrayList<>();
     for (HelpRequester helpRequester : pairedHelpRequesters) {
       DebuggingPartner helper = helpRequester.getDebuggingPartner();
-      pairs.add(List.of(helper.getName(), helpRequester.getName()));
+      pairs.add(List.of(List.of(helper.getName(), helper.getEmail()),List.of(helpRequester.getName(),
+          helpRequester.getEmail())));
       if (helpRequester.getEscalated()) {
-        escalatedPairs.add(List.of(helper.getName(), helpRequester.getName()));
+        escalatedPairs.add(List.of(List.of(helper.getName(),helper.getEmail()), List.of(helpRequester.getName(),
+            helpRequester.getEmail())));
       }
     }
 
     List<DebuggingPartner> allDebuggingPartners =
         debuggingPartnerQueue.getAllDebuggingPartnerList();
-    List<String> openDBPs = new ArrayList<>();
+    List<List<String>> openDBPs = new ArrayList<>();
     for (DebuggingPartner debuggingPartner : allDebuggingPartners) {
       if (debuggingPartner.isFree()) {
-        openDBPs.add(debuggingPartner.getName());
+        openDBPs.add(List.of(debuggingPartner.getName(), debuggingPartner.getEmail()));
       }
     }
 
     List<HelpRequester> helped = helpRequesterQueue.getHelpedList();
-    List<String> helpedNames = new ArrayList<>();
+    List<List<String>> helpedNames = new ArrayList<>();
     for (HelpRequester helpRequester : helped) {
-      helpedNames.add(helpRequester.getName());
+      helpedNames.add(List.of(helpRequester.getName(), helpRequester.getEmail()));
     }
 
     return new AllInfoSuccessResponse(
@@ -177,18 +179,18 @@ public class GetInfoHandler implements Route {
   public record AllInfoSuccessResponse(
       String result,
       String message,
-      List<String> waitingHRQs,
-      List<String> openDBPs,
-      List<List<String>> pairs,
-      List<List<String>> escalatedPairs,
-      List<String> helpedNames) {
+      List<List<String>> waitingHRQs,
+      List<List<String>> openDBPs,
+      List<List<List<String>>> pairs,
+      List<List<List<String>>> escalatedPairs,
+      List<List<String>> helpedNames) {
     public AllInfoSuccessResponse(
         String message,
-        List<String> waitingHRQs,
-        List<String> openDBPs,
-        List<List<String>> pairs,
-        List<List<String>> escalatedPairs,
-        List<String> helpedNames) {
+        List<List<String>> waitingHRQs,
+        List<List<String>> openDBPs,
+        List<List<List<String>>> pairs,
+        List<List<List<String>>> escalatedPairs,
+        List<List<String>> helpedNames) {
       this("success", message, waitingHRQs, openDBPs, pairs, escalatedPairs, helpedNames);
     }
 

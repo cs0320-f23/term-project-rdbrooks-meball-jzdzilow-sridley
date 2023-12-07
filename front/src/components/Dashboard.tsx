@@ -20,6 +20,13 @@ const Dashboard = () => {
   const [fullTimeRemaining, setFullTimeRemaining] = useState(
     calculateFullTimeRemaining()
   );
+
+  // get info will continuously update this information
+  const [unpairedDP, setUnpairedDP] = useState([[]]);
+  const [unpairedHR, setUnpairedHR] = useState([[]]);
+  const [pairedStudents, setPairedStudents] = useState([[[]]]);
+  const [escalatedPairs, setEscalatedPairs] = useState([[[]]]);
+
   //   const user = useRecoilValue(userState);
   //   const userRole = useRecoilValue(userRoleState);
 
@@ -99,6 +106,49 @@ const Dashboard = () => {
 
   /* ---------------------------- end of timer content ------------------------------------*/
 
+  /* ---------------------------- get info for instructors ------------------------------------*/
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const getInfoResponse = await fetch("http://localhost:3333/getInfo")
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            console.log(data.openDBPs);
+            console.log(data.waitingHRQs);
+            console.log(data.pairs);
+            console.log(data.escalatedPairs);
+          });
+        //const result = await getInfoResponse.json();
+
+        // setUnpairedDP(result.openDBQs);
+        //console.log(result.openDBQ); // how do I access
+        // setUnpairedHR(result.waitingHRQs);
+        //console.log(result.waitingHRQs);
+        //setPairedStudents(result.pairs);
+        //console.log(result.pairs);
+        //setEscalatedPairs(result.escalatedPairs);
+        //console.log(result.escalatedPairs);
+
+        /*console.log(unpairedDP);
+        console.log(unpairedHR);
+        console.log(pairedStudents);
+        console.log(escalatedPairs);*/
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    // fetches data initally
+    fetchData();
+
+    // Fetch data every 5 seconds (adjust the interval as needed)
+    const intervalId = setInterval(fetchData, 5000);
+  }, []);
+
+  /* ---------------------------- end of get info for instructors ------------------------------*/
+
   const openResourcesWebsite = () => {
     const url: string = "https://hackmd.io/@brown-csci0320/BJKCtyxxs/";
     window.open(url, "_blank");
@@ -106,7 +156,7 @@ const Dashboard = () => {
 
   /* ---------------------------------- handlers -----------------------------------------*/
 
-  const handleSubmit = async () => {
+  const handleFormSubmit = async () => {
     if (bugCategory === "" || debuggingProcess === "") {
       return alert("Bug category and debugging process inputs required!");
     }
@@ -167,6 +217,60 @@ const Dashboard = () => {
     setUserSession({ user: null, role: UserRole.NoneSelected, time: null });
   };
 
+  const handleStart = async () => {
+    try {
+      await fetch("http://localhost:3333/session?command=begin");
+    } catch (error) {
+      console.error("ERROR: " + error);
+      // Handle errors is needed
+    }
+  };
+
+  const handleEnd = async () => {
+    try {
+      await fetch("http://localhost:3333/session?command=end");
+    } catch (error) {
+      console.error("ERROR: " + error);
+      // Handle errors is needed
+    }
+  };
+
+  // will need information about users that it is associated with as right now taking from current user
+  /*const handleRemove = async () => {
+    return fetch(
+      "http://localhost:3333/debuggingPartnerDone?name=" +
+        userSession.user?.name +
+        "&email=" +
+        userSession.user?.email +
+        "&record=no"
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        return data["message"];
+      })
+      .catch((e) => {
+        return "ERROR: " + e;
+      });
+  };*/
+
+  // will need information about users that it is associated with as right now taking from current user
+  /*const hanldeRematchFlag = async () => {
+    return fetch(
+      "http://localhost:3333/debuggingPartnerDone?name=" +
+        userSession.user?.name +
+        "&email=" +
+        userSession.user?.email +
+        "&record=no"
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        return data["message"];
+      })
+      .catch((e) => {
+        return "ERROR: " + e;
+      });
+  };*/
+
   /* ----------------------- end of handlers / below rendering ---------------------------*/
 
   const renderHeaderBasedOnRole = (role: UserRole) => {
@@ -215,7 +319,14 @@ const Dashboard = () => {
   const renderContentBasedOnRole = (role: UserRole) => {
     switch (role) {
       case UserRole.Instructor:
-        return <p>instructor content here.</p>;
+        return (
+          <div>
+            <button onClick={handleStart}>Start Session</button>
+            <button onClick={handleEnd}>End Session</button>
+
+            <p>instructor content here and julia will make this pretty :</p>
+          </div>
+        );
       case UserRole.DebuggingPartner:
         return (
           <div className="debugging-partner-content">
@@ -258,7 +369,7 @@ const Dashboard = () => {
                   onChange={(e) => setDebuggingProcess(e.target.value)}
                 />
               </div>
-              <button className="submit-button" onClick={handleSubmit}>
+              <button className="submit-button" onClick={handleFormSubmit}>
                 Submit!
               </button>
             </div>
