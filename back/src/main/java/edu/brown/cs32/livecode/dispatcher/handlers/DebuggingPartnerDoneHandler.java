@@ -31,7 +31,9 @@ public class DebuggingPartnerDoneHandler implements Route {
    * @param sessionState SessionState representing the current state of the session
    */
   public DebuggingPartnerDoneHandler(
-      HelpRequesterQueue helpRequesterQueue, DebuggingPartnerQueue debuggingPartnerQueue, SessionState sessionState) {
+      HelpRequesterQueue helpRequesterQueue,
+      DebuggingPartnerQueue debuggingPartnerQueue,
+      SessionState sessionState) {
     this.helpRequesterQueue = helpRequesterQueue;
     this.debuggingPartnerQueue = debuggingPartnerQueue;
     this.sessionState = sessionState;

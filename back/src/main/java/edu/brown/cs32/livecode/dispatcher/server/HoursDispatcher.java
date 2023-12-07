@@ -49,13 +49,16 @@ public class HoursDispatcher {
    *
    * @param sessionState SessionState representing the current state of the session
    */
-  public void dispatch(SessionState sessionState) {
+  public void dispatch(SessionState sessionState, boolean test) {
     System.out.println(
         Utils.timestamp()
             + " Dispatcher: Welcome to edu.brown.cs32.livecode.threads.TA hours! Today we're discussing "
             + this.getStatusMessage());
     // Only loop while the session is still running
-    while (sessionState.getRunning()) {
+    int iterations = 0;
+    // If we're in testing mode, we do max 5 iterations
+    while (sessionState.getRunning() && (!test || iterations < 2)) {
+      iterations++;
       if (helpRequesterQueue.getNeedHelp().hasNext()) {
         // Who will help this student?
         DebuggingPartner helper = null;

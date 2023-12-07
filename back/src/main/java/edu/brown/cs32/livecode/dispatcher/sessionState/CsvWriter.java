@@ -39,9 +39,9 @@ public class CsvWriter {
   }
 
   /** Helper function that writes to the all-attendance.csv file in the data directory */
-  public void writeAllAttendance() {
+  public void writeAllAttendance(String allAttendanceFileName) {
     try {
-      FileWriter myWriter = new FileWriter("data/all-attendance.csv", true);
+      FileWriter myWriter = new FileWriter(allAttendanceFileName, true);
       String beginTime = sessionState.getBeginTime();
       String endTime = sessionState.getEndTime();
       List<HelpRequester> allHelpRequesters = helpRequesterQueue.getAllHelpRequesters();
@@ -89,13 +89,11 @@ public class CsvWriter {
    * Helper function that writes to a new HelpRequester file and a new DebuggingPartner file in the
    * sessions directory inside the data directory
    */
-  public void writeSessionAttendance() {
-    String beginTime = sessionState.getBeginTime();
+  public void writeSessionAttendance(
+      String debuggingPartnerFileName, String helpRequesterFileName) {
     try {
-      FileWriter dpWriter =
-          new FileWriter("data/sessions/debugging-partner-attendance-" + beginTime + ".csv", true);
-      FileWriter hrWriter =
-          new FileWriter("data/sessions/help-requester-attendance-" + beginTime + ".csv", true);
+      FileWriter dpWriter = new FileWriter(debuggingPartnerFileName, true);
+      FileWriter hrWriter = new FileWriter(helpRequesterFileName, true);
       dpWriter.write(
           "DebuggingPartnerName, DebuggingPartnerEmail, JoinedTime, LastPairedAtTime, HelpRequestersSeen\n");
       hrWriter.write(
@@ -139,7 +137,10 @@ public class CsvWriter {
 
   /** Main function that calls the helper functions to write all attendance information */
   public void write() {
-    writeAllAttendance();
-    writeSessionAttendance();
+    String beginTime = sessionState.getBeginTime();
+    writeAllAttendance("data/all-attendance.csv");
+    writeSessionAttendance(
+        "data/sessions/debugging-partner-attendance-" + beginTime + ".csv",
+        "data/sessions/help-requester-attendance-" + beginTime + ".csv");
   }
 }

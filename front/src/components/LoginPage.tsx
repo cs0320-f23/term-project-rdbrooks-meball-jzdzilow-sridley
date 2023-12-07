@@ -25,7 +25,7 @@ const firebaseConfig = {
 };
 
 function getRoleFromBackend(email: string): Promise<string> {
-  return fetch("http://localhost:3333/isTA?email=" + email)
+  return fetch("http://localhost:3333/isInstructor?email=" + email)
     .then((response) => response.json())
     .then((data) => {
       return data["message"];

@@ -1,5 +1,6 @@
 package edu.brown.cs32.livecode.dispatcher.debuggingPartner;
 
+import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequester;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.Test;
  */
 public class TestDebuggingPartner {
 
-  /** Tests the creation of a Debugging Partner and default state */
+  /** Tests the creation of a DebuggingPartner and default state */
   @Test
   public void createDebuggingPartner() {
     DebuggingPartner testDebuggingPartner = new DebuggingPartner("Sarah", "sarah_ridley@brown.edu");
@@ -21,5 +22,29 @@ public class TestDebuggingPartner {
     Assertions.assertEquals(testDebuggingPartner.getCurrentHelpRequester(), null);
     Assertions.assertEquals(testDebuggingPartner.getFlagged(), false);
     Assertions.assertEquals(testDebuggingPartner.getStudentsHelped(), 0);
+    Assertions.assertEquals(testDebuggingPartner.getJoinedTime().split(":").length, 2);
+    Assertions.assertEquals(testDebuggingPartner.getPairedAtTime(), null);
+  }
+
+  /**
+   * Tests the updating of a DebuggingPartner
+   *
+   * @throws Exception if student cannot be seen
+   */
+  @Test
+  public void updateDebuggingPartner() throws Exception {
+    DebuggingPartner cato = new DebuggingPartner("Cato", "meow@gmail.com");
+    HelpRequester rosie = new HelpRequester("Rosie", "meow_meow@gmail.com", "meow");
+    Assertions.assertEquals(true, cato.isFree());
+    cato.incrementStudentsHelper();
+    Assertions.assertEquals(1, cato.getStudentsHelped());
+    cato.setFlagged();
+    Assertions.assertEquals(true, cato.getFlagged());
+    cato.seeStudent(rosie);
+    Assertions.assertEquals(rosie, cato.getCurrentHelpRequester());
+    Assertions.assertEquals(false, cato.isFree());
+    rosie.setDebugged(true);
+    Thread.sleep(500);
+    Assertions.assertEquals(null, cato.getCurrentHelpRequester());
   }
 }
