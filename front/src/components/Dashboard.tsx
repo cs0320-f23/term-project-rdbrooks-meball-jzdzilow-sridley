@@ -3,6 +3,7 @@ import { useRecoilValue, useRecoilState, useSetRecoilState } from "recoil";
 import {
   IssueType,
   UserRole,
+  mockedMode,
   singleSessionState,
   userSessionState,
 } from "../recoil/atoms";
@@ -41,35 +42,38 @@ const Dashboard = () => {
   }, [userSession.user]);
 
   /* MOCKED BACKEND -------------------------------------- */
+
   useEffect(() => {
-    console.log("test");
-    const fetchPartner = async () => {
-      try {
-        const response = await fetch("http://localhost:2000/getSession");
-        const data = await response.json();
-        if (userSession.role === UserRole.DebuggingPartner) {
-          const sessionAsDP = data.pHelpRequester;
-          const partner = sessionAsDP.user;
-          const issue = sessionAsDP.issueType;
-          setSingleSession({ partner: partner, issueType: issue });
+    if (mockedMode) {
+      console.log("test");
+      const fetchPartner = async () => {
+        try {
+          const response = await fetch("http://localhost:2000/getSession");
+          const data = await response.json();
+          if (userSession.role === UserRole.DebuggingPartner) {
+            const sessionAsDP = data.pHelpRequester;
+            const partner = sessionAsDP.user;
+            const issue = sessionAsDP.issueType;
+            setSingleSession({ partner: partner, issueType: issue });
+          }
+          if (userSession.role === UserRole.HelpRequester) {
+            const sessionAsHR = data.pDebuggingPartner;
+            const partner = sessionAsHR.user;
+            setSingleSession({
+              partner: partner,
+              issueType: singleSession.issueType,
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching partner:", error);
         }
-        if (userSession.role === UserRole.HelpRequester) {
-          const sessionAsHR = data.pDebuggingPartner;
-          const partner = sessionAsHR.user;
-          setSingleSession({
-            partner: partner,
-            issueType: singleSession.issueType,
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching partner:", error);
-      }
-    };
-    fetchPartner();
-    console.log(
-      "issue " + singleSession.issueType,
-      "partner " + singleSession.partner
-    );
+      };
+      fetchPartner();
+      console.log(
+        "issue " + singleSession.issueType,
+        "partner " + singleSession.partner
+      );
+    }
   }, []);
 
   /* end of MOCKED BACKEND -------------------------------------- */
@@ -82,10 +86,11 @@ const Dashboard = () => {
       return 0;
     }
 
-    const oneHourInMillis = 60 * 60 * 1000; // 1 hour in milliseconds
+    //const oneHourInMillis = 60 * 60 * 1000; // 1 hour in milliseconds
+    const oneMinuteInMillis = 60 * 1000;
     const currentTime = new Date().getTime();
     const elapsedTime = currentTime - userSession.time.getTime();
-    const remainingTime = Math.max(oneHourInMillis - elapsedTime, 0);
+    const remainingTime = Math.max(oneMinuteInMillis - elapsedTime, 0);
     return remainingTime;
   }
 
@@ -160,7 +165,89 @@ const Dashboard = () => {
     console.log("escalated");
   };
 
-  const handleEndSession = () => {
+  function removeFromQueue(
+    email: string | undefined,
+    name: string | undefined,
+    role: UserRole
+  ): Promise<String> {
+    if (role === UserRole.DebuggingPartner) {
+      console.log("about to fetch and remove debugging partner")
+      return fetch(
+        "http://localhost:3333/debuggingPartnerDone?name=" +
+          name +
+          "&email=" +
+          email + "&record=yes"
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          return data["result"];
+        })
+        .catch((e) => {
+          return "ERROR: " + e;
+        });
+    }
+    // if user is a help requester and they have been paired
+    if (role === UserRole.HelpRequester && singleSession.partner) {
+      console.log(singleSession.partner);
+      return fetch(
+        "http://localhost:3333/helpRequesterDone?name=" +
+          name +
+          "&email=" +
+          email +
+          "&record=yes"
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          return data["result"];
+        })
+        .catch((e) => {
+          return "ERROR: " + e;
+        });
+    }
+    // if user is help requester and they haven't been paired
+    if (role === UserRole.HelpRequester && singleSession.partner == null) {
+      console.log(singleSession.partner)
+      console.log("removing from help requester queue");
+      return fetch(
+        "http://localhost:3333/helpRequesterDone?name=" +
+          name +
+          "&email=" +
+          email +
+          "&record=no"
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          return data["result"];
+        })
+        .catch((e) => {
+          return "ERROR: " + e;
+        });
+    } else {
+      return new Promise<String>((resolves) => {
+        resolves(
+          "ERROR: UserRole must be HelpRequester or DebuggingPartner for this function"
+        );
+      });
+    }
+  }
+
+  const handleEndSession = (role: UserRole) => {
+    if (role === UserRole.DebuggingPartner) {
+      removeFromQueue(
+        userSession.user?.email,
+        userSession.user?.name,
+        UserRole.DebuggingPartner
+      );
+    }
+    if (role === UserRole.HelpRequester) {
+      console.log(userSession);
+      removeFromQueue(
+        userSession.user?.email,
+        userSession.user?.name,
+        UserRole.HelpRequester
+      );
+      // take help requester out of the queue
+    }
     setBugCategory("");
     setDebuggingProcess("");
     setSingleSession({ partner: null, issueType: IssueType.NoneSelected });
@@ -190,7 +277,10 @@ const Dashboard = () => {
               Join time: {userSession.time?.toLocaleTimeString()}
             </p>
             {}
-            <button className="done-button" onClick={handleEndSession}>
+            <button
+              className="done-button"
+              onClick={() => handleEndSession(UserRole.HelpRequester)}
+            >
               I'm done!
             </button>
           </header>
@@ -201,11 +291,17 @@ const Dashboard = () => {
   };
 
   const renderTimerOrButton = () => {
-    if (singleSession.partner && fullTimeRemaining > 0) {
+    // if (singleSession.partner && fullTimeRemaining > 0) {
+    //   // return the timer countdown as well
+    // }
+    if (fullTimeRemaining > 0) {
       return <Timer fullTimeRemaining={fullTimeRemaining} />;
     } else if (fullTimeRemaining === 0) {
       return (
-        <button className="done-button" onClick={handleEndSession}>
+        <button
+          className="done-button"
+          onClick={() => handleEndSession(UserRole.DebuggingPartner)}
+        >
           I'm done!
         </button>
       );

@@ -6,7 +6,7 @@ http://localhost:3333/session?command=begin → begins the session
 
 http://localhost:3333/session?command=end → ends the session
 
-http://localhost:3333/addHelpRequester?name=_&email=_ → add a help requester by name
+http://localhost:3333/addHelpRequester?name=_&email=_&bugType= → add a help requester by name
 
 http://localhost:3333/helpRequesterDone?name=_&email=_ → remove a help requester by name
 

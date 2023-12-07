@@ -59,8 +59,9 @@ public class DebuggingPartnerDoneHandler implements Route {
       return new FailureResponse("error_bad_request", "Missing required parameter: email")
           .serialize();
     }
+
     boolean setSuccess = debuggingPartnerQueue.removeDebuggingPartner(name, email);
-    if (record != null && record.equals("no")) {
+    if (record.equals("no")) {
       debuggingPartnerQueue.removeFromAttendanceList(name, email);
       helpRequesterQueue.rematchByDebuggingPartner(name, email);
     }

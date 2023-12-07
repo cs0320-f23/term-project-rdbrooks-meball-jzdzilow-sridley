@@ -20,7 +20,7 @@ public class HelpRequesterQueue {
   private final List<HelpRequester> gettingHelp = new ArrayList<>();
 
   private final List<HelpRequester> alreadyHelped = new ArrayList<>();
-  private final List<HelpRequester> allHelpRequesters = new ArrayList<>();
+  private List<HelpRequester> allHelpRequesters = new ArrayList<>();
 
   /**
    * Constructor for the HelpRequesterQueue class
@@ -128,8 +128,24 @@ public class HelpRequesterQueue {
         debugged = true;
       }
     }
-    gettingHelp.remove(toRemove);
-    return debugged;
+    if(debugged){
+      gettingHelp.remove(toRemove);
+      return true;
+
+    } else {
+      for (HelpRequester helpRequester : needHelp){
+        String thisName = helpRequester.getName();
+        String thisEmail = helpRequester.getEmail();
+        if (name.equals(thisName) && email.equals(thisEmail)) {
+          helpRequester.setDebugged(true);
+          toRemove = helpRequester;
+          debugged = true;
+      }
+    }
+      needHelp.remove(toRemove);
+      return debugged;
+    }
+
   }
 
   /**
@@ -189,6 +205,24 @@ public class HelpRequesterQueue {
       gettingHelp.remove(toMove);
       needHelp.add(toMove);
     }
+  }
+
+  /**
+   * Removes a DebuggingPartner from the list of all debugging partners, used for attendance.
+   *
+   * @param name String name of DebuggingPartner to remove from the queue
+   * @param email String email of DebuggingPartner to remove from the queue
+   */
+  public void removeFromAttendanceList(String name, String email) {
+    List<HelpRequester> newHelpRequesters = new ArrayList<>();
+    for (HelpRequester helpRequester : allHelpRequesters) {
+      if (!helpRequester.getName().equals(name) || !helpRequester.getEmail().equals(email)) {
+        newHelpRequesters.add(helpRequester);
+      } else {
+        break;
+      }
+    }
+    allHelpRequesters = newHelpRequesters;
   }
 
   public boolean moveBackToQueue(String name, String email) {
