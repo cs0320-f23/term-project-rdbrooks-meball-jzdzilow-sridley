@@ -165,18 +165,73 @@ const Dashboard = () => {
     console.log("escalated");
   };
 
+  const handleEndSession = (role: UserRole) => {
+    if (role === UserRole.DebuggingPartner) {
+      removeFromQueue(
+        userSession.user?.email,
+        userSession.user?.name,
+        UserRole.DebuggingPartner
+      );
+    }
+    if (role === UserRole.HelpRequester) {
+      console.log(userSession);
+      removeFromQueue(
+        userSession.user?.email,
+        userSession.user?.name,
+        UserRole.HelpRequester
+      );
+      // take help requester out of the queue
+    }
+    setBugCategory("");
+    setDebuggingProcess("");
+    setSingleSession({ partner: null, issueType: IssueType.NoneSelected });
+    setUserSession({ user: null, role: UserRole.NoneSelected, time: null });
+  };
+
+  /* ----------------------- end of handlers ---------------------------*/
+
+  /* ---------------------------------- get info debuggings and help requesters -----------------------------------------*/
+
+  //  useEffect(() => {
+  //    const fetchData = async (role: string, name: string, email: string) => {
+  //      try {
+  //        const getInfoResponse = await fetch(
+  //          "http://localhost:3333/getInfo?role=" + role + "&name=" + name + "&email=" + email
+  //        )
+  //          .then((response) => response.json())
+  //          .then((data) => {
+  //            console.log(data);
+  //            console.log(data.openDBPs);
+  //            console.log(data.waitingHRQs);
+  //            console.log(data.pairs);
+  //            console.log(data.escalatedPairs);
+  //          });
+         
+  //      } catch (error) {
+  //        console.error("Error fetching data:", error);
+  //      }
+  //    };
+
+  //    // fetches data initally
+  //    fetchData(role, name, email);
+
+  //    // Fetch data every 5 seconds (adjust the interval as needed)
+  //    const intervalId = setInterval(fetchData, 5000);
+  //  }, []);
+  
   function removeFromQueue(
     email: string | undefined,
     name: string | undefined,
     role: UserRole
   ): Promise<String> {
     if (role === UserRole.DebuggingPartner) {
-      console.log("about to fetch and remove debugging partner")
+      console.log("about to fetch and remove debugging partner");
       return fetch(
         "http://localhost:3333/debuggingPartnerDone?name=" +
           name +
           "&email=" +
-          email + "&record=yes"
+          email +
+          "&record=yes"
       )
         .then((response) => response.json())
         .then((data) => {
@@ -206,7 +261,7 @@ const Dashboard = () => {
     }
     // if user is help requester and they haven't been paired
     if (role === UserRole.HelpRequester && singleSession.partner == null) {
-      console.log(singleSession.partner)
+      console.log(singleSession.partner);
       console.log("removing from help requester queue");
       return fetch(
         "http://localhost:3333/helpRequesterDone?name=" +
@@ -231,30 +286,9 @@ const Dashboard = () => {
     }
   }
 
-  const handleEndSession = (role: UserRole) => {
-    if (role === UserRole.DebuggingPartner) {
-      removeFromQueue(
-        userSession.user?.email,
-        userSession.user?.name,
-        UserRole.DebuggingPartner
-      );
-    }
-    if (role === UserRole.HelpRequester) {
-      console.log(userSession);
-      removeFromQueue(
-        userSession.user?.email,
-        userSession.user?.name,
-        UserRole.HelpRequester
-      );
-      // take help requester out of the queue
-    }
-    setBugCategory("");
-    setDebuggingProcess("");
-    setSingleSession({ partner: null, issueType: IssueType.NoneSelected });
-    setUserSession({ user: null, role: UserRole.NoneSelected, time: null });
-  };
+  /* ---------------------------------- end get info debuggings and help requesters -----------------------------------------*/
 
-  /* ----------------------- end of handlers / below rendering ---------------------------*/
+  /* ----------------------- below rendering ---------------------------*/
 
   const renderHeaderBasedOnRole = (role: UserRole) => {
     switch (role) {
