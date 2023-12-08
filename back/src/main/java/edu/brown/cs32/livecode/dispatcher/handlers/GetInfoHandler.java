@@ -60,11 +60,14 @@ public class GetInfoHandler implements Route {
     List<HelpRequester> pairedHelpRequesters = helpRequesterQueue.getGettingHelpList();
     List<List<String>> pairs = new ArrayList<>();
     List<List<String>> escalatedPairs = new ArrayList<>();
+    List<List<String>> nonEscalatedPairs = new ArrayList<>();
     for (HelpRequester helpRequester : pairedHelpRequesters) {
       DebuggingPartner helper = helpRequester.getDebuggingPartner();
       pairs.add(List.of(helper.getName(), helpRequester.getName()));
       if (helpRequester.getEscalated()) {
         escalatedPairs.add(List.of(helper.getName(), helpRequester.getName()));
+      } else {
+        nonEscalatedPairs.add(List.of(helper.getName(), helpRequester.getName()));
       }
     }
 
@@ -89,6 +92,7 @@ public class GetInfoHandler implements Route {
             openDBPs,
             pairs,
             escalatedPairs,
+            nonEscalatedPairs,
             helpedNames)
         .serialize();
   }
@@ -172,6 +176,7 @@ public class GetInfoHandler implements Route {
    * @param openDBPs list of String of free DebuggingPartners
    * @param pairs nested list of String of pairs (DP first, then HR)
    * @param escalatedPairs nested list of String of escalated pairs (DP first, then HR)
+   * @param escalatedPairs nested list of String of non-escalated pairs (DP first, then HR)
    * @param helpedNames list of String of helped HelpRequesters
    */
   public record AllInfoSuccessResponse(
@@ -181,6 +186,7 @@ public class GetInfoHandler implements Route {
       List<String> openDBPs,
       List<List<String>> pairs,
       List<List<String>> escalatedPairs,
+      List<List<String>> nonEscalatedPairs,
       List<String> helpedNames) {
     public AllInfoSuccessResponse(
         String message,
@@ -188,8 +194,17 @@ public class GetInfoHandler implements Route {
         List<String> openDBPs,
         List<List<String>> pairs,
         List<List<String>> escalatedPairs,
+        List<List<String>> nonEscalatedPairs,
         List<String> helpedNames) {
-      this("success", message, waitingHRQs, openDBPs, pairs, escalatedPairs, helpedNames);
+      this(
+          "success",
+          message,
+          waitingHRQs,
+          openDBPs,
+          pairs,
+          escalatedPairs,
+          nonEscalatedPairs,
+          helpedNames);
     }
 
     String serialize() {
