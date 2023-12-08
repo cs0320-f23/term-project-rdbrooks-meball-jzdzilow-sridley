@@ -10,6 +10,7 @@ public class SessionState {
   private boolean running;
   private String beginTime;
   private String endTime;
+  private String answersFileName;
 
   /**
    * Constructor for the SessionState class
@@ -18,6 +19,18 @@ public class SessionState {
    */
   public SessionState(boolean running) {
     this.running = running;
+    this.answersFileName = "data/debugging-process-answers.csv";
+  }
+
+  /**
+   * Constructor for the SessionState class
+   *
+   * @param running boolean representing value of running field
+   * @param answersFileName String representing name of file to write answers to (if not default)
+   */
+  public SessionState(boolean running, String answersFileName) {
+    this.running = running;
+    this.answersFileName = answersFileName;
   }
 
   /**
@@ -72,5 +85,14 @@ public class SessionState {
    */
   public String getEndTime() {
     return endTime;
+  }
+
+  /**
+   * Getter for the answersFileName
+   *
+   * @return String representing the answersFileName field
+   */
+  public String getAnswersFileName() {
+    return answersFileName;
   }
 }
