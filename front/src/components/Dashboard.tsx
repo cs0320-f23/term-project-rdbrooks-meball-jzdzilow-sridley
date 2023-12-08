@@ -108,6 +108,8 @@ const Dashboard = () => {
 
   /* ---------------------------- get info for instructors ------------------------------------*/
 
+  // NEED TO KNOW IF SESSION STARTED BY CHECKING IF SUCCESS OR BAD REQUEST
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -115,26 +117,19 @@ const Dashboard = () => {
           .then((response) => response.json())
           .then((data) => {
             console.log(data);
+
+            setUnpairedDP(data.openDBPs);
             console.log(data.openDBPs);
+
+            setUnpairedHR(data.waitingHRQs);
             console.log(data.waitingHRQs);
+
+            setPairedStudents(data.pairs);
             console.log(data.pairs);
+
+            setEscalatedPairs(data.escalatedPairs);
             console.log(data.escalatedPairs);
           });
-        //const result = await getInfoResponse.json();
-
-        // setUnpairedDP(result.openDBQs);
-        //console.log(result.openDBQ); // how do I access
-        // setUnpairedHR(result.waitingHRQs);
-        //console.log(result.waitingHRQs);
-        //setPairedStudents(result.pairs);
-        //console.log(result.pairs);
-        //setEscalatedPairs(result.escalatedPairs);
-        //console.log(result.escalatedPairs);
-
-        /*console.log(unpairedDP);
-        console.log(unpairedHR);
-        console.log(pairedStudents);
-        console.log(escalatedPairs);*/
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -145,6 +140,7 @@ const Dashboard = () => {
 
     // Fetch data every 5 seconds (adjust the interval as needed)
     const intervalId = setInterval(fetchData, 5000);
+    return () => clearInterval(intervalId);
   }, []);
 
   /* ---------------------------- end of get info for instructors ------------------------------*/
@@ -233,43 +229,48 @@ const Dashboard = () => {
       console.error("ERROR: " + error);
       // Handle errors is needed
     }
+  }; // TO DO - bring everybody back to login page when session ended
+
+  // need to determine how to get user information
+  const handleRemove = (name: string, email: string) => async () => {
+    return fetch(
+      "http://localhost:3333/debuggingPartnerDone?name=" +
+        name +
+        "&email=" +
+        email +
+        "&record=no"
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        return data["message"];
+      })
+      .catch((e) => {
+        return "ERROR: " + e;
+      });
   };
 
-  // will need information about users that it is associated with as right now taking from current user
-  /*const handleRemove = async () => {
-    return fetch(
-      "http://localhost:3333/debuggingPartnerDone?name=" +
-        userSession.user?.name +
-        "&email=" +
-        userSession.user?.email +
-        "&record=no"
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        return data["message"];
-      })
-      .catch((e) => {
-        return "ERROR: " + e;
-      });
-  };*/
-
-  // will need information about users that it is associated with as right now taking from current user
-  /*const hanldeRematchFlag = async () => {
-    return fetch(
-      "http://localhost:3333/debuggingPartnerDone?name=" +
-        userSession.user?.name +
-        "&email=" +
-        userSession.user?.email +
-        "&record=no"
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        return data["message"];
-      })
-      .catch((e) => {
-        return "ERROR: " + e;
-      });
-  };*/
+  // need to determine how to get user information
+  const hanldeRematchFlag =
+    (HRname: string, HRemail: string, DPname: string, DPemail: string) =>
+    async () => {
+      return fetch(
+        "http://localhost:3333/flagAndRematch?helpRequesterName=" +
+          HRname +
+          "&helpRequesterEmail=" +
+          HRemail +
+          "&debuggingPartnerName=" +
+          DPname +
+          "&debuggingPartnerEmail=" +
+          DPemail
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          return data["message"];
+        })
+        .catch((e) => {
+          return "ERROR: " + e;
+        });
+    };
 
   /* ----------------------- end of handlers / below rendering ---------------------------*/
 
@@ -324,7 +325,37 @@ const Dashboard = () => {
             <button onClick={handleStart}>Start Session</button>
             <button onClick={handleEnd}>End Session</button>
 
-            <p>instructor content here and julia will make this pretty :</p>
+            {unpairedDP &&
+              unpairedDP.length > 0 &&
+              unpairedDP.map((partner, index) => (
+                <div key={index}>
+                  <p>Name: {partner[0]}</p>
+                  <button onClick={handleRemove(partner[0], partner[1])}>
+                    Remove
+                  </button>
+                </div>
+              ))}
+
+            {/*pairedStudents.map((pair, index) => (
+              <div>
+                <p>
+                  Name: {pair[0][0]}, Name: {pair[1][0]}
+                </p>
+                <button
+                  onClick={hanldeRematchFlag(
+                    pair[1][0],
+                    pair[1][1],
+                    pair[0][0],
+                    pair[0][1]
+                  )}
+                >
+                  Rematch and Flag
+                </button>
+              </div>
+                  ))*/}
+
+            {/* need to get pairs info*/}
+            <p>julia will make this pretty!</p>
           </div>
         );
       case UserRole.DebuggingPartner:
