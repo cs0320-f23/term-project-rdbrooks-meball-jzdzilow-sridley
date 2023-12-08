@@ -54,7 +54,7 @@ public class GetInfoHandler implements Route {
     List<HelpRequester> waitingHelpRequesters = helpRequesterQueue.getNeedHelpList();
     List<List<String>> waitingHRQs = new ArrayList<>();
     for (HelpRequester helpRequester : waitingHelpRequesters) {
-      waitingHRQs.add(List.of(helpRequester.getName(), helpRequester.getEmail()));
+      waitingHRQs.add(List.of(helpRequester.getName(), helpRequester.getEmail(), helpRequester.getJoinedTime()));
     }
 
     List<HelpRequester> pairedHelpRequesters = helpRequesterQueue.getGettingHelpList();
@@ -65,13 +65,13 @@ public class GetInfoHandler implements Route {
     for (HelpRequester helpRequester : pairedHelpRequesters) {
       DebuggingPartner helper = helpRequester.getDebuggingPartner();
       pairs.add(List.of(List.of(helper.getName(), helper.getEmail()),List.of(helpRequester.getName(),
-          helpRequester.getEmail())));
+          helpRequester.getEmail()), List.of(helper.getPairedAtTime())));
       if (helpRequester.getEscalated()) {
         escalatedPairs.add(List.of(List.of(helper.getName(),helper.getEmail()), List.of(helpRequester.getName(),
-            helpRequester.getEmail())));
+            helpRequester.getEmail()), List.of(helper.getPairedAtTime())));
       } else {
         nonEscalatedPairs.add(List.of(List.of(helper.getName(), helper.getEmail()), List.of(helpRequester.getName(),
-            helpRequester.getEmail())));
+            helpRequester.getEmail()), List.of(helper.getPairedAtTime())));
       }
     }
 
@@ -80,14 +80,14 @@ public class GetInfoHandler implements Route {
     List<List<String>> openDBPs = new ArrayList<>();
     for (DebuggingPartner debuggingPartner : allDebuggingPartners) {
       if (debuggingPartner.isFree()) {
-        openDBPs.add(List.of(debuggingPartner.getName(), debuggingPartner.getEmail()));
+        openDBPs.add(List.of(debuggingPartner.getName(), debuggingPartner.getEmail(), debuggingPartner.getJoinedTime()));
       }
     }
 
     List<HelpRequester> helped = helpRequesterQueue.getHelpedList();
     List<List<String>> helpedNames = new ArrayList<>();
     for (HelpRequester helpRequester : helped) {
-      helpedNames.add(List.of(helpRequester.getName(), helpRequester.getEmail()));
+      helpedNames.add(List.of(helpRequester.getName(), helpRequester.getEmail(), helpRequester.getJoinedTime()));
     }
 
     return new AllInfoSuccessResponse(
