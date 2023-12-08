@@ -22,10 +22,11 @@ const Dashboard = () => {
   );
 
   // get info will continuously update this information
-  const [unpairedDP, setUnpairedDP] = useState([[]]);
-  const [unpairedHR, setUnpairedHR] = useState([[]]);
-  const [pairedStudents, setPairedStudents] = useState([[[]]]);
-  const [escalatedPairs, setEscalatedPairs] = useState([[[]]]);
+  const [unpairedDP, setUnpairedDP] = useState([]);
+  const [unpairedHR, setUnpairedHR] = useState([]);
+  const [pairedStudents, setPairedStudents] = useState([]); // ended up using just escalated and nonEscalated but left in case we need
+  const [escalatedPairs, setEscalatedPairs] = useState([]);
+  const [nonEscalatedPairs, setNonEscalatedPairs] = useState([]);
 
   //   const user = useRecoilValue(userState);
   //   const userRole = useRecoilValue(userRoleState);
@@ -108,27 +109,31 @@ const Dashboard = () => {
 
   /* ---------------------------- get info for instructors ------------------------------------*/
 
-  // NEED TO KNOW IF SESSION STARTED BY CHECKING IF SUCCESS OR BAD REQUEST
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const getInfoResponse = await fetch("http://localhost:3333/getInfo")
           .then((response) => response.json())
           .then((data) => {
-            console.log(data);
+            if (data["result"] === "success") {
+              console.log(data);
 
-            setUnpairedDP(data.openDBPs);
-            console.log(data.openDBPs);
-
-            setUnpairedHR(data.waitingHRQs);
-            console.log(data.waitingHRQs);
-
-            setPairedStudents(data.pairs);
-            console.log(data.pairs);
-
-            setEscalatedPairs(data.escalatedPairs);
-            console.log(data.escalatedPairs);
+              setUnpairedDP(data.openDBPs);
+              setUnpairedHR(data.waitingHRQs);
+              setPairedStudents(data.pairs);
+              setEscalatedPairs(data.escalatedPairs);
+              setNonEscalatedPairs(data.nonEscalatedPairs);
+            }
+            if (
+              data["result"] === "error_bad_request" &&
+              data["error_message"] === "No session is running."
+            ) {
+              setUnpairedDP([]);
+              setUnpairedHR([]);
+              setPairedStudents([]);
+              setEscalatedPairs([]);
+              setNonEscalatedPairs([]);
+            }
           });
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -231,7 +236,6 @@ const Dashboard = () => {
     }
   }; // TO DO - bring everybody back to login page when session ended
 
-  // need to determine how to get user information
   const handleRemove = (name: string, email: string) => async () => {
     return fetch(
       "http://localhost:3333/debuggingPartnerDone?name=" +
@@ -324,35 +328,69 @@ const Dashboard = () => {
           <div>
             <button onClick={handleStart}>Start Session</button>
             <button onClick={handleEnd}>End Session</button>
-
+            <p>Debugging Partners:</p>
             {unpairedDP &&
               unpairedDP.length > 0 &&
               unpairedDP.map((partner, index) => (
                 <div key={index}>
-                  <p>Name: {partner[0]}</p>
-                  <button onClick={handleRemove(partner[0], partner[1])}>
-                    Remove
-                  </button>
+                  <p>
+                    {partner[0]}
+                    <button onClick={handleRemove(partner[0], partner[1])}>
+                      Remove
+                    </button>
+                  </p>
+                </div>
+              ))}
+            <p>Help Requesters:</p>
+            {unpairedHR &&
+              unpairedHR.length > 0 &&
+              unpairedHR.map((partner, index) => (
+                <div key={index}>
+                  <p>{partner[0]}</p>
                 </div>
               ))}
 
-            {/*pairedStudents.map((pair, index) => (
-              <div>
-                <p>
-                  Name: {pair[0][0]}, Name: {pair[1][0]}
-                </p>
-                <button
-                  onClick={hanldeRematchFlag(
-                    pair[1][0],
-                    pair[1][1],
-                    pair[0][0],
-                    pair[0][1]
-                  )}
-                >
-                  Rematch and Flag
-                </button>
-              </div>
-                  ))*/}
+            <p>Escalated Pairs:</p>
+            {escalatedPairs &&
+              escalatedPairs.length > 0 &&
+              escalatedPairs.map((pair, index) => (
+                <div>
+                  <p>
+                    Escalated! {pair[0][0]} and {pair[1][0]}
+                    <button
+                      onClick={hanldeRematchFlag(
+                        pair[1][0],
+                        pair[1][1],
+                        pair[0][0],
+                        pair[0][1]
+                      )}
+                    >
+                      Rematch and Flag
+                    </button>
+                  </p>
+                </div>
+              ))}
+
+            <p>Non-Escalated Pairs:</p>
+            {nonEscalatedPairs &&
+              nonEscalatedPairs.length > 0 &&
+              nonEscalatedPairs.map((pair, index) => (
+                <div>
+                  <p>
+                    Name: {pair[0][0]}, Name: {pair[1][0]}
+                    <button
+                      onClick={hanldeRematchFlag(
+                        pair[1][0],
+                        pair[1][1],
+                        pair[0][0],
+                        pair[0][1]
+                      )}
+                    >
+                      Rematch and Flag
+                    </button>
+                  </p>
+                </div>
+              ))}
 
             {/* need to get pairs info*/}
             <p>julia will make this pretty!</p>
