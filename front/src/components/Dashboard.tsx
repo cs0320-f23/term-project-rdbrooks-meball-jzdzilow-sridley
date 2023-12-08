@@ -20,6 +20,14 @@ const Dashboard = () => {
   const [fullTimeRemaining, setFullTimeRemaining] = useState(
     calculateFullTimeRemaining()
   );
+
+  // get info will continuously update this information
+  const [unpairedDP, setUnpairedDP] = useState([]);
+  const [unpairedHR, setUnpairedHR] = useState([]);
+  const [pairedStudents, setPairedStudents] = useState([]); // ended up using just escalated and nonEscalated but left in case we need
+  const [escalatedPairs, setEscalatedPairs] = useState([]);
+  const [nonEscalatedPairs, setNonEscalatedPairs] = useState([]);
+
   //   const user = useRecoilValue(userState);
   //   const userRole = useRecoilValue(userRoleState);
 
@@ -99,6 +107,49 @@ const Dashboard = () => {
 
   /* ---------------------------- end of timer content ------------------------------------*/
 
+  /* ---------------------------- get info for instructors ------------------------------------*/
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const getInfoResponse = await fetch("http://localhost:3333/getInfo")
+          .then((response) => response.json())
+          .then((data) => {
+            if (data["result"] === "success") {
+              console.log(data);
+
+              setUnpairedDP(data.openDBPs);
+              setUnpairedHR(data.waitingHRQs);
+              setPairedStudents(data.pairs);
+              setEscalatedPairs(data.escalatedPairs);
+              setNonEscalatedPairs(data.nonEscalatedPairs);
+            }
+            if (
+              data["result"] === "error_bad_request" &&
+              data["error_message"] === "No session is running."
+            ) {
+              setUnpairedDP([]);
+              setUnpairedHR([]);
+              setPairedStudents([]);
+              setEscalatedPairs([]);
+              setNonEscalatedPairs([]);
+            }
+          });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    // fetches data initally
+    fetchData();
+
+    // Fetch data every 5 seconds (adjust the interval as needed)
+    const intervalId = setInterval(fetchData, 5000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  /* ---------------------------- end of get info for instructors ------------------------------*/
+
   const openResourcesWebsite = () => {
     const url: string = "https://hackmd.io/@brown-csci0320/BJKCtyxxs/";
     window.open(url, "_blank");
@@ -106,7 +157,7 @@ const Dashboard = () => {
 
   /* ---------------------------------- handlers -----------------------------------------*/
 
-  const handleSubmit = async () => {
+  const handleFormSubmit = async () => {
     if (bugCategory === "" || debuggingProcess === "") {
       return alert("Bug category and debugging process inputs required!");
     }
@@ -167,6 +218,64 @@ const Dashboard = () => {
     setUserSession({ user: null, role: UserRole.NoneSelected, time: null });
   };
 
+  const handleStart = async () => {
+    try {
+      await fetch("http://localhost:3333/session?command=begin");
+    } catch (error) {
+      console.error("ERROR: " + error);
+      // Handle errors is needed
+    }
+  };
+
+  const handleEnd = async () => {
+    try {
+      await fetch("http://localhost:3333/session?command=end");
+    } catch (error) {
+      console.error("ERROR: " + error);
+      // Handle errors is needed
+    }
+  }; // TO DO - bring everybody back to login page when session ended
+
+  const handleRemove = (name: string, email: string) => async () => {
+    return fetch(
+      "http://localhost:3333/debuggingPartnerDone?name=" +
+        name +
+        "&email=" +
+        email +
+        "&record=no"
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        return data["message"];
+      })
+      .catch((e) => {
+        return "ERROR: " + e;
+      });
+  };
+
+  // need to determine how to get user information
+  const hanldeRematchFlag =
+    (HRname: string, HRemail: string, DPname: string, DPemail: string) =>
+    async () => {
+      return fetch(
+        "http://localhost:3333/flagAndRematch?helpRequesterName=" +
+          HRname +
+          "&helpRequesterEmail=" +
+          HRemail +
+          "&debuggingPartnerName=" +
+          DPname +
+          "&debuggingPartnerEmail=" +
+          DPemail
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          return data["message"];
+        })
+        .catch((e) => {
+          return "ERROR: " + e;
+        });
+    };
+
   /* ----------------------- end of handlers / below rendering ---------------------------*/
 
   const renderHeaderBasedOnRole = (role: UserRole) => {
@@ -215,7 +324,78 @@ const Dashboard = () => {
   const renderContentBasedOnRole = (role: UserRole) => {
     switch (role) {
       case UserRole.Instructor:
-        return <p>instructor content here.</p>;
+        return (
+          <div>
+            <button onClick={handleStart}>Start Session</button>
+            <button onClick={handleEnd}>End Session</button>
+            <p>Debugging Partners:</p>
+            {unpairedDP &&
+              unpairedDP.length > 0 &&
+              unpairedDP.map((partner, index) => (
+                <div key={index}>
+                  <p>
+                    {partner[0]}
+                    <button onClick={handleRemove(partner[0], partner[1])}>
+                      Remove
+                    </button>
+                  </p>
+                </div>
+              ))}
+            <p>Help Requesters:</p>
+            {unpairedHR &&
+              unpairedHR.length > 0 &&
+              unpairedHR.map((partner, index) => (
+                <div key={index}>
+                  <p>{partner[0]}</p>
+                </div>
+              ))}
+
+            <p>Escalated Pairs:</p>
+            {escalatedPairs &&
+              escalatedPairs.length > 0 &&
+              escalatedPairs.map((pair, index) => (
+                <div>
+                  <p>
+                    Escalated! {pair[0][0]} and {pair[1][0]}
+                    <button
+                      onClick={hanldeRematchFlag(
+                        pair[1][0],
+                        pair[1][1],
+                        pair[0][0],
+                        pair[0][1]
+                      )}
+                    >
+                      Rematch and Flag
+                    </button>
+                  </p>
+                </div>
+              ))}
+
+            <p>Non-Escalated Pairs:</p>
+            {nonEscalatedPairs &&
+              nonEscalatedPairs.length > 0 &&
+              nonEscalatedPairs.map((pair, index) => (
+                <div>
+                  <p>
+                    Name: {pair[0][0]}, Name: {pair[1][0]}
+                    <button
+                      onClick={hanldeRematchFlag(
+                        pair[1][0],
+                        pair[1][1],
+                        pair[0][0],
+                        pair[0][1]
+                      )}
+                    >
+                      Rematch and Flag
+                    </button>
+                  </p>
+                </div>
+              ))}
+
+            {/* need to get pairs info*/}
+            <p>julia will make this pretty!</p>
+          </div>
+        );
       case UserRole.DebuggingPartner:
         return (
           <div className="debugging-partner-content">
@@ -258,7 +438,7 @@ const Dashboard = () => {
                   onChange={(e) => setDebuggingProcess(e.target.value)}
                 />
               </div>
-              <button className="submit-button" onClick={handleSubmit}>
+              <button className="submit-button" onClick={handleFormSubmit}>
                 Submit!
               </button>
             </div>
