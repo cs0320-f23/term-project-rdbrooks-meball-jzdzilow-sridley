@@ -10,8 +10,8 @@ import spark.Response;
 import spark.Route;
 
 /**
- * This class is the SubmitDebuggingQuestionsHandler, which handles and records submissions to
- * the debugging partner questions, by default recording them in debugging-process-answers.csv
+ * This class is the SubmitDebuggingQuestionsHandler, which handles and records submissions to the
+ * debugging partner questions, by default recording them in debugging-process-answers.csv
  *
  * @author sarahridley juliazdzilowska rachelbrooks meganball
  * @version 1.0
@@ -22,6 +22,7 @@ public class SubmitDebuggingQuestionsHandler implements Route {
 
   /**
    * Constructor for the SubmitDebuggingQuestionsHandler class
+   *
    * @param sessionState SessionState managing info about the running session
    */
   public SubmitDebuggingQuestionsHandler(SessionState sessionState) {
@@ -48,37 +49,54 @@ public class SubmitDebuggingQuestionsHandler implements Route {
     String debuggingProcess = request.queryParams("debuggingProcess");
     if (helpRequesterName == null) {
       return new FailureResponse(
-          "error_bad_request", "Missing required parameter: helpRequesterName")
+              "error_bad_request", "Missing required parameter: helpRequesterName")
           .serialize();
     } else if (helpRequesterEmail == null) {
       return new FailureResponse(
-          "error_bad_request", "Missing required parameter: helpRequesterEmail")
+              "error_bad_request", "Missing required parameter: helpRequesterEmail")
           .serialize();
     } else if (debuggingPartnerName == null) {
       return new FailureResponse(
-          "error_bad_request", "Missing required parameter: debuggingPartnerName")
+              "error_bad_request", "Missing required parameter: debuggingPartnerName")
           .serialize();
     } else if (debuggingPartnerEmail == null) {
       return new FailureResponse(
-          "error_bad_request", "Missing required parameter: debuggingPartnerEmail")
+              "error_bad_request", "Missing required parameter: debuggingPartnerEmail")
           .serialize();
     } else if (bugCategory == null) {
-      return new FailureResponse(
-          "error_bad_request", "Missing required parameter: bugCategory")
+      return new FailureResponse("error_bad_request", "Missing required parameter: bugCategory")
           .serialize();
     } else if (debuggingProcess == null) {
       return new FailureResponse(
-          "error_bad_request", "Missing required parameter: debuggingProcess")
+              "error_bad_request", "Missing required parameter: debuggingProcess")
           .serialize();
     } else {
       FileWriter writer = new FileWriter(sessionState.getAnswersFileName(), true);
-      String toWrite = helpRequesterName + ", " + helpRequesterEmail + ", " + debuggingPartnerName +
-          ", " + debuggingPartnerEmail + ", " + sessionState.getBeginTime() + ", " +
-          Utils.simpleTime() + ", \"" + bugCategory + "\", \"" + debuggingProcess + "\"";
+      String toWrite =
+          helpRequesterName
+              + ", "
+              + helpRequesterEmail
+              + ", "
+              + debuggingPartnerName
+              + ", "
+              + debuggingPartnerEmail
+              + ", "
+              + sessionState.getBeginTime()
+              + ", "
+              + Utils.simpleTime()
+              + ", \""
+              + bugCategory
+              + "\", \""
+              + debuggingProcess
+              + "\"";
       writer.write(toWrite);
       writer.close();
-      return new SuccessResponse("Debugging questions recorded for Debugging Partner "
-          + debuggingPartnerName + " and Help Requester " + helpRequesterName).serialize();
+      return new SuccessResponse(
+              "Debugging questions recorded for Debugging Partner "
+                  + debuggingPartnerName
+                  + " and Help Requester "
+                  + helpRequesterName)
+          .serialize();
     }
   }
 }

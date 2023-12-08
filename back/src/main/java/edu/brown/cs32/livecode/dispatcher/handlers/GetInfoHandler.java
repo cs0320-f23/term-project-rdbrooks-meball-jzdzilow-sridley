@@ -196,7 +196,15 @@ public class GetInfoHandler implements Route {
         List<List<String>> escalatedPairs,
         List<List<String>> nonEscalatedPairs,
         List<String> helpedNames) {
-      this("success", message, waitingHRQs, openDBPs, pairs, escalatedPairs, nonEscalatedPairs, helpedNames);
+      this(
+          "success",
+          message,
+          waitingHRQs,
+          openDBPs,
+          pairs,
+          escalatedPairs,
+          nonEscalatedPairs,
+          helpedNames);
     }
 
     String serialize() {
