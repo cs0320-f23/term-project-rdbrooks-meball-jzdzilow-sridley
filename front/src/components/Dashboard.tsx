@@ -341,14 +341,14 @@ const Dashboard = () => {
     return (
       <div className="instructor-container">
         <div className="unpaired-students-container">
-          <div className="general-title" style={{ marginBottom: "20px" }}>
+          <div className="general-title">
             <b>Debugging Partners:</b>
           </div>
-          <div className="list-debugging">
+          <div className="list-debugging" style={{ height: "95px" }}>
             {unpairedDP && unpairedDP.length > 0 ? (
               unpairedDP.map((partner, index) => (
                 <div key={index} className="single-debugging">
-                  <p style={{ marginBottom: "10px" }}>
+                  <p style={{ marginBottom: "8px" }}>
                     {index + 1}. {partner[0]}
                   </p>
                   <button onClick={() => handleRemove(partner[0], partner[1])}>
@@ -359,9 +359,10 @@ const Dashboard = () => {
             ) : (
               <div
                 style={{
-                  display: "flex",
                   marginBottom: "10px",
                   color: "darkred",
+                  display: "flex",
+                  alignItems: "center",
                   justifyContent: "center",
                 }}
               >
@@ -369,20 +370,16 @@ const Dashboard = () => {
               </div>
             )}
           </div>
-          <div className="general-title" style={{ marginBottom: "30px" }}>
+          <div className="general-title">
             <b>Help Requesters:</b>
           </div>{" "}
-          <div className="help-requester-list" style={{ width: "100%" }}>
+          <div className="list-debugging">
             {unpairedHR && unpairedHR.length > 0 ? (
               unpairedHR.map((partner, index) => (
-                <div
-                  key={index}
-                  style={{
-                    width: "100%",
-                    marginBottom: "20px",
-                  }}
-                >
-                  {index + 1}. {partner[0]}
+                <div key={index} className="single-debugging">
+                  <p style={{ marginBottom: "5px" }}>
+                    {index + 1}. {partner[0]}
+                  </p>
                 </div>
               ))
             ) : (
@@ -393,7 +390,6 @@ const Dashboard = () => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  marginLeft: "-80px",
                 }}
               >
                 None in queue!
@@ -402,14 +398,16 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="paired-students-container">
-          <div className="general-title" style={{ marginBottom: "20px" }}>
+          <div className="general-title">
             <b>Escalated Pairs:</b>
           </div>{" "}
-          {escalatedPairs && escalatedPairs.length > 0 ? (
-            escalatedPairs.map((pair, index) => (
-              <div className="single-pair">
-                {index + 1}. {pair[0][0]} & {pair[1][0]}
-                <div className="buttons">
+          <div className="list-debugging" style={{ height: "95px" }}>
+            {escalatedPairs && escalatedPairs.length > 0 ? (
+              escalatedPairs.map((pair, index) => (
+                <div key={index} className="single-debugging">
+                  <p style={{ marginBottom: "5px" }}>
+                    {index + 1}. {pair[0][0]} & {pair[1][0]}
+                  </p>
                   <button
                     onClick={hanldeRematchFlag(
                       pair[1][0],
@@ -421,21 +419,29 @@ const Dashboard = () => {
                     Rematch and Flag
                   </button>
                 </div>
+              ))
+            ) : (
+              <div
+                style={{
+                  color: "darkred",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                None yet!
               </div>
-            ))
-          ) : (
-            <div style={{ marginBottom: "10px", color: "darkred" }}>
-              None yet!
-            </div>
-          )}
-          <div className="general-title" style={{ marginBottom: "30px" }}>
+            )}
+          </div>
+          <div className="general-title">
             <b>Non-Escalated Pairs:</b>
           </div>{" "}
-          {nonEscalatedPairs && nonEscalatedPairs.length > 0 ? (
-            nonEscalatedPairs.map((pair, index) => (
-              <div className="single-pair">
-                {index + 1}. {pair[0][0]} & {pair[1][0]}
-                <div className="buttons">
+          <div className="list-debugging">
+            {nonEscalatedPairs && nonEscalatedPairs.length > 0 ? (
+              nonEscalatedPairs.map((pair, index) => (
+                <div key={index} className="single-debugging">
+                  <p style={{ marginBottom: "8px" }}>
+                    {index + 1}. {pair[0][0]} & {pair[1][0]}
+                  </p>
                   <button
                     onClick={hanldeRematchFlag(
                       pair[1][0],
@@ -447,13 +453,21 @@ const Dashboard = () => {
                     Rematch and Flag
                   </button>
                 </div>
+              ))
+            ) : (
+              <div
+                style={{
+                  marginBottom: "10px",
+                  color: "darkred",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                None yet!
               </div>
-            ))
-          ) : (
-            <div style={{ marginBottom: "10px", color: "darkred" }}>
-              None yet!
-            </div>
-          )}
+            )}
+          </div>
         </div>
         {/* need to get pairs info*/}
       </div>

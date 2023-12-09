@@ -407,6 +407,7 @@
   background-color: white;
   font-size: 20px;
   margin-top: 10px;
+  margin-bottom: 15px;
 }
 
 .paired-students-container {
@@ -440,7 +441,7 @@
   width: 200px;
   border: none;
   outline: none;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
   background: #e9e9ea;
   color: #333;
   border-radius: 40px;
@@ -465,22 +466,23 @@
   flex-direction: column;
 }
 
-.help-requester-list {
-  margin-left: 80px;
-}
-
 .list-debugging {
   margin-bottom: 10px;
   width: 80%;
+  height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .single-debugging {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-evenly;
 }
 
 .single-debugging button {
+  margin-top: 8px;
   width: 60%;
 }
