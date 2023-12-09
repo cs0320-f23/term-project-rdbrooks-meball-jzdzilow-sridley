@@ -344,18 +344,16 @@ const Dashboard = () => {
           <div className="general-title" style={{ marginBottom: "20px" }}>
             <b>Debugging Partners:</b>
           </div>
-          <div className="listhere" style={{ width: "100%" }}>
+          <div className="list-debugging">
             {unpairedDP && unpairedDP.length > 0 ? (
               unpairedDP.map((partner, index) => (
-                <div key={index} style={{ width: "100%", marginLeft: "60px" }}>
+                <div key={index} className="single-debugging">
                   <p style={{ marginBottom: "10px" }}>
                     {index + 1}. {partner[0]}
-                    <button
-                      onClick={() => handleRemove(partner[0], partner[1])}
-                    >
-                      Remove
-                    </button>
                   </p>
+                  <button onClick={() => handleRemove(partner[0], partner[1])}>
+                    Remove
+                  </button>
                 </div>
               ))
             ) : (
@@ -390,10 +388,12 @@ const Dashboard = () => {
             ) : (
               <div
                 style={{
-                  display: "flex",
                   marginBottom: "10px",
                   color: "darkred",
+                  display: "flex",
+                  alignItems: "center",
                   justifyContent: "center",
+                  marginLeft: "-80px",
                 }}
               >
                 None in queue!
@@ -407,9 +407,9 @@ const Dashboard = () => {
           </div>{" "}
           {escalatedPairs && escalatedPairs.length > 0 ? (
             escalatedPairs.map((pair, index) => (
-              <div>
-                <p>
-                  Escalated! {pair[0][0]} and {pair[1][0]}
+              <div className="single-pair">
+                {index + 1}. {pair[0][0]} & {pair[1][0]}
+                <div className="buttons">
                   <button
                     onClick={hanldeRematchFlag(
                       pair[1][0],
@@ -420,7 +420,7 @@ const Dashboard = () => {
                   >
                     Rematch and Flag
                   </button>
-                </p>
+                </div>
               </div>
             ))
           ) : (
