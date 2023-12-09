@@ -281,7 +281,16 @@ const Dashboard = () => {
   const renderHeaderBasedOnRole = (role: UserRole) => {
     switch (role) {
       case UserRole.Instructor:
-        return <p>instructor content here.</p>;
+        return (
+          <header className="instructor-header">
+            <button className="start-button" onClick={handleStart}>
+              Start Session
+            </button>
+            <button className="end-button" onClick={handleEnd}>
+              End Session
+            </button>
+          </header>
+        );
       case UserRole.DebuggingPartner:
         return (
           <header className="user-header">
@@ -326,8 +335,6 @@ const Dashboard = () => {
       case UserRole.Instructor:
         return (
           <div>
-            <button onClick={handleStart}>Start Session</button>
-            <button onClick={handleEnd}>End Session</button>
             <p>Debugging Partners:</p>
             {unpairedDP &&
               unpairedDP.length > 0 &&
