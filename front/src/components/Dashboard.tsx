@@ -20,6 +20,7 @@ const Dashboard = () => {
   const [fullTimeRemaining, setFullTimeRemaining] = useState(
     calculateFullTimeRemaining()
   );
+  const [sessionStarted, setSessionStarted] = useState(false);
 
   // get info will continuously update this information
   const [unpairedDP, setUnpairedDP] = useState([]);
@@ -225,6 +226,7 @@ const Dashboard = () => {
       console.error("ERROR: " + error);
       // Handle errors is needed
     }
+    setSessionStarted(true);
   };
 
   const handleEnd = async () => {
@@ -234,6 +236,7 @@ const Dashboard = () => {
       console.error("ERROR: " + error);
       // Handle errors is needed
     }
+    setSessionStarted(false);
   }; // TO DO - bring everybody back to login page when session ended
 
   const handleRemove = (name: string, email: string) => async () => {
@@ -276,6 +279,7 @@ const Dashboard = () => {
         });
     };
 
+  console.log("session started" + sessionStarted);
   /* ----------------------- end of handlers / below rendering ---------------------------*/
 
   const renderHeaderBasedOnRole = (role: UserRole) => {
@@ -283,12 +287,15 @@ const Dashboard = () => {
       case UserRole.Instructor:
         return (
           <header className="instructor-header">
-            <button className="start-button" onClick={handleStart}>
-              Start Session
-            </button>
-            <button className="end-button" onClick={handleEnd}>
-              End Session
-            </button>
+            {!sessionStarted ? (
+              <button className="start-button" onClick={handleStart}>
+                Start Session
+              </button>
+            ) : (
+              <button className="end-button" onClick={handleEnd}>
+                End Session
+              </button>
+            )}
           </header>
         );
       case UserRole.DebuggingPartner:
@@ -330,79 +337,133 @@ const Dashboard = () => {
     }
   };
 
-  const renderContentBasedOnRole = (role: UserRole) => {
-    switch (role) {
-      case UserRole.Instructor:
-        return (
-          <div>
-            <p>Debugging Partners:</p>
-            {unpairedDP &&
-              unpairedDP.length > 0 &&
+  const renderInstructorContent = () => {
+    return (
+      <div className="instructor-container">
+        <div className="unpaired-students-container">
+          <div className="general-title" style={{ marginBottom: "20px" }}>
+            <b>Debugging Partners:</b>
+          </div>
+          <div className="listhere" style={{ width: "100%" }}>
+            {unpairedDP && unpairedDP.length > 0 ? (
               unpairedDP.map((partner, index) => (
-                <div key={index}>
-                  <p>
-                    {partner[0]}
-                    <button onClick={handleRemove(partner[0], partner[1])}>
+                <div key={index} style={{ width: "100%", marginLeft: "60px" }}>
+                  <p style={{ marginBottom: "10px" }}>
+                    {index + 1}. {partner[0]}
+                    <button
+                      onClick={() => handleRemove(partner[0], partner[1])}
+                    >
                       Remove
                     </button>
                   </p>
                 </div>
-              ))}
-            <p>Help Requesters:</p>
-            {unpairedHR &&
-              unpairedHR.length > 0 &&
-              unpairedHR.map((partner, index) => (
-                <div key={index}>
-                  <p>{partner[0]}</p>
-                </div>
-              ))}
-
-            <p>Escalated Pairs:</p>
-            {escalatedPairs &&
-              escalatedPairs.length > 0 &&
-              escalatedPairs.map((pair, index) => (
-                <div>
-                  <p>
-                    Escalated! {pair[0][0]} and {pair[1][0]}
-                    <button
-                      onClick={hanldeRematchFlag(
-                        pair[1][0],
-                        pair[1][1],
-                        pair[0][0],
-                        pair[0][1]
-                      )}
-                    >
-                      Rematch and Flag
-                    </button>
-                  </p>
-                </div>
-              ))}
-
-            <p>Non-Escalated Pairs:</p>
-            {nonEscalatedPairs &&
-              nonEscalatedPairs.length > 0 &&
-              nonEscalatedPairs.map((pair, index) => (
-                <div>
-                  <p>
-                    Name: {pair[0][0]}, Name: {pair[1][0]}
-                    <button
-                      onClick={hanldeRematchFlag(
-                        pair[1][0],
-                        pair[1][1],
-                        pair[0][0],
-                        pair[0][1]
-                      )}
-                    >
-                      Rematch and Flag
-                    </button>
-                  </p>
-                </div>
-              ))}
-
-            {/* need to get pairs info*/}
-            <p>julia will make this pretty!</p>
+              ))
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  marginBottom: "10px",
+                  color: "darkred",
+                  justifyContent: "center",
+                }}
+              >
+                None available!
+              </div>
+            )}
           </div>
-        );
+          <div className="general-title" style={{ marginBottom: "30px" }}>
+            <b>Help Requesters:</b>
+          </div>{" "}
+          <div className="help-requester-list" style={{ width: "100%" }}>
+            {unpairedHR && unpairedHR.length > 0 ? (
+              unpairedHR.map((partner, index) => (
+                <div
+                  key={index}
+                  style={{
+                    width: "100%",
+                    marginBottom: "20px",
+                  }}
+                >
+                  {index + 1}. {partner[0]}
+                </div>
+              ))
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  marginBottom: "10px",
+                  color: "darkred",
+                  justifyContent: "center",
+                }}
+              >
+                None in queue!
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="paired-students-container">
+          <div className="general-title" style={{ marginBottom: "20px" }}>
+            <b>Escalated Pairs:</b>
+          </div>{" "}
+          {escalatedPairs && escalatedPairs.length > 0 ? (
+            escalatedPairs.map((pair, index) => (
+              <div>
+                <p>
+                  Escalated! {pair[0][0]} and {pair[1][0]}
+                  <button
+                    onClick={hanldeRematchFlag(
+                      pair[1][0],
+                      pair[1][1],
+                      pair[0][0],
+                      pair[0][1]
+                    )}
+                  >
+                    Rematch and Flag
+                  </button>
+                </p>
+              </div>
+            ))
+          ) : (
+            <div style={{ marginBottom: "10px", color: "darkred" }}>
+              None yet!
+            </div>
+          )}
+          <div className="general-title" style={{ marginBottom: "30px" }}>
+            <b>Non-Escalated Pairs:</b>
+          </div>{" "}
+          {nonEscalatedPairs && nonEscalatedPairs.length > 0 ? (
+            nonEscalatedPairs.map((pair, index) => (
+              <div className="single-pair">
+                {index + 1}. {pair[0][0]} & {pair[1][0]}
+                <div className="buttons">
+                  <button
+                    onClick={hanldeRematchFlag(
+                      pair[1][0],
+                      pair[1][1],
+                      pair[0][0],
+                      pair[0][1]
+                    )}
+                  >
+                    Rematch and Flag
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div style={{ marginBottom: "10px", color: "darkred" }}>
+              None yet!
+            </div>
+          )}
+        </div>
+        {/* need to get pairs info*/}
+      </div>
+    );
+  };
+
+  const renderContentBasedOnRole = (role: UserRole) => {
+    switch (role) {
+      case UserRole.Instructor:
+        return renderInstructorContent();
       case UserRole.DebuggingPartner:
         return (
           <div className="debugging-partner-content">
