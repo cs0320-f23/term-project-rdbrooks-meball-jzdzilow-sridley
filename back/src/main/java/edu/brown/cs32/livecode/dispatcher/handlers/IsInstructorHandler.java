@@ -7,8 +7,8 @@ import spark.Response;
 import spark.Route;
 
 /**
- * This class is a handler to determine if a user is a TA by comparing the email of the user to
- * the emails on the CSV of TAs.
+ * This class is a handler to determine if a user is a TA by comparing the email of the user to the
+ * emails on the CSV of TAs.
  */
 public class IsInstructorHandler implements Route {
 

@@ -44,7 +44,8 @@ public class Server {
         });
 
     // parse csv of instructors (to avoid repetition everytime endpoint called)
-    List<List<String>> listInstructors = new ArrayList<>(Server.parseCsvInstructors()); // defensive copy
+    List<List<String>> listInstructors =
+        new ArrayList<>(Server.parseCsvInstructors()); // defensive copy
 
     // Setting up the handler for the GET endpoints
     Spark.get("addHelpRequester", new AddHelpRequesterHandler(helpRequesterQueue, sessionState));
@@ -106,7 +107,8 @@ public class Server {
    */
   public static List<List<String>> parseCsvInstructors() {
     try {
-      BufferedReader bufferedFile = new BufferedReader(new FileReader("./data/instructor-list.csv"));
+      BufferedReader bufferedFile =
+          new BufferedReader(new FileReader("./data/instructor-list.csv"));
       List<List<String>> parsed = new ArrayList<>();
 
       String line = bufferedFile.readLine();
