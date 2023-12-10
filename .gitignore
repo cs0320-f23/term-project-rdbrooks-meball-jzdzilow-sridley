@@ -9,6 +9,4 @@ back/.idea/
 
 # Maven
 back/target/
-back/.mvn
-back/.mvn-classpath
 back/pom.xml.bak
