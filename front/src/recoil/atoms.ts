@@ -10,7 +10,7 @@ export enum UserRole {
 
 export enum IssueType {
   Bug = "bug",
-  ConceptualQuestion = "conceptual question",
+  ConceptualQuestion = "conceptual",
   NoneSelected = "",
 }
 

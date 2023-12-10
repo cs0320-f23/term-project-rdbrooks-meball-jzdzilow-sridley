@@ -40,8 +40,6 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const setUserSession = useSetRecoilState(userSessionState);
-  //const setUser = useSetRecoilState(userState);
-  //const [userRole, setUserRole] = useRecoilState(userRoleState);
 
   const handleLoginMocked = async () => {
     const response = await fetch("http://localhost:2000/login/");
@@ -50,14 +48,12 @@ const LoginPage = () => {
 
     const user = users.find((u) => u.email === email);
     if (user) {
-      //setUser(user);
       if (user.role === "student") {
         // pass user information to the further component
         setUserSession({ user: user, role: UserRole.NoneSelected, time: null });
         return navigate("/role-selection");
       } else if (user.role === "instructor") {
         setUserSession({ user: user, role: UserRole.Instructor, time: null });
-        //setUserRole({ role: UserRole.Instructor, time: null });
         return navigate("/dashboard");
       }
     } else {
@@ -65,29 +61,31 @@ const LoginPage = () => {
     }
   };
 
-  // Initialize Firebase login and redirect to appropriate page
+  // initialize Firebase login and redirect to appropriate page
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
   const signInWithGoogle = async () => {
     try {
+      // connects to google auth
       const result = await signInWithPopup(auth, provider);
 
+      // retrieves email and name stored by google auth
       const name: string | null = result.user.displayName;
       const email: string | null = result.user.email;
-      console.log(name);
-      console.log(email);
 
       if (name == null || email == null) {
-        console.log("error: name of email is null");
+        return navigate("/failed-login");
       } else {
+        // create IUser from email and name (role will be set later)
         let user: IUser = {
           email: email,
           name: name,
           role: "",
         };
 
+        // defensive programming
         if (!user?.email.includes("brown.edu")) {
           return navigate("/failed-login");
         }
@@ -101,25 +99,29 @@ const LoginPage = () => {
           return navigate("/failed-login");
         }
 
-        //setUser(user);
         if (user.role === "student") {
+          // setting user session provides info for rest of frontend to use
           setUserSession({
             user: user,
-            role: UserRole.NoneSelected,
+            role: UserRole.NoneSelected, // students still have to select role
             time: null,
           });
           return navigate("/role-selection");
         } else if (user.role === "instructor") {
-          setUserSession({ user: user, role: UserRole.Instructor, time: null });
-          //setUserRole({ role: UserRole.Instructor, time: null });
+          setUserSession({
+            user: user,
+            role: UserRole.Instructor,
+            time: null,
+          });
           return navigate("/dashboard");
         }
       }
     } catch (error) {
-      console.log(error);
+      console.log(error); // determine what to do with errors
     }
   };
 
+  // two different displays depending on if mocked mode
   if (!mockedMode) {
     return (
       <div className="login-body">

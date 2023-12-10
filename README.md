@@ -8,11 +8,13 @@ http://localhost:3333/session?command=end → ends the session
 
 http://localhost:3333/addHelpRequester?name=_&email=_&bugType= → add a help requester by name
 
-http://localhost:3333/helpRequesterDone?name=_&email=_ → remove a help requester by name
+http://localhost:3333/helpRequesterDone?name=_&email=_&record= → remove a help requester by name
+
+http://localhost:3333/helpRequesterDone?name=_&email=_&record=no → remove a help requester by name and remove them from the list tracking attendance
 
 http://localhost:3333/addDebuggingPartner?name=_&email=_ → add a debugging partner by name
 
-http://localhost:3333/debuggingPartnerDone?name=_&email=_ → remove a debugging partner by name
+http://localhost:3333/debuggingPartnerDone?name=_&email=_&record= → remove a debugging partner by name
 
 http://localhost:3333/debuggingPartnerDone?name=_&email=_&record=no → remove a debugging partner by name and remove them from the list tracking attendance
 
@@ -27,3 +29,5 @@ http://localhost:3333/escalate?helpRequesterName=_&helpRequesterEmail=_ → esca
 http://localhost:3333/flagAndRematch?helpRequesterName=_&helpRequesterEmail=_&debuggingPartnerName=_&debuggingPartnerEmail=_ → rematch and flag debugging partner and help requester by name
 
 http://localhost:3333/isInstructor?email= → determine if a given email is considered a TA based on csv
+
+http://localhost:3333/submitDebuggingQuestions?debuggingPartnerName=_&debuggingPartnerEmail=_&helpRequesterName=_&helpRequesterEmail=_&bugCategory=_&debuggingProcess=_ → submit debugging questions
