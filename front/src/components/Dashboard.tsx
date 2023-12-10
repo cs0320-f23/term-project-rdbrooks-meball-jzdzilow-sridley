@@ -348,9 +348,12 @@ const Dashboard = () => {
             {unpairedDP && unpairedDP.length > 0 ? (
               unpairedDP.map((partner, index) => (
                 <div key={index} className="single-debugging">
-                  <p style={{ marginBottom: "8px" }}>
-                    {index + 1}. {partner[0]}
-                  </p>
+                  <div className="single-debugging-namentime">
+                    <p className="name">
+                      {index + 1}. {partner[0]}
+                    </p>
+                    <p className="time">Joined at {partner[2]}</p>
+                  </div>
                   <button onClick={() => handleRemove(partner[0], partner[1])}>
                     Remove
                   </button>
@@ -376,10 +379,17 @@ const Dashboard = () => {
           <div className="list-debugging">
             {unpairedHR && unpairedHR.length > 0 ? (
               unpairedHR.map((partner, index) => (
-                <div key={index} className="single-debugging">
-                  <p style={{ marginBottom: "5px" }}>
-                    {index + 1}. {partner[0]}
-                  </p>
+                <div
+                  key={index}
+                  className="single-debugging"
+                  style={{ display: "flex", justifyContent: "flex-start" }}
+                >
+                  <div className="single-debugging-namentime">
+                    <p className="name">
+                      {index + 1}. {partner[0]}
+                    </p>
+                    <p className="time">Joined at {partner[2]}</p>
+                  </div>
                 </div>
               ))
             ) : (
@@ -405,9 +415,12 @@ const Dashboard = () => {
             {escalatedPairs && escalatedPairs.length > 0 ? (
               escalatedPairs.map((pair, index) => (
                 <div key={index} className="single-debugging">
-                  <p style={{ marginBottom: "5px" }}>
-                    {index + 1}. {pair[0][0]} & {pair[1][0]}
-                  </p>
+                  <div className="single-debugging-namentime">
+                    <p className="name">
+                      {index + 1}. {pair[0][0]} & {pair[1][0]}
+                    </p>
+                    <p className="time">Matched at {pair[2][0]}</p>
+                  </div>
                   <button
                     onClick={hanldeRematchFlag(
                       pair[1][0],
@@ -439,9 +452,12 @@ const Dashboard = () => {
             {nonEscalatedPairs && nonEscalatedPairs.length > 0 ? (
               nonEscalatedPairs.map((pair, index) => (
                 <div key={index} className="single-debugging">
-                  <p style={{ marginBottom: "8px" }}>
-                    {index + 1}. {pair[0][0]} & {pair[1][0]}
-                  </p>
+                  <div className="single-debugging-namentime">
+                    <p className="name">
+                      {index + 1}. {pair[0][0]} & {pair[1][0]}
+                    </p>
+                    <p className="time">Matched at {pair[2][0]}</p>
+                  </div>
                   <button
                     onClick={hanldeRematchFlag(
                       pair[1][0],

@@ -407,7 +407,7 @@
   background-color: white;
   font-size: 20px;
   margin-top: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .paired-students-container {
@@ -485,4 +485,20 @@
 .single-debugging button {
   margin-top: 8px;
   width: 60%;
+}
+
+.single-debugging-namentime {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  margin-bottom: -10px;
+}
+
+.single-debugging-namentime .time {
+  font-size: 11px;
+}
+
+.single-debugging-namentime .name {
+  margin-bottom: -15px;
 }
