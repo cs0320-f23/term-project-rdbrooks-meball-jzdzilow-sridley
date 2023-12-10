@@ -33,9 +33,8 @@ public class Server {
    * @param helpRequesterQueue HelpRequesterQueue containing all HelpRequester info
    * @param debuggingPartnerQueue DebuggingPartnerQueue containing all DebuggingPartner info
    */
-  public Server(
+  public Server(HelpRequesterQueue helpRequesterQueue, DebuggingPartnerQueue debuggingPartnerQueue) {
     System.out.println("Working Directory = " + System.getProperty("user.dir"));
-      HelpRequesterQueue helpRequesterQueue, DebuggingPartnerQueue debuggingPartnerQueue) {
     this.sessionState = new SessionState(false);
     Spark.port(port);
     after(
