@@ -31,7 +31,24 @@ function getRoleFromBackend(email: string): Promise<string> {
       return data["message"];
     })
     .catch((e) => {
-      return "ERROR: " + e;
+      console.error("ERROR: " + e);
+      throw e; // TODO: what are we doing with returned errors?
+    });
+}
+
+function checkSessionStarted(): Promise<boolean> {
+  return fetch("http://localhost:3333/getInfo")
+    .then((response) => response.json())
+    .then((data) => {
+      if (data["result"] === "success") {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch((e) => {
+      console.error("ERROR: " + e);
+      throw e;
     });
 }
 
@@ -41,6 +58,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const setUserSession = useSetRecoilState(userSessionState);
 
+  // MOCKED LOGIN
   const handleLoginMocked = async () => {
     const response = await fetch("http://localhost:2000/login/");
     const data = await response.json();
@@ -49,7 +67,6 @@ const LoginPage = () => {
     const user = users.find((u) => u.email === email);
     if (user) {
       if (user.role === "student") {
-        // pass user information to the further component
         setUserSession({ user: user, role: UserRole.NoneSelected, time: null });
         return navigate("/role-selection");
       } else if (user.role === "instructor") {
@@ -100,20 +117,44 @@ const LoginPage = () => {
         }
 
         if (user.role === "student") {
-          // setting user session provides info for rest of frontend to use
-          setUserSession({
-            user: user,
-            role: UserRole.NoneSelected, // students still have to select role
-            time: null,
-          });
-          return navigate("/role-selection");
+          // if a session has not been started then create pop up
+          checkSessionStarted()
+            .then((isSessionStarted) => {
+              if (!isSessionStarted) {
+                return alert("No session has been started by an instructor.");
+              } else {
+                // setting user session provides info for rest of frontend to use
+                setUserSession({
+                  user: user,
+                  role: UserRole.NoneSelected, // students still have to select role
+                  time: null,
+                });
+                return navigate("/role-selection");
+              }
+            })
+            .catch((error) => {
+              console.error("An error occurred: " + error);
+            });
         } else if (user.role === "instructor") {
-          setUserSession({
-            user: user,
-            role: UserRole.Instructor,
-            time: null,
-          });
-          return navigate("/dashboard");
+          checkSessionStarted()
+            .then((isSessionStarted) => {
+              if (isSessionStarted) {
+                return alert(
+                  "Only one session can be held at a time and an instructor has already started a session."
+                );
+              } else {
+                // setting user session provides info for rest of frontend to use
+                setUserSession({
+                  user: user,
+                  role: UserRole.Instructor,
+                  time: null,
+                });
+                return navigate("/dashboard");
+              }
+            })
+            .catch((error) => {
+              console.error("An error occurred: " + error);
+            });
         }
       }
     } catch (error) {
