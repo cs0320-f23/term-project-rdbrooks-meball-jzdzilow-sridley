@@ -22,22 +22,13 @@ const Dashboard = () => {
   );
   const [sessionStarted, setSessionStarted] = useState(false);
 
-  // get info will continuously update this information
+  // call to get info from backend will continuously update this information
   const [unpairedDP, setUnpairedDP] = useState([]);
   const [unpairedHR, setUnpairedHR] = useState([]);
-  const [pairedStudents, setPairedStudents] = useState([]); // ended up using just escalated and nonEscalated but left in case we need
   const [escalatedPairs, setEscalatedPairs] = useState([]);
   const [nonEscalatedPairs, setNonEscalatedPairs] = useState([]);
 
-  //   const user = useRecoilValue(userState);
-  //   const userRole = useRecoilValue(userRoleState);
-
-  // useEffect(() => {
-  //   if (user === null) {
-  //     navigate("/login");
-  //   }
-  // }, [userState, userRoleState, user]);
-
+  // resets user session back to log in
   useEffect(() => {
     if (userSession.user === null) {
       setSingleSession({
@@ -85,9 +76,9 @@ const Dashboard = () => {
 
   /* -------------------------------timer content ---------------------------------------*/
 
+  // calculates time remaining for a session
   function calculateFullTimeRemaining() {
     if (userSession.time === null) {
-      /* ------------- CHECK --------------- */
       return 0;
     }
 
@@ -108,30 +99,32 @@ const Dashboard = () => {
 
   /* ---------------------------- end of timer content ------------------------------------*/
 
-  /* ---------------------------- get info for instructors ------------------------------------*/
+  /* -------------------------- get info for instructors ----------------------------------*/
 
+  /* gets information about debugging parters, help requesters and pairings from 
+  backend to update instructor page */
   useEffect(() => {
     const fetchData = async () => {
       try {
         const getInfoResponse = await fetch("http://localhost:3333/getInfo")
           .then((response) => response.json())
           .then((data) => {
+            // if successfully can get info (and thus session is running), set values appropriately
             if (data["result"] === "success") {
               console.log(data);
 
               setUnpairedDP(data.openDBPs);
               setUnpairedHR(data.waitingHRQs);
-              setPairedStudents(data.pairs);
               setEscalatedPairs(data.escalatedPairs);
               setNonEscalatedPairs(data.nonEscalatedPairs);
             }
+            // if no session is running, sets all values to empty arrays
             if (
               data["result"] === "error_bad_request" &&
               data["error_message"] === "No session is running."
             ) {
               setUnpairedDP([]);
               setUnpairedHR([]);
-              setPairedStudents([]);
               setEscalatedPairs([]);
               setNonEscalatedPairs([]);
             }
@@ -149,7 +142,7 @@ const Dashboard = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  /* ---------------------------- end of get info for instructors ------------------------------*/
+  /* -------------------------- end of get info for instructors ---------------------------*/
 
   const openResourcesWebsite = () => {
     const url: string = "https://hackmd.io/@brown-csci0320/BJKCtyxxs/";
@@ -219,26 +212,29 @@ const Dashboard = () => {
     setUserSession({ user: null, role: UserRole.NoneSelected, time: null });
   };
 
+  // starts the session by calling backend
   const handleStart = async () => {
     try {
       await fetch("http://localhost:3333/session?command=begin");
     } catch (error) {
       console.error("ERROR: " + error);
-      // Handle errors is needed
+      // TODO: Handle errors as needed
     }
     setSessionStarted(true);
   };
 
+  // ends the session by calling backend
   const handleEnd = async () => {
     try {
       await fetch("http://localhost:3333/session?command=end");
     } catch (error) {
       console.error("ERROR: " + error);
-      // Handle errors is needed
+      // TODO: Handle errors as needed
     }
     setSessionStarted(false);
-  }; // TO DO - bring everybody back to login page when session ended
+  }; // TODO: bring everybody back to login page when session ended
 
+  // removes a debugging partner from attendance (button accessible to instructors)
   const handleRemove = (name: string, email: string) => async () => {
     return fetch(
       "http://localhost:3333/debuggingPartnerDone?name=" +
@@ -253,11 +249,12 @@ const Dashboard = () => {
       })
       .catch((e) => {
         return "ERROR: " + e;
+        // TODO: Handle errors as needed
       });
   };
 
-  // need to determine how to get user information
-  const hanldeRematchFlag =
+  // will rematch the help requester and flag the debugging partner by removing from attendance
+  const handleRematchFlag =
     (HRname: string, HRemail: string, DPname: string, DPemail: string) =>
     async () => {
       return fetch(
@@ -276,6 +273,7 @@ const Dashboard = () => {
         })
         .catch((e) => {
           return "ERROR: " + e;
+          // TODO: Handle errors as needed
         });
     };
 
@@ -337,6 +335,7 @@ const Dashboard = () => {
     }
   };
 
+  // creation of instructor page
   const renderInstructorContent = () => {
     return (
       <div className="instructor-container">
@@ -345,15 +344,19 @@ const Dashboard = () => {
             <b>Debugging Partners:</b>
           </div>
           <div className="list-debugging" style={{ height: "95px" }}>
+            {/*checks if there are unpaired debugging partners to determine what to dispaly*/}
             {unpairedDP && unpairedDP.length > 0 ? (
               unpairedDP.map((partner, index) => (
                 <div key={index} className="single-debugging">
                   <div className="single-debugging-namentime">
+                    {/*displays debugging partner name*/}
                     <p className="name">
                       {index + 1}. {partner[0]}
                     </p>
+                    {/*displays join time*/}
                     <p className="time">Joined at {partner[2]}</p>
                   </div>
+                  {/*button to remove from attendance*/}
                   <button onClick={() => handleRemove(partner[0], partner[1])}>
                     Remove
                   </button>
@@ -377,6 +380,7 @@ const Dashboard = () => {
             <b>Help Requesters:</b>
           </div>{" "}
           <div className="list-debugging">
+            {/*checks if there are unpaired help requester to determine what to display*/}
             {unpairedHR && unpairedHR.length > 0 ? (
               unpairedHR.map((partner, index) => (
                 <div
@@ -385,9 +389,11 @@ const Dashboard = () => {
                   style={{ display: "flex", justifyContent: "flex-start" }}
                 >
                   <div className="single-debugging-namentime">
+                    {/*displays help requester name*/}
                     <p className="name">
                       {index + 1}. {partner[0]}
                     </p>
+                    {/*displays join time*/}
                     <p className="time">Joined at {partner[2]}</p>
                   </div>
                 </div>
@@ -412,17 +418,21 @@ const Dashboard = () => {
             <b>Escalated Pairs:</b>
           </div>{" "}
           <div className="list-debugging" style={{ height: "95px" }}>
+            {/*checks if there are escalated pairs to determine what to display*/}
             {escalatedPairs && escalatedPairs.length > 0 ? (
               escalatedPairs.map((pair, index) => (
                 <div key={index} className="single-debugging">
                   <div className="single-debugging-namentime">
+                    {/*displays names of pair*/}
                     <p className="name">
                       {index + 1}. {pair[0][0]} & {pair[1][0]}
                     </p>
+                    {/*displays time of match*/}
                     <p className="time">Matched at {pair[2][0]}</p>
                   </div>
+                  {/*button to rematch help requester and flag debugging partner*/}
                   <button
-                    onClick={hanldeRematchFlag(
+                    onClick={handleRematchFlag(
                       pair[1][0],
                       pair[1][1],
                       pair[0][0],
@@ -449,17 +459,20 @@ const Dashboard = () => {
             <b>Non-Escalated Pairs:</b>
           </div>{" "}
           <div className="list-debugging">
+            {/*checks if there are non-escalated pairs to determine what to display*/}
             {nonEscalatedPairs && nonEscalatedPairs.length > 0 ? (
               nonEscalatedPairs.map((pair, index) => (
                 <div key={index} className="single-debugging">
                   <div className="single-debugging-namentime">
+                    {/*displays names of pair*/}
                     <p className="name">
                       {index + 1}. {pair[0][0]} & {pair[1][0]}
                     </p>
+                    {/*displays time of match*/}
                     <p className="time">Matched at {pair[2][0]}</p>
                   </div>
                   <button
-                    onClick={hanldeRematchFlag(
+                    onClick={handleRematchFlag(
                       pair[1][0],
                       pair[1][1],
                       pair[0][0],
@@ -485,7 +498,6 @@ const Dashboard = () => {
             )}
           </div>
         </div>
-        {/* need to get pairs info*/}
       </div>
     );
   };
@@ -493,6 +505,7 @@ const Dashboard = () => {
   const renderContentBasedOnRole = (role: UserRole) => {
     switch (role) {
       case UserRole.Instructor:
+        // to make code easier to read put instructor content in seperate section
         return renderInstructorContent();
       case UserRole.DebuggingPartner:
         return (
@@ -575,6 +588,7 @@ const Dashboard = () => {
     }
   };
 
+  // creation of star background for the code
   return (
     <div className="body">
       <div id="stars-container">
