@@ -1,4 +1,3 @@
-// src/AppRouter.tsx
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Landing from "./Landing";
@@ -8,6 +7,7 @@ import RoleSelection from "./RoleSelection";
 import Dashboard from "./Dashboard";
 import IssueTypeSelection from "./IssueTypeSelection";
 
+// creating different components of App
 const App: React.FC = () => {
   return (
     <Router>
