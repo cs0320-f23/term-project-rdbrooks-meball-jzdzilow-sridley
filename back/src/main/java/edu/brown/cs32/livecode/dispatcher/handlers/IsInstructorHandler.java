@@ -1,5 +1,6 @@
 package edu.brown.cs32.livecode.dispatcher.handlers;
 
+import edu.brown.cs32.livecode.dispatcher.handlers.AddHelpRequesterHandler.FailureResponse;
 import edu.brown.cs32.livecode.dispatcher.handlers.AddHelpRequesterHandler.SuccessResponse;
 import java.util.List;
 import spark.Request;
@@ -22,6 +23,10 @@ public class IsInstructorHandler implements Route {
   public Object handle(Request request, Response response) throws Exception {
     // request parameter - just email since unique for every person
     String email = request.queryParams("email");
+    if (email == null) {
+      return new FailureResponse("error_bad_request", "Missing required parameter: email")
+          .serialize();
+    }
 
     // parse email to make lowercase and remove leading/trailing zeros for comparison
     String emailParsed = email.toLowerCase().trim();
