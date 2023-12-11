@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import Timer from "./Timer";
 import "../styles/nightsky.scss";
 import { IUser } from "../types/IUser";
+import { checkSessionStarted } from "./LoginPage";
 
 const Dashboard = () => {
   const [userSession, setUserSession] = useRecoilState(userSessionState);
@@ -36,6 +37,8 @@ const Dashboard = () => {
   const [pairedStudents, setPairedStudents] = useState([]); // ended up using just escalated and nonEscalated but left in case we need
   const [escalatedPairs, setEscalatedPairs] = useState([]);
   const [nonEscalatedPairs, setNonEscalatedPairs] = useState([]);
+
+  const [escalationResult, setEscalationResult] = useState("");
 
   //   const user = useRecoilValue(userState);
   //   const userRole = useRecoilValue(userRoleState);
@@ -205,9 +208,10 @@ const Dashboard = () => {
               const partnerName = data.helpRequesterName;
               const partnerEmail = data.helpRequesterEmail;
               const bugType = data.helpRequesterBug;
+              const pairedTime = data.pairedAtTime;
 
-              console.log("partnername: " + partnerName)
-        
+              console.log("partnername: " + partnerName);
+
               if (partnerName === "") {
                 setSingleSession({
                   partner: null,
@@ -215,6 +219,7 @@ const Dashboard = () => {
                 });
               }
               if (partnerName != "") {
+                setStartPairedTime(pairedTime);
                 var partner: IUser = {
                   email: partnerEmail,
                   name: partnerName,
@@ -232,8 +237,6 @@ const Dashboard = () => {
                     issueType: IssueType.ConceptualQuestion,
                   });
                 }
-                // THIS DOESN"T WORK :)
-                setStartPairedTime(new Date().getTime());
               }
             });
         }
@@ -418,10 +421,11 @@ const Dashboard = () => {
             .then((response) => response.json())
             .then((data) => {
               if (data.result === "success") {
-                setSingleSession({
-                  partner: null,
-                  issueType: IssueType.NoneSelected,
-                });
+                // SUBMITTING THE FORM DOESN"T RESET THE DEBUGGING PARTNER; ONLY "I'M DONE" BY THE HELP REQUESTER
+                // setSingleSession({
+                //   partner: null,
+                //   issueType: IssueType.NoneSelected,
+                // });
                 setBugCategory("");
                 setDebuggingProcess("");
                 console.log("success");
@@ -435,15 +439,21 @@ const Dashboard = () => {
   };
 
   const handleEscalate = async () => {
-    // THIS WILL NOT WORK RIGHT NOW BECAUSE CANNOT GET EMAIL YET
+    console.log("escalated");
     try {
-      console.log("escalated");
+      console.log(singleSession.partner?.name, singleSession.partner?.email);
       await fetch(
         "http://localhost:3333/escalate?helpRequesterName=" +
           singleSession.partner?.name +
           "&helpRequesterEmail=" +
           singleSession.partner?.email
-      );
+      ).then((response) => response.json()).then((data) => {
+        if (data.result === "success"){
+          setEscalationResult("You have been escalated")
+        } else {
+          setEscalationResult("Escalation failed")
+        }
+      });
     } catch (error) {
       console.error("ERROR: " + error);
     }
@@ -534,7 +544,7 @@ const Dashboard = () => {
         });
     };
 
-  console.log("session started" + sessionStarted);
+  console.log("session started " + sessionStarted);
 
   /* ----------------------- end of handlers / below rendering ---------------------------*/
 
@@ -605,12 +615,15 @@ const Dashboard = () => {
 
     if (singleSession.partner?.name != null) {
       return <Timer fullTimeRemaining={timeRemaining} />;
-    } else if (timeRemaining === 0) {
+      } else if (timeRemaining === 0) {
       return (
-        <button className="escalate-button" onClick={() => handleEscalate}>
-          {" "}
-          Escalate!{" "}
-        </button>
+        <div>
+          <button className="escalate-button" onClick={handleEscalate}>
+            {" "}
+            Escalate!{" "}
+          </button>
+          {escalationResult && <p>{escalationResult}</p>}
+        </div>
       );
     }
   };

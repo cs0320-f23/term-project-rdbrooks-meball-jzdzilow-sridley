@@ -36,7 +36,7 @@ function getRoleFromBackend(email: string): Promise<string> {
     });
 }
 
-function checkSessionStarted(): Promise<boolean> {
+export function checkSessionStarted(): Promise<boolean> {
   return fetch("http://localhost:3333/getInfo")
     .then((response) => response.json())
     .then((data) => {
