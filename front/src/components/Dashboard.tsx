@@ -12,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 import Timer from "./Timer";
 import "../styles/nightsky.scss";
 import { IUser } from "../types/IUser";
-import { stat } from "fs";
 
 const Dashboard = () => {
   const [userSession, setUserSession] = useRecoilState(userSessionState);
@@ -189,6 +188,7 @@ const Dashboard = () => {
 
   /* ---------------------------------- get info debuggings and help requesters -----------------------------------------*/
 
+  // get info for debugging helpers and help requesters every 5 seconds
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -203,25 +203,36 @@ const Dashboard = () => {
             .then((data) => {
               // create partner
               const partnerName = data.helpRequesterName;
-              console.log("help requester name: " + data.helpRequesterName)
-              // TO DO: Add in partner's email address and bug type
-              if (partnerName === ""){
+              const partnerEmail = data.helpRequesterEmail;
+              const bugType = data.helpRequesterBug;
+
+              console.log("partnername: " + partnerName)
+        
+              if (partnerName === "") {
                 setSingleSession({
                   partner: null,
                   issueType: IssueType.NoneSelected,
                 });
-
               }
               if (partnerName != "") {
                 var partner: IUser = {
-                  email: "tim@brown.edu",
+                  email: partnerEmail,
                   name: partnerName,
                   role: "student",
                 };
-                setSingleSession({
-                  partner: partner,
-                  issueType: IssueType.NoneSelected,
-                });
+                if (bugType === "bug") {
+                  setSingleSession({
+                    partner: partner,
+                    issueType: IssueType.Bug,
+                  });
+                }
+                if (bugType === "conceptual") {
+                  setSingleSession({
+                    partner: partner,
+                    issueType: IssueType.ConceptualQuestion,
+                  });
+                }
+                // THIS DOESN"T WORK :)
                 setStartPairedTime(new Date().getTime());
               }
             });
@@ -237,6 +248,7 @@ const Dashboard = () => {
             .then((data) => {
               console.log(data.debuggingPartnerName);
 
+              // does the help requester need access to the debugging partner's email?
               const partnerName = data.debuggingPartnerName;
               if (partnerName != "") {
                 var partner: IUser = {
@@ -260,7 +272,7 @@ const Dashboard = () => {
     // fetches data initally
     fetchUserData();
 
-    // Fetch data every 5 seconds (adjust the interval as needed)
+    // Fetches data every 5 seconds
     const intervalId = setInterval(() => fetchUserData(), 5000);
     return () => clearInterval(intervalId);
   }, []);
@@ -405,14 +417,14 @@ const Dashboard = () => {
           )
             .then((response) => response.json())
             .then((data) => {
-              if(data.result === "success"){
+              if (data.result === "success") {
                 setSingleSession({
                   partner: null,
                   issueType: IssueType.NoneSelected,
                 });
                 setBugCategory("");
                 setDebuggingProcess("");
-                console.log("success")
+                console.log("success");
               }
             });
         }
@@ -601,6 +613,7 @@ const Dashboard = () => {
         </button>
       );
     }
+  };
 
   const renderInstructorContent = () => {
     return (
@@ -876,6 +889,6 @@ const Dashboard = () => {
       </div>
     </div>
   );
-};}
+};
 
 export default Dashboard;

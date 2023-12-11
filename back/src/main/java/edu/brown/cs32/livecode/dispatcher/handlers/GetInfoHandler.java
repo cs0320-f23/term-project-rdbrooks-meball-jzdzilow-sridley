@@ -138,14 +138,25 @@ public class GetInfoHandler implements Route {
           String helpingName = "";
           if (currentlyHelping != null) {
             helpingName = currentlyHelping.getName();
+
+            return new DebuggingPartnerInfoSuccessResponse(
+                    "Debugging Partner " + targetName + " found!",
+                    helpingName,
+                    currentlyHelping.getEmail(),
+                    currentlyHelping.getBugType(),
+                    debuggingPartner)
+                    .serialize();
+          } else {
+            return new DebuggingPartnerInfoSuccessResponse(
+                    "Debugging Partner " + targetName + " found!",
+                    helpingName,
+                    "",
+                    "",
+                    debuggingPartner)
+                    .serialize();
+
           }
-          return new DebuggingPartnerInfoSuccessResponse(
-                  "Debugging Partner " + targetName + " found!",
-                  helpingName,
-                  currentlyHelping.getEmail(),
-                  currentlyHelping.getBugType(),
-                  debuggingPartner)
-              .serialize();
+
         }
       }
     } else if (role.equals("helpRequester")) {
