@@ -7,13 +7,11 @@ import { UserRole } from "../recoil/atoms";
 import { IUser } from "../types/IUser";
 
 // Used the following video for firebase authentication: https://www.youtube.com/watch?v=vDT7EnUpEoo
-// Added to import from other services
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 // Import functions needed from appropriate SDKs
 import { initializeApp } from "firebase/app";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCpEp6SMcO3hen7UKMeR-NNEy7ySSWStYI",
   authDomain: "collab-section-manager.firebaseapp.com",
@@ -24,11 +22,12 @@ const firebaseConfig = {
   measurementId: "G-1FFWDE2HTT",
 };
 
+// using login email, determine if instructor by calling backend
 function getRoleFromBackend(email: string): Promise<string> {
   return fetch("http://localhost:3333/isInstructor?email=" + email)
     .then((response) => response.json())
     .then((data) => {
-      return data["message"];
+      return data["message"]; // either student or instructor
     })
     .catch((e) => {
       console.error("ERROR: " + e);
@@ -36,6 +35,8 @@ function getRoleFromBackend(email: string): Promise<string> {
     });
 }
 
+
+// checks if session started by determining if backend call to get info successful
 export function checkSessionStarted(): Promise<boolean> {
   return fetch("http://localhost:3333/getInfo")
     .then((response) => response.json())
@@ -43,11 +44,12 @@ export function checkSessionStarted(): Promise<boolean> {
       if (data["result"] === "success") {
         return true;
       } else {
+        // error with getting info means session not successful started
         return false;
       }
     })
     .catch((e) => {
-      console.error("ERROR: " + e);
+      console.error("ERROR: " + e); // TODO: determine what to do with errors
       throw e;
     });
 }
@@ -58,7 +60,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const setUserSession = useSetRecoilState(userSessionState);
 
-  // MOCKED LOGIN
+  // MOCKED LOGIN - uses mocked data to determine user role and navigate to appropriate page
   const handleLoginMocked = async () => {
     const response = await fetch("http://localhost:2000/login/");
     const data = await response.json();
@@ -115,9 +117,8 @@ const LoginPage = () => {
           // Determine what to do with the error, handle it as needed
           return navigate("/failed-login");
         }
-
         if (user.role === "student") {
-          // if a session has not been started then create pop up
+          // if a session has not been started, then create pop up
           checkSessionStarted()
             .then((isSessionStarted) => {
               if (!isSessionStarted) {
@@ -138,6 +139,7 @@ const LoginPage = () => {
         } else if (user.role === "instructor") {
           checkSessionStarted()
             .then((isSessionStarted) => {
+              // if session already started and instructor alert that cannot join
               if (isSessionStarted) {
                 return alert(
                   "Only one session can be held at a time and an instructor has already started a session."
@@ -158,7 +160,7 @@ const LoginPage = () => {
         }
       }
     } catch (error) {
-      console.log(error); // determine what to do with errors
+      console.log(error); // TODO: determine what to do with errors
     }
   };
 
