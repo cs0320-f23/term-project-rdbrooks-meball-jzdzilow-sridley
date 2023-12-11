@@ -4,7 +4,6 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartnerQueue;
-import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequester;
 import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequesterQueue;
 import edu.brown.cs32.livecode.dispatcher.sessionState.SessionState;
 import java.io.IOException;
@@ -12,7 +11,6 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import okio.Buffer;
 import org.junit.jupiter.api.AfterEach;
@@ -21,6 +19,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spark.Spark;
 
+/**
+ * This is a testing class that tests the HelpRequesterDone class, which handles requests to the
+ * /helpRequesterDone endpoint.
+ *
+ * @author sarahridley juliazdzilowska rachelbrooks meganball
+ * @version 1.0
+ */
 public class TestHelpRequesterDoneHandler {
   private final Type mapStringObject =
       Types.newParameterizedType(Map.class, String.class, Object.class);
@@ -30,11 +35,7 @@ public class TestHelpRequesterDoneHandler {
   public void setup() {
     Moshi moshi = new Moshi.Builder().build();
     adapter = moshi.adapter(mapStringObject);
-    List<HelpRequester> helpRequesterList = new ArrayList<>();
-    HelpRequester sarah = new HelpRequester("Sarah", "sarah@gmail.com", "bug");
-    helpRequesterList.add(sarah);
-    HelpRequesterQueue helpRequesterQueue = new HelpRequesterQueue(helpRequesterList);
-    helpRequesterQueue.claimHelpRequester(sarah);
+    HelpRequesterQueue helpRequesterQueue = new HelpRequesterQueue(new ArrayList<>());
     DebuggingPartnerQueue debuggingPartnerQueue = new DebuggingPartnerQueue(new ArrayList<>());
     SessionState sessionState = new SessionState(false);
     SessionHandler sessionHandler =
