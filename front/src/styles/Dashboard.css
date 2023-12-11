@@ -50,6 +50,21 @@
   padding-right: 40px;
 }
 
+.instructor-header {
+  backdrop-filter: blur(15px);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.859);
+  box-shadow: 0 0 10px 0px rgb(0, 0, 0);
+  margin-bottom: 50px;
+  padding: 4px;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
 .join-time {
   margin-left: 30px;
 }
@@ -260,6 +275,52 @@
   color: white;
 }
 
+.start-button {
+  text-align: center;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  background: #e9e9ea;
+  color: #333;
+  border-radius: 40px;
+  font-size: 16px;
+  font-weight: 600;
+  height: 35px;
+  width: auto;
+  padding: 0px 40px 0px 40px;
+  text-decoration: none;
+  transition: 0.5s ease;
+  margin-right: 10px;
+}
+
+.start-button:hover {
+  background-color: rgb(81, 99, 67);
+  color: white;
+}
+
+.end-button {
+  text-align: center;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  background: #e9e9ea;
+  color: #333;
+  border-radius: 40px;
+  font-size: 16px;
+  font-weight: 600;
+  height: 35px;
+  width: auto;
+  padding: 0px 40px 0px 40px;
+  text-decoration: none;
+  transition: 0.5s ease;
+  margin-right: 10px;
+}
+
+.end-button:hover {
+  background-color: #3e1310;
+  color: white;
+}
+
 /* resources icon */
 .tooltip {
   position: relative;
@@ -309,4 +370,135 @@
 
 .tooltip:hover .tooltiptext {
   visibility: visible;
+}
+
+.instructor-container {
+  margin-top: -20px;
+  display: flex;
+  flex-direction: row;
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-bottom: 30px;
+}
+
+.unpaired-students-container {
+  margin-right: 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  width: 100%;
+  min-height: 350px;
+  height: max-content;
+  border-radius: 30px;
+  box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  padding-top: 30px;
+  margin-top: 30px;
+}
+
+.general-title {
+  text-align: center;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.4);
+  background-color: white;
+  font-size: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.paired-students-container {
+  margin-left: 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  width: 100%;
+  min-height: 350px;
+  height: max-content;
+  border-radius: 30px;
+  box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0;
+  padding-top: 30px;
+  margin-top: 30px;
+}
+
+.single-pair {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin-bottom: 20px;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.instructor-container button {
+  white-space: nowrap;
+  width: 200px;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+  background: #e9e9ea;
+  color: #333;
+  border-radius: 40px;
+  font-size: 16px;
+  font-weight: 600;
+  height: 30px;
+  padding: 0px 40px 0px 40px;
+  text-decoration: none;
+  transition: 0.5s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.instructor-container button:hover {
+  background-color: #1a212a;
+  color: white;
+}
+
+.names {
+  display: flex;
+  flex-direction: column;
+}
+
+.list-debugging {
+  margin-bottom: 10px;
+  width: 80%;
+  height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.single-debugging {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.single-debugging button {
+  margin-top: 8px;
+  width: 60%;
+}
+
+.single-debugging-namentime {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  margin-bottom: -10px;
+}
+
+.single-debugging-namentime .time {
+  font-size: 11px;
+}
+
+.single-debugging-namentime .name {
+  margin-bottom: -15px;
 }

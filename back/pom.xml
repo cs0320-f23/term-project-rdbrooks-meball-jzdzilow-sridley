@@ -270,7 +270,7 @@
         <artifactId>exec-maven-plugin</artifactId>
         <version>1.4.0</version>
         <configuration>
-          <mainClass>edu.brown.cs.helpRequester.main.server.Server</mainClass>
+          <mainClass>edu.brown.cs32.livecode.dispatcher.server.Server</mainClass>
           <arguments/>
         </configuration>
         <executions>
