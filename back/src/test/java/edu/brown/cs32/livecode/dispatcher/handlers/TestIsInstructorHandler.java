@@ -76,6 +76,11 @@ public class TestIsInstructorHandler {
     return clientConnection;
   }
 
+  /**
+   * Testing with no parameters
+   *
+   * @throws IOException if the request fails
+   */
   @Test
   public void testNoParams() throws IOException {
     HttpURLConnection addConnection = tryRequest("isInstructor");
@@ -87,6 +92,11 @@ public class TestIsInstructorHandler {
     addConnection.disconnect();
   }
 
+  /**
+   * Testing for student
+   *
+   * @throws IOException if request fails
+   */
   @Test
   public void testStudent() throws IOException {
     HttpURLConnection addConnection = tryRequest("isInstructor?email=sarah@gmail.com");
@@ -98,6 +108,11 @@ public class TestIsInstructorHandler {
     addConnection.disconnect();
   }
 
+  /**
+   * Testing for instructor
+   *
+   * @throws IOException if request fails
+   */
   @Test
   public void testInstructor() throws IOException {
     HttpURLConnection addConnection =
