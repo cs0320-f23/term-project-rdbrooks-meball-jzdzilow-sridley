@@ -41,10 +41,10 @@ public class TestAddDebuggingPartnerHandler {
     SessionState sessionState = new SessionState(false);
     SessionHandler sessionHandler =
         new SessionHandler(helpRequesterQueue, debuggingPartnerQueue, sessionState);
-    AddDebuggingPartnerHandler addDebuggingPartnerHandlerhandler =
+    AddDebuggingPartnerHandler addDebuggingPartnerHandler =
         new AddDebuggingPartnerHandler(debuggingPartnerQueue, sessionState);
     Spark.get("/session", sessionHandler);
-    Spark.get("/addDebuggingPartner", addDebuggingPartnerHandlerhandler);
+    Spark.get("/addDebuggingPartner", addDebuggingPartnerHandler);
     Spark.awaitInitialization();
   }
 
