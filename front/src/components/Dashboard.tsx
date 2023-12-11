@@ -28,7 +28,7 @@ const Dashboard = () => {
   const [escalatedPairs, setEscalatedPairs] = useState([]);
   const [nonEscalatedPairs, setNonEscalatedPairs] = useState([]);
 
-  // resets user session back to log in
+  // resets user session back to log in on unwanted backend interruptions
   useEffect(() => {
     if (userSession.user === null) {
       setSingleSession({
@@ -39,6 +39,46 @@ const Dashboard = () => {
       navigate("/login");
     }
   }, [userSession.user]);
+
+  // resets user session back to log in on session ended
+  useEffect(() => {
+    if (userSession.user?.role !== "instructor") {
+      const fetchData = async () => {
+        try {
+          await fetch("http://localhost:3333/getInfo")
+            .then((response) => response.json())
+            .then((data) => {
+              // if successfully can get info (and thus session is running), set values appropriately
+              if (data["result"] === "success") {
+                setSessionStarted(true);
+              }
+              // if no session is running, sets all values to empty arrays
+              if (
+                data["result"] === "error_bad_request" &&
+                data["error_message"] === "No session is running."
+              ) {
+                setSingleSession({
+                  partner: null,
+                  issueType: IssueType.NoneSelected,
+                });
+                setUserSession({
+                  user: null,
+                  role: UserRole.NoneSelected,
+                  time: null,
+                });
+              }
+            });
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      };
+      // fetches data initally
+      fetchData();
+      // Fetch data every 5 seconds
+      const intervalId = setInterval(fetchData, 5000);
+      return () => clearInterval(intervalId);
+    }
+  }, []);
 
   /* MOCKED BACKEND -------------------------------------- */
   useEffect(() => {
