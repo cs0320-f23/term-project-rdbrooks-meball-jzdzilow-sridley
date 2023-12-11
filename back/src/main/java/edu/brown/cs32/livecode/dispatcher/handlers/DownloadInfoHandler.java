@@ -52,24 +52,24 @@ public class DownloadInfoHandler implements Route {
     }
     if (info.equals("all")) {
       String filePath = "data/all-attendance.csv";
-      byte[] content = Files.readAllBytes(Paths.get(filePath));
-      response.header("Content-Disposition", "attachment; filename=all-attendance.csv");
-      response.status(200);
       try (OutputStream outputStream = response.raw().getOutputStream()) {
+        byte[] content = Files.readAllBytes(Paths.get(filePath));
+        response.header("Content-Disposition", "attachment; filename=all-attendance.csv");
+        response.status(200);
         outputStream.write(content);
       } catch (Exception e) {
         return new FailureResponse("error_bad_request", "File could not be downloaded").serialize();
       }
     }
     if (info.equals("debugging")) {
-      String beginTime = this.sessionState.getBeginTime();
-      String filePath = "data/sessions/debugging-partner-attendance-" + beginTime + ".csv";
-
-      byte[] content = Files.readAllBytes(Paths.get(filePath));
-      response.header(
-          "Content-Disposition", "attachment; filename=debugging-attendance-" + beginTime + ".csv");
-      response.status(200);
       try (OutputStream outputStream = response.raw().getOutputStream()) {
+        String beginTime = this.sessionState.getBeginTime();
+        String filePath = "data/sessions/debugging-partner-attendance-" + beginTime + ".csv";
+        byte[] content = Files.readAllBytes(Paths.get(filePath));
+        response.header(
+            "Content-Disposition",
+            "attachment; filename=debugging-attendance-" + beginTime + ".csv");
+        response.status(200);
         outputStream.write(content);
       } catch (Exception e) {
         return new FailureResponse("error_bad_request", "File could not be downloaded").serialize();
