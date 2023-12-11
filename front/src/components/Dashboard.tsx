@@ -158,12 +158,12 @@ const Dashboard = () => {
       return 0;
     }
 
-    const oneHourInMillis = 15 * 60 * 1000; // 15 mins in milliseconds
+    const fifteenMinsInMillis = 15 * 60 * 1000; // 15 mins in milliseconds
     const currentTime = new Date().getTime();
     // change userSession.time.getTime() to something that changes when people are matched
     const elapsedTime = currentTime - pairedTime;
     console.log("paired time" + pairedTime);
-    const remainingTime = Math.max(oneHourInMillis - elapsedTime, 0);
+    const remainingTime = Math.max(fifteenMinsInMillis - elapsedTime, 0);
     return remainingTime;
   }
 
