@@ -86,8 +86,7 @@ public class GetInfoHandler implements Route {
       }
     }
 
-    List<DebuggingPartner> debuggingPartners =
-        debuggingPartnerQueue.getDebuggingPartnerList();
+    List<DebuggingPartner> debuggingPartners = debuggingPartnerQueue.getDebuggingPartnerList();
 
     List<List<String>> openDBPs = new ArrayList<>();
     for (DebuggingPartner debuggingPartner : debuggingPartners) {
@@ -145,7 +144,7 @@ public class GetInfoHandler implements Route {
                     currentlyHelping.getEmail(),
                     currentlyHelping.getBugType(),
                     debuggingPartner)
-                    .serialize();
+                .serialize();
           } else {
             return new DebuggingPartnerInfoSuccessResponse(
                     "Debugging Partner " + targetName + " found!",
@@ -153,10 +152,8 @@ public class GetInfoHandler implements Route {
                     "",
                     "",
                     debuggingPartner)
-                    .serialize();
-
+                .serialize();
           }
-
         }
       }
     } else if (role.equals("helpRequester")) {

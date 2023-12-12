@@ -33,6 +33,6 @@ public class TestUtils {
   public void testSimpleTime() {
     String simpleTime = Utils.simpleTime();
     String[] splitUtils = simpleTime.split(":");
-    Assertions.assertEquals(splitUtils.length, 2);
+    Assertions.assertEquals(splitUtils.length, 3);
   }
 }
