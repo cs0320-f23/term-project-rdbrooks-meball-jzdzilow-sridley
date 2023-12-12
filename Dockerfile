@@ -1,5 +1,3 @@
 FROM maven:latest
 WORKDIR /back
-RUN ["ls"]
-RUN [ "mvn", "package"]
-RUN [ "mvn", "exec:java"]
+RUN ["java", "-cp", "target/s0-1.0-SNAPSHOT.jar", "edu.brown.cs32.livecode.dispatcher.server.Server"]
