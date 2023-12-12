@@ -63,7 +63,7 @@ public class DebuggingPartnerDoneHandler implements Route {
     }
 
     boolean setSuccess = debuggingPartnerQueue.removeDebuggingPartner(name, email);
-    if (record.equals("no")) {
+    if (record != null && record.equals("no")) {
       debuggingPartnerQueue.removeFromAttendanceList(name, email);
       helpRequesterQueue.rematchByDebuggingPartner(name, email);
     }

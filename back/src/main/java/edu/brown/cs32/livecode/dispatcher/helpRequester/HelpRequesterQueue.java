@@ -128,24 +128,23 @@ public class HelpRequesterQueue {
         debugged = true;
       }
     }
-    if(debugged){
+    if (debugged) {
       gettingHelp.remove(toRemove);
       return true;
 
     } else {
-      for (HelpRequester helpRequester : needHelp){
+      for (HelpRequester helpRequester : needHelp) {
         String thisName = helpRequester.getName();
         String thisEmail = helpRequester.getEmail();
         if (name.equals(thisName) && email.equals(thisEmail)) {
           helpRequester.setDebugged(true);
           toRemove = helpRequester;
           debugged = true;
+        }
       }
-    }
       needHelp.remove(toRemove);
       return debugged;
     }
-
   }
 
   /**

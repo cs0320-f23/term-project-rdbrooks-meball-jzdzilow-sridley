@@ -37,7 +37,6 @@ public class TestHelpRequesterQueue {
     helpRequesterQueue.setEscalated("Sarah", "sarah@gmail.com");
     Assertions.assertEquals(true, helpRequesterQueue.checkPaired("Claire", "Sarah"));
     helpRequesterQueue.moveBackToQueue("Sarah", "sarah@gmail.com");
-    Assertions.assertEquals(false, helpRequesterQueue.setDoneDebugging("Sarah", "sarah@gmail.com"));
     Assertions.assertEquals(List.of(sarah), helpRequesterQueue.getNeedHelpList());
     helpRequesterQueue.claimHelpRequester(sarah);
     Assertions.assertEquals(true, helpRequesterQueue.setDoneDebugging("Sarah", "sarah@gmail.com"));
@@ -47,5 +46,6 @@ public class TestHelpRequesterQueue {
     sarah.setDebuggingPartner(claire);
     helpRequesterQueue.rematchByDebuggingPartner("Claire", "claire@gmail.com");
     Assertions.assertEquals(false, helpRequesterQueue.checkPaired("Claire", "Sarah"));
+    Assertions.assertEquals(true, helpRequesterQueue.setDoneDebugging("Sarah", "sarah@gmail.com"));
   }
 }
