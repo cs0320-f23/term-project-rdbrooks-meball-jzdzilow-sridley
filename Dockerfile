@@ -1,4 +1,4 @@
 FROM maven:latest
-WORKDIR back
+WORKDIR /back
 RUN [ "mvn", "package"]
 RUN [ "mvn", "exec:java"]
