@@ -3,7 +3,11 @@ package edu.brown.cs32.livecode.dispatcher.handlers;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
+import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartner;
 import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartnerQueue;
+import edu.brown.cs32.livecode.dispatcher.handlers.GetInfoHandler.DebuggingPartnerInfoSuccessResponse;
+import edu.brown.cs32.livecode.dispatcher.handlers.GetInfoHandler.HelpRequesterInfoSuccessResponse;
+import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequester;
 import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequesterQueue;
 import edu.brown.cs32.livecode.dispatcher.sessionState.SessionState;
 import edu.brown.cs32.livecode.dispatcher.utils.Utils;
@@ -159,5 +163,43 @@ public class TestGetInfoHandler {
         "No debuggingPartner found named sarah with email sarah@gmail.com",
         body.get("error_message"));
     getConnection.disconnect();
+  }
+
+  /** Test GetInfoHandler DebuggingPartnerInfoSuccessResponse */
+  @Test
+  public void testDebuggingPartnerInfoSuccessResponse() {
+    DebuggingPartner claire = new DebuggingPartner("Claire", "claire@gmail.com");
+    DebuggingPartnerInfoSuccessResponse response =
+        new DebuggingPartnerInfoSuccessResponse(
+            "success", "Sarah", "sarah@gmail.com", "bug", claire);
+    Assertions.assertEquals("claire@gmail.com", response.email());
+    Assertions.assertEquals("Claire", response.name());
+    Assertions.assertEquals("bug", response.helpRequesterBug());
+    Assertions.assertEquals("Sarah", response.helpRequesterName());
+    Assertions.assertEquals("sarah@gmail.com", response.helpRequesterEmail());
+    Assertions.assertEquals("success", response.message());
+    Assertions.assertEquals("success", response.result());
+    Assertions.assertEquals(false, response.flagged());
+    Assertions.assertEquals(0, response.studentsHelped());
+    Assertions.assertEquals(null, response.pairedAtTime());
+    Assertions.assertEquals(2, response.joinedTime().split(":").length);
+  }
+
+  /** Test GetInfoHandler HelpRequesterInfoSuccessResponse */
+  @Test
+  public void testHelpRequesterInfoSuccessResponse() {
+    HelpRequester claire = new HelpRequester("Claire", "claire@gmail.com", "bug");
+    HelpRequesterInfoSuccessResponse response =
+        new HelpRequesterInfoSuccessResponse("success", "Sarah", claire);
+    Assertions.assertEquals("claire@gmail.com", response.email());
+    Assertions.assertEquals("Claire", response.name());
+    Assertions.assertEquals("bug", response.bugType());
+    Assertions.assertEquals("Sarah", response.debuggingPartnerName());
+    Assertions.assertEquals(false, response.debugged());
+    Assertions.assertEquals(false, response.escalated());
+    Assertions.assertEquals("success", response.message());
+    Assertions.assertEquals("success", response.result());
+    Assertions.assertEquals(null, response.pairedAtTime());
+    Assertions.assertEquals(2, response.joinedTime().split(":").length);
   }
 }
