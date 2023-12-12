@@ -32,4 +32,4 @@ http://localhost:3333/isInstructor?email= → determine if a given email is cons
 
 http://localhost:3333/submitDebuggingQuestions?debuggingPartnerName=_&debuggingPartnerEmail=_&helpRequesterName=_&helpRequesterEmail=_&bugCategory=_&debuggingProcess=_ → submit debugging questions
 
-http://localhost:3333/downloadInfo?info=_ → downloads CSV info based on type (all, debugging, helpRequester)
+http://localhost:3333/downloadInfo?type=_ → downloads CSV info based on type (all, debugging, helpRequester)
