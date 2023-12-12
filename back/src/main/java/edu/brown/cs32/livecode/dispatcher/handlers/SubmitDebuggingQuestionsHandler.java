@@ -88,7 +88,7 @@ public class SubmitDebuggingQuestionsHandler implements Route {
               + bugCategory
               + "\", \""
               + debuggingProcess
-              + "\"";
+              + "\"\n";
       writer.write(toWrite);
       writer.close();
       return new SuccessResponse(

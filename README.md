@@ -31,3 +31,5 @@ http://localhost:3333/flagAndRematch?helpRequesterName=_&helpRequesterEmail=_&de
 http://localhost:3333/isInstructor?email= → determine if a given email is considered a TA based on csv
 
 http://localhost:3333/submitDebuggingQuestions?debuggingPartnerName=_&debuggingPartnerEmail=_&helpRequesterName=_&helpRequesterEmail=_&bugCategory=_&debuggingProcess=_ → submit debugging questions
+
+http://localhost:3333/downloadInfo?info=_ → downloads CSV info based on type (all, debugging, helpRequester)
