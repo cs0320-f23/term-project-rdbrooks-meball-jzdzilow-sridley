@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useRecoilValue, useRecoilState, useSetRecoilState } from "recoil";
+import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
 import {
   IssueType,
   UserRole,
@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import Timer from "./Timer";
 import "../styles/nightsky.scss";
 import { IUser } from "../types/IUser";
+import * as FileSaver from "file-saver";
 
 const Dashboard = () => {
   const [userSession, setUserSession] = useRecoilState(userSessionState);
@@ -164,7 +165,9 @@ const Dashboard = () => {
     const millisecondsInSecond = 1000; // 1 sec in milliseconds
 
     const currTimeMilis =
-      currentHour * millisecondsHour + currentMin * millisecondsInMinute + currentSec * millisecondsInSecond;
+      currentHour * millisecondsHour +
+      currentMin * millisecondsInMinute +
+      currentSec * millisecondsInSecond;
 
     // change userSession.time.getTime() to something that changes when people are matched
     console.log(currTimeMilis, pairedTime);
@@ -190,7 +193,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const getInfoResponse = await fetch("http://localhost:3333/getInfo")
+        await fetch("http://localhost:3333/getInfo")
           .then((response) => response.json())
           .then((data) => {
             // if successfully can get info (and thus session is running), set values appropriately
@@ -235,7 +238,7 @@ const Dashboard = () => {
     const fetchUserData = async () => {
       try {
         if (userSession.role === UserRole.DebuggingPartner) {
-          const getInfoResponse = await fetch(
+          await fetch(
             "http://localhost:3333/getInfo?role=debuggingPartner&name=" +
               userSession.user?.name +
               "&email=" +
@@ -252,8 +255,8 @@ const Dashboard = () => {
                 .split(":")
                 .map(Number);
 
-              console.log(data.pairedAtTime)
-              console.log(pairedAtTimeString)
+              console.log(data.pairedAtTime);
+              console.log(pairedAtTimeString);
 
               const millisecondsInHour = 60 * 60 * 1000; // 1 hour in milliseconds
               const millisecondsInMinute = 60 * 1000; // 1 minute in milliseconds
@@ -263,9 +266,9 @@ const Dashboard = () => {
               var adjustHours = hours;
 
               // add 12 hours to the hours from the backend when in the 24 hr clock it's 13+
-              if(new Date().getHours() > 12){
+              if (new Date().getHours() > 12) {
                 adjustHours += 12;
-              } 
+              }
 
               // adjust hours will be the hours when 0-12
               // adjust hours will add 12 hours to backend when 13-24
@@ -273,8 +276,6 @@ const Dashboard = () => {
                 adjustHours * millisecondsInHour +
                 minutes * millisecondsInMinute +
                 seconds * millisecondsInSecond;
-
-              
 
               if (partnerName === "") {
                 setSingleSession({
@@ -305,7 +306,7 @@ const Dashboard = () => {
             });
         }
         if (userSession.role === UserRole.HelpRequester) {
-          const getInfoResponse = await fetch(
+          await fetch(
             "http://localhost:3333/getInfo?role=helpRequester&name=" +
               userSession.user?.name +
               "&email=" +
@@ -564,13 +565,41 @@ const Dashboard = () => {
   // ends the session by calling backend
   const handleEnd = async () => {
     try {
+      // end session
       await fetch("http://localhost:3333/session?command=end");
+
+      const downloadInfoResponse = await fetch(
+        "http://localhost:3333/downloadInfo?type=debugging"
+      );
+
+      if (downloadInfoResponse.ok) {
+        // if success response
+        const csvBlob = await downloadInfoResponse.blob(); // create blob element
+        const downloadLink = document.createElement("a"); // create link
+        downloadLink.href = URL.createObjectURL(csvBlob); // url for blob, set as href attribute
+
+        // get current date for filename
+        const currentDate = new Date();
+        const formattedDateTime =
+          currentDate.toLocaleDateString() +
+          "-" +
+          currentDate.toLocaleTimeString();
+
+        // Set file name for download
+        downloadLink.download =
+          "debugging-attendance-" + formattedDateTime + ".csv";
+        document.body.appendChild(downloadLink); // add link to document body
+        downloadLink.click(); // trigger click on link
+        document.body.removeChild(downloadLink); // remove link from document body
+      } else {
+        console.log("ERROR: could not download");
+      }
     } catch (error) {
-      console.error("ERROR: " + error);
+      console.log("ERROR: " + error);
       // TODO: Handle errors as needed
     }
     setSessionStarted(false);
-  }; // TODO: bring everybody back to login page when session ended
+  };
 
   // removes a debugging partner from attendance (button accessible to instructors)
   const handleRemove = (name: string, email: string) => async () => {

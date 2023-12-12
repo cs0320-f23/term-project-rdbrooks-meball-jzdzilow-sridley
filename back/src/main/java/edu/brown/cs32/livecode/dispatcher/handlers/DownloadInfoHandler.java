@@ -2,12 +2,25 @@ package edu.brown.cs32.livecode.dispatcher.handlers;
 
 import edu.brown.cs32.livecode.dispatcher.handlers.AddHelpRequesterHandler.FailureResponse;
 import edu.brown.cs32.livecode.dispatcher.sessionState.SessionState;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import javax.servlet.http.HttpServletResponse;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.io.OutputStream;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * This class is the DownloadInfoHandler class, implements the Route interface such that it can be
@@ -75,7 +88,26 @@ public class DownloadInfoHandler implements Route {
         return new FailureResponse("error_bad_request", "File could not be downloaded").serialize();
       }
     }
+    /*if (info.equals("debugging")) {
+      String beginTime = this.sessionState.getBeginTime();
+      String filePath = "data/sessions/debugging-partner-attendance-" + beginTime + ".csv";
+      Path path = Paths.get(filePath);
 
+      // Set response headers
+      response.header("Content-Disposition",
+          "attachment; filename=debugging-attendance-" + beginTime + ".csv");
+      response.type("text/csv"); // Set content type
+      response.status(200);
+
+      // Stream the file content directly to the response
+      try {
+        Files.copy(path, response.raw().getOutputStream());
+      } catch (IOException e) {
+        // Log or handle the exception
+        e.printStackTrace();
+        response.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      }
+    }*/
     if (info.equals("helpRequester")) {
       String beginTime = this.sessionState.getBeginTime();
       String filePath = "data/sessions/help-requester-attendance-" + beginTime + ".csv";
