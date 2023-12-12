@@ -48,6 +48,8 @@ public class HelpRequesterDoneHandler implements Route {
     }
     String name = request.queryParams("name");
     String email = request.queryParams("email");
+    String record = request.queryParams("record");
+
     if (name == null) {
       return new FailureResponse("error_bad_request", "Missing required parameter: name")
           .serialize();
@@ -55,7 +57,13 @@ public class HelpRequesterDoneHandler implements Route {
       return new FailureResponse("error_bad_request", "Missing required parameter: email")
           .serialize();
     }
+
+    if (record.equals("no")) {
+      helpRequesterQueue.removeFromAttendanceList(name, email);
+    }
+
     boolean setSuccess = helpRequesterQueue.setDoneDebugging(name, email);
+
     if (setSuccess) {
       return new SuccessResponse(
               "success", "Help Requester " + name + " has been debugged and allowed to leave!")

@@ -3,6 +3,7 @@ import { useRecoilValue, useRecoilState, useSetRecoilState } from "recoil";
 import {
   IssueType,
   UserRole,
+  mockedMode,
   singleSessionState,
   userSessionState,
 } from "../recoil/atoms";
@@ -10,6 +11,7 @@ import "../styles/Dashboard.css";
 import { useNavigate } from "react-router-dom";
 import Timer from "./Timer";
 import "../styles/nightsky.scss";
+import { IUser } from "../types/IUser";
 
 const Dashboard = () => {
   const [userSession, setUserSession] = useRecoilState(userSessionState);
@@ -17,8 +19,14 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [bugCategory, setBugCategory] = useState("");
   const [debuggingProcess, setDebuggingProcess] = useState("");
+  // timer for debugger to leave
   const [fullTimeRemaining, setFullTimeRemaining] = useState(
-    calculateFullTimeRemaining()
+    calculateFullTimeRemaining
+  );
+  // timer for escalation
+  const [pairedTime, setPairedTime] = useState(0);
+  const [escalationTimeRemaining, setEscalationTimeRemaining] = useState(
+    calculateTimeBeforeEscalation
   );
   const [sessionStarted, setSessionStarted] = useState(false);
 
@@ -27,6 +35,8 @@ const Dashboard = () => {
   const [unpairedHR, setUnpairedHR] = useState([]);
   const [escalatedPairs, setEscalatedPairs] = useState([]);
   const [nonEscalatedPairs, setNonEscalatedPairs] = useState([]);
+
+  const [escalationResult, setEscalationResult] = useState("");
 
   // resets user session back to log in on unwanted backend interruptions
   useEffect(() => {
@@ -49,7 +59,7 @@ const Dashboard = () => {
             .then((response) => response.json())
             .then((data) => {
               // if successfully can get info (and thus session is running), set values appropriately
-              if (data["result"] === "success") {
+              if (data["result"] === "success" && !sessionStarted) {
                 setSessionStarted(true);
               }
               // if no session is running, sets all values to empty arrays
@@ -81,35 +91,37 @@ const Dashboard = () => {
   }, []);
 
   /* MOCKED BACKEND -------------------------------------- */
+
   useEffect(() => {
-    console.log("test");
-    const fetchPartner = async () => {
-      try {
-        const response = await fetch("http://localhost:2000/getSession");
-        const data = await response.json();
-        if (userSession.role === UserRole.DebuggingPartner) {
-          const sessionAsDP = data.pHelpRequester;
-          const partner = sessionAsDP.user;
-          const issue = sessionAsDP.issueType;
-          setSingleSession({ partner: partner, issueType: issue });
+    if (mockedMode) {
+      const fetchPartner = async () => {
+        try {
+          const response = await fetch("http://localhost:2000/getSession");
+          const data = await response.json();
+          if (userSession.role === UserRole.DebuggingPartner) {
+            const sessionAsDP = data.pHelpRequester;
+            const partner = sessionAsDP.user;
+            const issue = sessionAsDP.issueType;
+            setSingleSession({ partner: partner, issueType: issue });
+          }
+          if (userSession.role === UserRole.HelpRequester) {
+            const sessionAsHR = data.pDebuggingPartner;
+            const partner = sessionAsHR.user;
+            setSingleSession({
+              partner: partner,
+              issueType: singleSession.issueType,
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching partner:", error);
         }
-        if (userSession.role === UserRole.HelpRequester) {
-          const sessionAsHR = data.pDebuggingPartner;
-          const partner = sessionAsHR.user;
-          setSingleSession({
-            partner: partner,
-            issueType: singleSession.issueType,
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching partner:", error);
-      }
-    };
-    fetchPartner();
-    console.log(
-      "issue " + singleSession.issueType,
-      "partner " + singleSession.partner
-    );
+      };
+      fetchPartner();
+      console.log(
+        "issue " + singleSession.issueType,
+        "partner " + singleSession.partner
+      );
+    }
   }, []);
 
   /* end of MOCKED BACKEND -------------------------------------- */
@@ -136,6 +148,38 @@ const Dashboard = () => {
 
     return () => clearInterval(timerInterval);
   }, [userSession.time]);
+
+  // timer for escalation (15 minutes)
+  function calculateTimeBeforeEscalation() {
+    if (userSession.time === null) {
+      return 0;
+    }
+    const fifteenMinsInMillis = 15 * 60 * 1000; // 15 mins in milliseconds
+    const currentHour = new Date().getHours();
+    const currentMin = new Date().getMinutes();
+    const currentSec = new Date().getSeconds();
+
+    const millisecondsHour = 60 * 60 * 1000; // 1 hour in milliseconds
+    const millisecondsInMinute = 60 * 1000; // 1 minute in milliseconds
+    const millisecondsInSecond = 1000; // 1 sec in milliseconds
+
+    const currTimeMilis =
+      currentHour * millisecondsHour + currentMin * millisecondsInMinute + currentSec * millisecondsInSecond;
+
+    // change userSession.time.getTime() to something that changes when people are matched
+    console.log(currTimeMilis, pairedTime);
+    const elapsedTime = currTimeMilis - pairedTime;
+    const remainingTime = Math.max(fifteenMinsInMillis - elapsedTime, 0);
+    return remainingTime;
+  }
+
+  useEffect(() => {
+    const timerInterval = setInterval(() => {
+      setEscalationTimeRemaining(calculateTimeBeforeEscalation());
+    }, 1000);
+
+    return () => clearInterval(timerInterval);
+  }, [singleSession]);
 
   /* ---------------------------- end of timer content ------------------------------------*/
 
@@ -184,6 +228,191 @@ const Dashboard = () => {
 
   /* -------------------------- end of get info for instructors ---------------------------*/
 
+  /* ---------------------------------- get info debuggings and help requesters -----------------------------------------*/
+
+  // get info for debugging helpers and help requesters every 5 seconds
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        if (userSession.role === UserRole.DebuggingPartner) {
+          const getInfoResponse = await fetch(
+            "http://localhost:3333/getInfo?role=debuggingPartner&name=" +
+              userSession.user?.name +
+              "&email=" +
+              userSession.user?.email
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              // create partner
+              const partnerName = data.helpRequesterName;
+              const partnerEmail = data.helpRequesterEmail;
+              const bugType = data.helpRequesterBug;
+              const pairedAtTimeString = data.pairedAtTime;
+              const [hours, minutes, seconds] = pairedAtTimeString
+                .split(":")
+                .map(Number);
+
+              console.log(data.pairedAtTime)
+              console.log(pairedAtTimeString)
+
+              const millisecondsInHour = 60 * 60 * 1000; // 1 hour in milliseconds
+              const millisecondsInMinute = 60 * 1000; // 1 minute in milliseconds
+              const millisecondsInSecond = 1000; // 1 second in milliseconds
+
+              // to fix problem of backend not being 24 hour clock
+              var adjustHours = hours;
+
+              // add 12 hours to the hours from the backend when in the 24 hr clock it's 13+
+              if(new Date().getHours() > 12){
+                adjustHours += 12;
+              } 
+
+              // adjust hours will be the hours when 0-12
+              // adjust hours will add 12 hours to backend when 13-24
+              const pairedAtTimeMilis =
+                adjustHours * millisecondsInHour +
+                minutes * millisecondsInMinute +
+                seconds * millisecondsInSecond;
+
+              
+
+              if (partnerName === "") {
+                setSingleSession({
+                  partner: null,
+                  issueType: IssueType.NoneSelected,
+                });
+              }
+              if (partnerName !== "") {
+                setPairedTime(pairedAtTimeMilis);
+                var partner: IUser = {
+                  email: partnerEmail,
+                  name: partnerName,
+                  role: "student",
+                };
+                if (bugType === "bug") {
+                  setSingleSession({
+                    partner: partner,
+                    issueType: IssueType.Bug,
+                  });
+                }
+                if (bugType === "conceptual") {
+                  setSingleSession({
+                    partner: partner,
+                    issueType: IssueType.ConceptualQuestion,
+                  });
+                }
+              }
+            });
+        }
+        if (userSession.role === UserRole.HelpRequester) {
+          const getInfoResponse = await fetch(
+            "http://localhost:3333/getInfo?role=helpRequester&name=" +
+              userSession.user?.name +
+              "&email=" +
+              userSession.user?.email
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              console.log(data.debuggingPartnerName);
+
+              // does the help requester need access to the debugging partner's email?
+              const partnerName = data.debuggingPartnerName;
+              if (partnerName !== "") {
+                var partner: IUser = {
+                  email: "",
+                  name: partnerName,
+                  role: "student",
+                };
+
+                setSingleSession({
+                  partner: partner,
+                  issueType: singleSession.issueType,
+                });
+              }
+            });
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    // fetches data initally
+    fetchUserData();
+
+    // Fetches data every 5 seconds
+    const intervalId = setInterval(() => fetchUserData(), 5000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  function removeFromQueue(
+    email: string | undefined,
+    name: string | undefined,
+    role: UserRole
+  ): Promise<String> {
+    if (role === UserRole.DebuggingPartner) {
+      console.log("about to fetch and remove debugging partner");
+      return fetch(
+        "http://localhost:3333/debuggingPartnerDone?name=" +
+          name +
+          "&email=" +
+          email +
+          "&record=yes"
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          return data["result"];
+        })
+        .catch((e) => {
+          console.log("ERROR: " + e);
+        });
+    }
+    // if user is a help requester and they have been paired
+    if (role === UserRole.HelpRequester && singleSession.partner) {
+      console.log(singleSession.partner);
+      return fetch(
+        "http://localhost:3333/helpRequesterDone?name=" +
+          name +
+          "&email=" +
+          email +
+          "&record=yes"
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          return data["result"];
+        })
+        .catch((e) => {
+          return "ERROR: " + e;
+        });
+    }
+    // if user is help requester and they haven't been paired
+    if (role === UserRole.HelpRequester && singleSession.partner == null) {
+      console.log(singleSession.partner);
+      console.log("removing from help requester queue");
+      return fetch(
+        "http://localhost:3333/helpRequesterDone?name=" +
+          name +
+          "&email=" +
+          email +
+          "&record=no"
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          return data["result"];
+        })
+        .catch((e) => {
+          return "ERROR: " + e;
+        });
+    } else {
+      return new Promise<String>((resolves) => {
+        resolves(
+          "ERROR: UserRole must be HelpRequester or DebuggingPartner for this function"
+        );
+      });
+    }
+  }
+
+  /* ---------------------------------- end get info debuggings and help requesters -----------------------------------------*/
+
   const openResourcesWebsite = () => {
     const url: string = "https://hackmd.io/@brown-csci0320/BJKCtyxxs/";
     window.open(url, "_blank");
@@ -203,37 +432,69 @@ const Dashboard = () => {
         debuggingProcess
       );
       try {
-        const response = await fetch("http://localhost:2000/submitForm/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            data: {
-              user: userSession.user.email,
-              partner: singleSession.partner.email,
-              bugCategory: bugCategory,
-              debuggingProcess: debuggingProcess,
+        if (mockedMode) {
+          const response = await fetch("http://localhost:2000/submitForm/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
             },
-          }),
-        });
+            body: JSON.stringify({
+              data: {
+                user: userSession.user.email,
+                partner: singleSession.partner.email,
+                bugCategory: bugCategory,
+                debuggingProcess: debuggingProcess,
+              },
+            }),
+          });
 
-        if (!response.ok) {
-          // If the server returns an error status
-          throw new Error("Server error: " + response.status);
-        } else {
-          const result = await response.json();
-          if (result.success) {
-            setSingleSession({
-              partner: null,
-              issueType: IssueType.NoneSelected,
-            });
-            setBugCategory("");
-            setDebuggingProcess("");
+          if (!response.ok) {
+            // If the server returns an error status
+            throw new Error("Server error: " + response.status);
           } else {
-            // Handle other success scenarios or display an error message
-            alert("Form submission failed:" + result);
+            const result = await response.json();
+            if (result.success) {
+              setSingleSession({
+                partner: null,
+                issueType: IssueType.NoneSelected,
+              });
+              setBugCategory("");
+              setDebuggingProcess("");
+            } else {
+              // Handle other success scenarios or display an error message
+              alert("Form submission failed:" + result);
+            }
           }
+        } else {
+          // THIS WILL NOT WORK YET DON"T HAVE EMAIL OF HELP REQUESTER
+          // need to get the info about who is submitting
+          const response = await fetch(
+            "http://localhost:3333/submitDebuggingQuestions?debuggingPartnerName=" +
+              userSession.user.name +
+              "&debuggingPartnerEmail=" +
+              userSession.user.email +
+              "&helpRequesterName=" +
+              singleSession.partner.name +
+              "&helpRequesterEmail=" +
+              singleSession.partner.email +
+              "&bugCategory=" +
+              bugCategory +
+              "&debuggingProcess=" +
+              debuggingProcess
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.result === "success") {
+                // SUBMITTING THE FORM DOESN"T RESET THE DEBUGGING PARTNER; ONLY "I'M DONE" BY THE HELP REQUESTER
+                // setSingleSession({
+                //   partner: null,
+                //   issueType: IssueType.NoneSelected,
+                // });
+                setBugCategory("");
+                setDebuggingProcess("");
+                console.log("success");
+              }
+            });
         }
       } catch (error) {
         alert("Error encountered: " + error);
@@ -241,11 +502,48 @@ const Dashboard = () => {
     }
   };
 
-  const handleEscalate = () => {
+  const handleEscalate = async () => {
     console.log("escalated");
+    try {
+      console.log(singleSession.partner?.name, singleSession.partner?.email);
+      await fetch(
+        "http://localhost:3333/escalate?helpRequesterName=" +
+          singleSession.partner?.name +
+          "&helpRequesterEmail=" +
+          singleSession.partner?.email
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.result === "success") {
+            setEscalationResult("You have been escalated");
+          } else {
+            setEscalationResult("Escalation failed");
+          }
+        });
+    } catch (error) {
+      console.error("ERROR: " + error);
+    }
   };
 
-  const handleEndSession = () => {
+  const handleEndSession = (role: UserRole) => {
+    if (role === UserRole.DebuggingPartner) {
+      removeFromQueue(
+        userSession.user?.email,
+        userSession.user?.name,
+        UserRole.DebuggingPartner
+      );
+    }
+    if (role === UserRole.HelpRequester) {
+      console.log(userSession);
+      removeFromQueue(
+        userSession.user?.email,
+        userSession.user?.name,
+        UserRole.HelpRequester
+      );
+      // reset partner of debugging partner
+
+      // take help requester out of the queue
+    }
     setBugCategory("");
     setDebuggingProcess("");
     setSingleSession({ partner: null, issueType: IssueType.NoneSelected });
@@ -317,7 +615,8 @@ const Dashboard = () => {
         });
     };
 
-  console.log("session started" + sessionStarted);
+  console.log("session started " + sessionStarted);
+
   /* ----------------------- end of handlers / below rendering ---------------------------*/
 
   const renderHeaderBasedOnRole = (role: UserRole) => {
@@ -353,7 +652,10 @@ const Dashboard = () => {
               Join time: {userSession.time?.toLocaleTimeString()}
             </p>
             {}
-            <button className="done-button" onClick={handleEndSession}>
+            <button
+              className="done-button"
+              onClick={() => handleEndSession(UserRole.HelpRequester)}
+            >
               I'm done!
             </button>
           </header>
@@ -364,13 +666,38 @@ const Dashboard = () => {
   };
 
   const renderTimerOrButton = () => {
-    if (singleSession.partner && fullTimeRemaining > 0) {
+    // full time remaining = 60
+    if (fullTimeRemaining > 0) {
       return <Timer fullTimeRemaining={fullTimeRemaining} />;
     } else if (fullTimeRemaining === 0) {
       return (
-        <button className="done-button" onClick={handleEndSession}>
+        <button
+          className="done-button"
+          onClick={() => handleEndSession(UserRole.DebuggingPartner)}
+        >
           I'm done!
         </button>
+      );
+    }
+  };
+
+  const renderEscalateTimerOrButton = () => {
+    if (!singleSession.partner) {
+      return "Single session hasn't started!";
+    } else if (escalationTimeRemaining > 0) {
+      return <Timer fullTimeRemaining={escalationTimeRemaining} />;
+    } else if (escalationTimeRemaining === 0) {
+      return (
+        // <button className="escalate-button" onClick={() => handleEscalate()}>
+        //   Escalate!
+        // </button>
+        <div>
+          <button className="escalate-button" onClick={handleEscalate}>
+            {" "}
+            Escalate!{" "}
+          </button>
+          {escalationResult && <p>{escalationResult}</p>}
+        </div>
       );
     }
   };
@@ -598,9 +925,7 @@ const Dashboard = () => {
                 Once 15 minutes in a current session have passed, you may
                 escalate:
               </b>
-              <button className="escalate-button" onClick={handleEscalate}>
-                Escalate!
-              </button>
+              {renderEscalateTimerOrButton()}
             </div>
           </div>
         );
