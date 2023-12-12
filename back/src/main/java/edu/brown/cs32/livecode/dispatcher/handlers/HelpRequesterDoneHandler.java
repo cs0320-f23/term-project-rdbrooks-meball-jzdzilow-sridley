@@ -58,7 +58,7 @@ public class HelpRequesterDoneHandler implements Route {
           .serialize();
     }
 
-    if (record.equals("no")) {
+    if (record != null && record.equals("no")) {
       helpRequesterQueue.removeFromAttendanceList(name, email);
     }
 
