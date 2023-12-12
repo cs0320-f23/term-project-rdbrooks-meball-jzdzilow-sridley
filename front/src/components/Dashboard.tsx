@@ -12,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 import Timer from "./Timer";
 import "../styles/nightsky.scss";
 import { IUser } from "../types/IUser";
-import { checkSessionStarted } from "./LoginPage";
 
 const Dashboard = () => {
   const [userSession, setUserSession] = useRecoilState(userSessionState);
@@ -25,8 +24,8 @@ const Dashboard = () => {
     calculateFullTimeRemaining
   );
   // timer for escalation
-  const [pairedTime, setStartPairedTime] = useState(0);
-  const [timeRemaining, setTimeRemaining] = useState(
+  const [pairedTime, setPairedTime] = useState(0);
+  const [escalationTimeRemaining, setEscalationTimeRemaining] = useState(
     calculateTimeBeforeEscalation
   );
   const [sessionStarted, setSessionStarted] = useState(false);
@@ -60,7 +59,7 @@ const Dashboard = () => {
             .then((response) => response.json())
             .then((data) => {
               // if successfully can get info (and thus session is running), set values appropriately
-              if (data["result"] === "success") {
+              if (data["result"] === "success" && !sessionStarted) {
                 setSessionStarted(true);
               }
               // if no session is running, sets all values to empty arrays
@@ -95,7 +94,6 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (mockedMode) {
-      console.log("test");
       const fetchPartner = async () => {
         try {
           const response = await fetch("http://localhost:2000/getSession");
@@ -130,7 +128,6 @@ const Dashboard = () => {
 
   /* -------------------------------timer content ---------------------------------------*/
 
-
   // calculates time remaining for a session
   function calculateFullTimeRemaining() {
     if (userSession.time === null) {
@@ -157,23 +154,29 @@ const Dashboard = () => {
     if (userSession.time === null) {
       return 0;
     }
-
     const fifteenMinsInMillis = 15 * 60 * 1000; // 15 mins in milliseconds
-    const currentTime = new Date().getTime();
+    const currentHour = new Date().getHours();
+    const currentMin = new Date().getMinutes();
+
+    const millisecondsHour = 60 * 60 * 1000; // 1 hour in milliseconds
+    const millisecondsInMinute = 60 * 1000; // 1 minute in milliseconds
+
+    const currTimeMilis =
+      currentHour * millisecondsHour + currentMin * millisecondsInMinute;
+
     // change userSession.time.getTime() to something that changes when people are matched
-    const elapsedTime = currentTime - pairedTime;
-    console.log("paired time" + pairedTime);
+    const elapsedTime = currTimeMilis - pairedTime;
     const remainingTime = Math.max(fifteenMinsInMillis - elapsedTime, 0);
     return remainingTime;
   }
 
   useEffect(() => {
     const timerInterval = setInterval(() => {
-      setTimeRemaining(calculateTimeBeforeEscalation());
+      setEscalationTimeRemaining(calculateTimeBeforeEscalation());
     }, 1000);
 
     return () => clearInterval(timerInterval);
-  }, [userSession.time]);
+  }, [singleSession]);
 
   /* ---------------------------- end of timer content ------------------------------------*/
 
@@ -228,7 +231,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        if (userSession.role == UserRole.DebuggingPartner) {
+        if (userSession.role === UserRole.DebuggingPartner) {
           const getInfoResponse = await fetch(
             "http://localhost:3333/getInfo?role=debuggingPartner&name=" +
               userSession.user?.name +
@@ -241,9 +244,18 @@ const Dashboard = () => {
               const partnerName = data.helpRequesterName;
               const partnerEmail = data.helpRequesterEmail;
               const bugType = data.helpRequesterBug;
-              const pairedTime = data.pairedAtTime;
+              const pairedAtTimeString = data.pairedAtTime;
+              const [hours, minutes] = pairedAtTimeString
+                .split(":")
+                .map(Number);
 
-              console.log("partnername: " + partnerName);
+              const millisecondsInHour = 60 * 60 * 1000; // 1 hour in milliseconds
+              const millisecondsInMinute = 60 * 1000; // 1 minute in milliseconds
+              const millisecondsInSecond = 1000; // 1 minute in milliseconds
+
+              const pairedAtTimeMilis =
+                (hours + 12) * millisecondsInHour +
+                minutes * millisecondsInMinute;
 
               if (partnerName === "") {
                 setSingleSession({
@@ -251,8 +263,8 @@ const Dashboard = () => {
                   issueType: IssueType.NoneSelected,
                 });
               }
-              if (partnerName != "") {
-                setStartPairedTime(pairedTime);
+              if (partnerName !== "") {
+                setPairedTime(pairedAtTimeMilis);
                 var partner: IUser = {
                   email: partnerEmail,
                   name: partnerName,
@@ -273,7 +285,7 @@ const Dashboard = () => {
               }
             });
         }
-        if (userSession.role == UserRole.HelpRequester) {
+        if (userSession.role === UserRole.HelpRequester) {
           const getInfoResponse = await fetch(
             "http://localhost:3333/getInfo?role=helpRequester&name=" +
               userSession.user?.name +
@@ -286,7 +298,7 @@ const Dashboard = () => {
 
               // does the help requester need access to the debugging partner's email?
               const partnerName = data.debuggingPartnerName;
-              if (partnerName != "") {
+              if (partnerName !== "") {
                 var partner: IUser = {
                   email: "",
                   name: partnerName,
@@ -480,13 +492,15 @@ const Dashboard = () => {
           singleSession.partner?.name +
           "&helpRequesterEmail=" +
           singleSession.partner?.email
-      ).then((response) => response.json()).then((data) => {
-        if (data.result === "success"){
-          setEscalationResult("You have been escalated")
-        } else {
-          setEscalationResult("Escalation failed")
-        }
-      });
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.result === "success") {
+            setEscalationResult("You have been escalated");
+          } else {
+            setEscalationResult("Escalation failed");
+          }
+        });
     } catch (error) {
       console.error("ERROR: " + error);
     }
@@ -648,25 +662,19 @@ const Dashboard = () => {
     }
   };
 
-
   const renderEscalateTimerOrButton = () => {
-    // full time remaining = 15
-
-    if (singleSession.partner?.name != null) {
-      return <Timer fullTimeRemaining={timeRemaining} />;
-      } else if (timeRemaining === 0) {
+    if (!singleSession.partner) {
+      return "Single session hasn't started!";
+    } else if (escalationTimeRemaining > 0) {
+      return <Timer fullTimeRemaining={escalationTimeRemaining} />;
+    } else if (escalationTimeRemaining === 0) {
       return (
-        <div>
-          <button className="escalate-button" onClick={handleEscalate}>
-            {" "}
-            Escalate!{" "}
-          </button>
-          {escalationResult && <p>{escalationResult}</p>}
-        </div>
+        <button className="escalate-button" onClick={() => handleEscalate()}>
+          Escalate!
+        </button>
       );
     }
   };
-
 
   // creation of instructor page
   const renderInstructorContent = () => {

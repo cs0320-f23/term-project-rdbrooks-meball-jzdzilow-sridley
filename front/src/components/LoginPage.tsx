@@ -35,7 +35,6 @@ function getRoleFromBackend(email: string): Promise<string> {
     });
 }
 
-
 // checks if session started by determining if backend call to get info successful
 export function checkSessionStarted(): Promise<boolean> {
   return fetch("http://localhost:3333/getInfo")
