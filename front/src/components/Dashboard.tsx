@@ -157,14 +157,17 @@ const Dashboard = () => {
     const fifteenMinsInMillis = 15 * 60 * 1000; // 15 mins in milliseconds
     const currentHour = new Date().getHours();
     const currentMin = new Date().getMinutes();
+    const currentSec = new Date().getSeconds();
 
     const millisecondsHour = 60 * 60 * 1000; // 1 hour in milliseconds
     const millisecondsInMinute = 60 * 1000; // 1 minute in milliseconds
+    const millisecondsInSecond = 1000; // 1 sec in milliseconds
 
     const currTimeMilis =
-      currentHour * millisecondsHour + currentMin * millisecondsInMinute;
+      currentHour * millisecondsHour + currentMin * millisecondsInMinute + currentSec * millisecondsInSecond;
 
     // change userSession.time.getTime() to something that changes when people are matched
+    console.log(currTimeMilis, pairedTime);
     const elapsedTime = currTimeMilis - pairedTime;
     const remainingTime = Math.max(fifteenMinsInMillis - elapsedTime, 0);
     return remainingTime;
@@ -245,17 +248,33 @@ const Dashboard = () => {
               const partnerEmail = data.helpRequesterEmail;
               const bugType = data.helpRequesterBug;
               const pairedAtTimeString = data.pairedAtTime;
-              const [hours, minutes] = pairedAtTimeString
+              const [hours, minutes, seconds] = pairedAtTimeString
                 .split(":")
                 .map(Number);
 
+              console.log(data.pairedAtTime)
+              console.log(pairedAtTimeString)
+
               const millisecondsInHour = 60 * 60 * 1000; // 1 hour in milliseconds
               const millisecondsInMinute = 60 * 1000; // 1 minute in milliseconds
-              const millisecondsInSecond = 1000; // 1 minute in milliseconds
+              const millisecondsInSecond = 1000; // 1 second in milliseconds
 
+              // to fix problem of backend not being 24 hour clock
+              var adjustHours = hours;
+
+              // add 12 hours to the hours from the backend when in the 24 hr clock it's 13+
+              if(new Date().getHours() > 12){
+                adjustHours += 12;
+              } 
+
+              // adjust hours will be the hours when 0-12
+              // adjust hours will add 12 hours to backend when 13-24
               const pairedAtTimeMilis =
-                (hours + 12) * millisecondsInHour +
-                minutes * millisecondsInMinute;
+                adjustHours * millisecondsInHour +
+                minutes * millisecondsInMinute +
+                seconds * millisecondsInSecond;
+
+              
 
               if (partnerName === "") {
                 setSingleSession({
@@ -669,9 +688,16 @@ const Dashboard = () => {
       return <Timer fullTimeRemaining={escalationTimeRemaining} />;
     } else if (escalationTimeRemaining === 0) {
       return (
-        <button className="escalate-button" onClick={() => handleEscalate()}>
-          Escalate!
-        </button>
+        // <button className="escalate-button" onClick={() => handleEscalate()}>
+        //   Escalate!
+        // </button>
+        <div>
+          <button className="escalate-button" onClick={handleEscalate}>
+            {" "}
+            Escalate!{" "}
+          </button>
+          {escalationResult && <p>{escalationResult}</p>}
+        </div>
       );
     }
   };
