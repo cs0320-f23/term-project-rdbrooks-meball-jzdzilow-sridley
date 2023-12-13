@@ -80,7 +80,7 @@ const Dashboard = () => {
               }
             });
         } catch (error) {
-          console.error("Error fetching data:", error);
+          return alert("ERROR: " + error);
         }
       };
       // fetches data initally
@@ -114,7 +114,7 @@ const Dashboard = () => {
             });
           }
         } catch (error) {
-          console.error("Error fetching partner:", error);
+          return alert("ERROR: " + error);
         }
       };
       fetchPartner();
@@ -198,8 +198,6 @@ const Dashboard = () => {
           .then((data) => {
             // if successfully can get info (and thus session is running), set values appropriately
             if (data["result"] === "success") {
-              console.log(data);
-
               setUnpairedDP(data.openDBPs);
               setUnpairedHR(data.waitingHRQs);
               setEscalatedPairs(data.escalatedPairs);
@@ -217,7 +215,7 @@ const Dashboard = () => {
             }
           });
       } catch (error) {
-        console.error("Error fetching data:", error);
+        return alert("ERROR: " + error);
       }
     };
 
@@ -354,7 +352,7 @@ const Dashboard = () => {
             });
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        return alert("ERROR: " + error);
       }
     };
 
@@ -384,8 +382,8 @@ const Dashboard = () => {
         .then((data) => {
           return data["result"];
         })
-        .catch((e) => {
-          console.log("ERROR: " + e);
+        .catch((error) => {
+          return alert("ERROR: " + error);
         });
     }
     // if user is a help requester and they have been paired
@@ -421,8 +419,8 @@ const Dashboard = () => {
         .then((data) => {
           return data["result"];
         })
-        .catch((e) => {
-          return "ERROR: " + e;
+        .catch((error) => {
+          return alert("ERROR: " + error);
         });
     } else {
       return new Promise<String>((resolves) => {
@@ -446,8 +444,10 @@ const Dashboard = () => {
     if (bugCategory === "" || debuggingProcess === "") {
       return alert("Bug category and debugging process inputs required!");
     }
-    if (!singleSession.partner){
-      alert("You cannot submit this form until you have been matched with a help requester")
+    if (!singleSession.partner) {
+      alert(
+        "You cannot submit this form until you have been matched with a help requester"
+      );
     }
     if (userSession.user && singleSession.partner) {
       console.log(
@@ -580,8 +580,7 @@ const Dashboard = () => {
     try {
       await fetch("http://localhost:3333/session?command=begin");
     } catch (error) {
-      console.error("ERROR: " + error);
-      // TODO: Handle errors as needed
+      return alert("ERROR: " + error);
     }
     setSessionStarted(true);
   };
@@ -619,8 +618,7 @@ const Dashboard = () => {
         console.log("ERROR: could not download");
       }
     } catch (error) {
-      console.log("ERROR: " + error);
-      // TODO: Handle errors as needed
+      return alert("ERROR: " + error);
     }
     setSessionStarted(false);
   };
@@ -638,9 +636,8 @@ const Dashboard = () => {
       .then((data) => {
         return data["message"];
       })
-      .catch((e) => {
-        return "ERROR: " + e;
-        // TODO: Handle errors as needed
+      .catch((error) => {
+        return alert("ERROR: " + error);
       });
   };
 
@@ -662,9 +659,8 @@ const Dashboard = () => {
         .then((data) => {
           return data["message"];
         })
-        .catch((e) => {
-          return "ERROR: " + e;
-          // TODO: Handle errors as needed
+        .catch((error) => {
+          return alert("ERROR: " + error);
         });
     };
 
