@@ -68,6 +68,7 @@ public class DownloadInfoHandler implements Route {
       try (OutputStream outputStream = response.raw().getOutputStream()) {
         byte[] content = Files.readAllBytes(Paths.get(filePath));
         response.header("Content-Disposition", "attachment; filename=all-attendance.csv");
+        response.header("Content-Type", "text/csv");
         response.status(200);
         outputStream.write(content);
       } catch (Exception e) {
