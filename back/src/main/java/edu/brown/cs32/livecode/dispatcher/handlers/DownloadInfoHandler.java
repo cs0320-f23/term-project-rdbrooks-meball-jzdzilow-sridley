@@ -89,26 +89,7 @@ public class DownloadInfoHandler implements Route {
         return new FailureResponse("error_bad_request", "File could not be downloaded").serialize();
       }
     }
-    /*if (info.equals("debugging")) {
-      String beginTime = this.sessionState.getBeginTime();
-      String filePath = "data/sessions/debugging-partner-attendance-" + beginTime + ".csv";
-      Path path = Paths.get(filePath);
 
-      // Set response headers
-      response.header("Content-Disposition",
-          "attachment; filename=debugging-attendance-" + beginTime + ".csv");
-      response.type("text/csv"); // Set content type
-      response.status(200);
-
-      // Stream the file content directly to the response
-      try {
-        Files.copy(path, response.raw().getOutputStream());
-      } catch (IOException e) {
-        // Log or handle the exception
-        e.printStackTrace();
-        response.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-      }
-    }*/
     if (info.equals("helpRequester")) {
       String beginTime = this.sessionState.getBeginTime();
       String filePath = "data/sessions/help-requester-attendance-" + beginTime + ".csv";
