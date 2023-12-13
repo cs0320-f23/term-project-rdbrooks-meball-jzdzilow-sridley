@@ -568,37 +568,6 @@ const Dashboard = () => {
       // end session
       await fetch("http://localhost:3333/session?command=end");
 
-      // await fetch("http://localhost:3333/downloadInfo?type=all", {
-      //   method: "GET",
-      // })
-      //   .then((response) => {
-      //     if (!response.ok) {
-      //       alert("HTTP error! Status: " + response.status);
-      //     }
-
-      //     const filenameHeader = response.headers.get("Content-Disposition");
-      //     const filename = filenameHeader
-      //       ? filenameHeader.split("=")[1]
-      //       : "all-attendance.csv";
-
-      //     console.log(filename);
-      //     console.log(filenameHeader);
-
-      //     return response.blob().then((blob) => ({ blob, filename }));
-      //   })
-      //   .then(({ blob, filename }) => {
-      //     const link = document.createElement("a");
-      //     link.href = URL.createObjectURL(blob);
-      //     link.download = filename;
-      //     document.body.appendChild(link);
-      //     link.click();
-      //     document.body.removeChild(link);
-      //   })
-      //   .catch((error) => {
-      //     alert("Error: " + error);
-      //   });
-
-
       const downloadInfoResponse = await fetch(
         "http://localhost:3333/downloadInfo?type=debugging"
       );
@@ -677,6 +646,35 @@ const Dashboard = () => {
 
   console.log("session started " + sessionStarted);
 
+  const handleDownloadAll = async () => {
+    await fetch("http://localhost:3333/downloadInfo?type=all", {
+      method: "GET",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          alert("HTTP error! Status: " + response.status);
+        }
+        const filenameHeader = response.headers.get("Content-Disposition");
+        const filename = filenameHeader
+          ? filenameHeader.split("=")[1]
+          : "all-attendance.csv";
+        console.log(filename);
+        console.log(filenameHeader);
+        return response.blob().then((blob) => ({ blob, filename }));
+      })
+      .then(({ blob, filename }) => {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch((error) => {
+        alert("Error: " + error);
+      });
+  }
+
   /* ----------------------- end of handlers / below rendering ---------------------------*/
 
   const renderHeaderBasedOnRole = (role: UserRole) => {
@@ -684,6 +682,7 @@ const Dashboard = () => {
       case UserRole.Instructor:
         return (
           <header className="instructor-header">
+          <button className="download-button" onClick={handleDownloadAll}>Download All Data</button>
             {!sessionStarted ? (
               <button className="start-button" onClick={handleStart}>
                 Start Session

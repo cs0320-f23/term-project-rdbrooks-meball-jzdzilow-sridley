@@ -321,6 +321,32 @@
   color: white;
 }
 
+.download-button {
+  text-align: center;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  background: #e9e9ea;
+  color: #333;
+  border-radius: 40px;
+  font-size: 16px;
+  font-weight: 600;
+  height: 35px;
+  width: auto;
+  padding: 0px 40px 0px 40px;
+  text-decoration: none;
+  transition: 0.5s ease;
+  margin-right: 10px;
+  left: 40px;
+  position: fixed;
+  margin-left: 10px;
+}
+
+.download-button:hover {
+  background-color: #3e1310;
+  color: white;
+}
+
 /* resources icon */
 .tooltip {
   position: relative;
