@@ -1,6 +1,7 @@
 package edu.brown.cs32.livecode.dispatcher.server;
 
 import static spark.Spark.after;
+import static spark.Spark.before;
 
 import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartner;
 import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartnerQueue;
@@ -37,10 +38,17 @@ public class Server {
       HelpRequesterQueue helpRequesterQueue, DebuggingPartnerQueue debuggingPartnerQueue) {
     this.sessionState = new SessionState(false);
     Spark.port(port);
+    before((requester, response) -> {
+      response.header("Access-Control-Allow-Origin", "*");
+      response.header("Access-Control-Allow-Methods", "*");
+      //response.header("Access-Control-Allow-Headers", "Content-Type");
+    });
+
     after(
         (request, response) -> {
-          response.header("Access-Control-Allow-Origin", "*");
-          response.header("Access-Control-Allow-Methods", "*");
+          // commented this out for being able to download info
+          //response.header("Access-Control-Allow-Origin", "*");
+          //response.header("Access-Control-Allow-Methods", "*");
         });
 
     // parse csv of instructors (to avoid repetition everytime endpoint called)
