@@ -182,7 +182,7 @@ public class TestGetInfoHandler {
     Assertions.assertEquals(false, response.flagged());
     Assertions.assertEquals(0, response.studentsHelped());
     Assertions.assertEquals(null, response.pairedAtTime());
-    Assertions.assertEquals(2, response.joinedTime().split(":").length);
+    Assertions.assertEquals(3, response.joinedTime().split(":").length);
   }
 
   /** Test GetInfoHandler HelpRequesterInfoSuccessResponse */
@@ -200,6 +200,6 @@ public class TestGetInfoHandler {
     Assertions.assertEquals("success", response.message());
     Assertions.assertEquals("success", response.result());
     Assertions.assertEquals(null, response.pairedAtTime());
-    Assertions.assertEquals(2, response.joinedTime().split(":").length);
+    Assertions.assertEquals(3, response.joinedTime().split(":").length);
   }
 }

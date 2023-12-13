@@ -250,6 +250,14 @@ const Dashboard = () => {
               const partnerName = data.helpRequesterName;
               const partnerEmail = data.helpRequesterEmail;
               const bugType = data.helpRequesterBug;
+              const flagged: boolean = data.flagged;
+              if (flagged) {
+                setSingleSession({
+                  partner: null,
+                  issueType: IssueType.NoneSelected,
+                });
+                return alert("You have been flagged!");
+              }
               const pairedAtTimeString = data.pairedAtTime;
               const [hours, minutes, seconds] = pairedAtTimeString
                 .split(":")
@@ -316,8 +324,21 @@ const Dashboard = () => {
             .then((data) => {
               console.log(data.debuggingPartnerName);
 
-              // does the help requester need access to the debugging partner's email?
               const partnerName = data.debuggingPartnerName;
+
+              const escalated = data.escalated;
+              if (escalated) {
+                setEscalationResult("You have been escalated");
+              }
+              console.log(escalated);
+
+              if (partnerName === "") {
+                setSingleSession({
+                  partner: null,
+                  issueType: IssueType.NoneSelected,
+                });
+              }
+
               if (partnerName !== "") {
                 var partner: IUser = {
                   email: "",
@@ -425,6 +446,9 @@ const Dashboard = () => {
     if (bugCategory === "" || debuggingProcess === "") {
       return alert("Bug category and debugging process inputs required!");
     }
+    if (!singleSession.partner){
+      alert("You cannot submit this form until you have been matched with a help requester")
+    }
     if (userSession.user && singleSession.partner) {
       console.log(
         userSession.user.email,
@@ -516,7 +540,7 @@ const Dashboard = () => {
         .then((response) => response.json())
         .then((data) => {
           if (data.result === "success") {
-            setEscalationResult("You have been escalated");
+            setEscalationResult("Escalation Success");
           } else {
             setEscalationResult("Escalation failed");
           }
@@ -1004,6 +1028,9 @@ const Dashboard = () => {
                     : "No one yet!"}
                 </b>{" "}
               </p>
+            </div>
+            <div className="escalation-content">
+              {escalationResult && <p>{escalationResult}</p>}
             </div>
           </div>
         );

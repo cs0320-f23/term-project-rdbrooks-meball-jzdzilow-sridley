@@ -23,7 +23,7 @@ public class TestHelpRequester {
     Assertions.assertEquals(testHelpRequester.getDebugged(), false);
     Assertions.assertEquals(testHelpRequester.getEscalated(), false);
     Assertions.assertEquals(testHelpRequester.getDebuggingPartner(), null);
-    Assertions.assertEquals(testHelpRequester.getJoinedTime().split(":").length, 2);
+    Assertions.assertEquals(testHelpRequester.getJoinedTime().split(":").length, 3);
     Assertions.assertEquals(testHelpRequester.getPairedAtTime(), null);
   }
 
