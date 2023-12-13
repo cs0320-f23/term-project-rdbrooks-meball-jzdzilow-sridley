@@ -244,6 +244,14 @@ const Dashboard = () => {
               const partnerName = data.helpRequesterName;
               const partnerEmail = data.helpRequesterEmail;
               const bugType = data.helpRequesterBug;
+              const flagged: boolean = data.flagged;
+              if (flagged) {
+                setSingleSession({
+                  partner: null,
+                  issueType: IssueType.NoneSelected,
+                });
+                return alert("You have been flagged!");
+              }
               const pairedAtTimeString = data.pairedAtTime;
               const [hours, minutes] = pairedAtTimeString
                 .split(":")
