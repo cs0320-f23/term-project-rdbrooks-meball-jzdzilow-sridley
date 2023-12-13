@@ -29,9 +29,8 @@ function getRoleFromBackend(email: string): Promise<string> {
     .then((data) => {
       return data["message"]; // either student or instructor
     })
-    .catch((e) => {
-      console.error("ERROR: " + e);
-      throw e; // TODO: what are we doing with returned errors?
+    .catch((error) => {
+      return alert("ERROR: " + error);
     });
 }
 
@@ -44,12 +43,13 @@ export function checkSessionStarted(): Promise<boolean> {
         return true;
       } else {
         // error with getting info means session not successful started
+        alert("ERROR: " + data["result"] + ", " + data["error_message"]);
         return false;
       }
     })
-    .catch((e) => {
-      console.error("ERROR: " + e); // TODO: determine what to do with errors
-      throw e;
+    .catch((error) => {
+      alert("ERROR " + error);
+      return false;
     });
 }
 
@@ -133,7 +133,7 @@ const LoginPage = () => {
               }
             })
             .catch((error) => {
-              console.error("An error occurred: " + error);
+              return alert("ERROR: " + error);
             });
         } else if (user.role === "instructor") {
           checkSessionStarted()
@@ -154,12 +154,12 @@ const LoginPage = () => {
               }
             })
             .catch((error) => {
-              console.error("An error occurred: " + error);
+              return alert("ERROR: " + error);
             });
         }
       }
     } catch (error) {
-      console.log(error); // TODO: determine what to do with errors
+      return alert("ERROR: " + error);
     }
   };
 
