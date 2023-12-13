@@ -249,6 +249,14 @@ const Dashboard = () => {
               const partnerName = data.helpRequesterName;
               const partnerEmail = data.helpRequesterEmail;
               const bugType = data.helpRequesterBug;
+              const flagged: boolean = data.flagged;
+              if (flagged) {
+                setSingleSession({
+                  partner: null,
+                  issueType: IssueType.NoneSelected,
+                });
+                return alert("You have been flagged!");
+              }
               const pairedAtTimeString = data.pairedAtTime;
               const [hours, minutes, seconds] = pairedAtTimeString
                 .split(":")
@@ -316,11 +324,20 @@ const Dashboard = () => {
               console.log(data.debuggingPartnerName);
 
               const partnerName = data.debuggingPartnerName;
+
               const escalated = data.escalated;
               if (escalated) {
                 setEscalationResult("You have been escalated");
               }
               console.log(escalated);
+
+              if (partnerName === "") {
+                setSingleSession({
+                  partner: null,
+                  issueType: IssueType.NoneSelected,
+                });
+              }
+
               if (partnerName !== "") {
                 var partner: IUser = {
                   email: "",

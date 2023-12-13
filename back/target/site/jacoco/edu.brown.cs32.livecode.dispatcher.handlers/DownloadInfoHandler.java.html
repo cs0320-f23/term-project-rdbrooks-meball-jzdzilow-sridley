@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DownloadInfoHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">s0</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs32.livecode.dispatcher.handlers</a> &gt; <span class="el_source">DownloadInfoHandler.java</span></div><h1>DownloadInfoHandler.java</h1><pre class="source lang-java linenums">package edu.brown.cs32.livecode.dispatcher.handlers;
+
+import edu.brown.cs32.livecode.dispatcher.handlers.AddHelpRequesterHandler.FailureResponse;
+import edu.brown.cs32.livecode.dispatcher.sessionState.SessionState;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import spark.Request;
+import spark.Response;
+import spark.Route;
+
+/**
+ * This class is the DownloadInfoHandler class, implements the Route interface such that it can be
+ * attached to the endpoint /info.
+ *
+ * &lt;p&gt;A call to the /info endpoint allows a download of the attendance information.
+ *
+ * @author sarahridley juliazdzilowska rachelbrooks meganball
+ * @version 1.0
+ */
+public class DownloadInfoHandler implements Route {
+
+  private SessionState sessionState;
+
+  /**
+   * Constructor for the DownloadInfoHandler class
+   *
+   * @param sessionState SessionState representing the current state of the session
+   */
+<span class="fc" id="L30">  public DownloadInfoHandler(SessionState sessionState) {</span>
+<span class="fc" id="L31">    this.sessionState = sessionState;</span>
+<span class="fc" id="L32">  }</span>
+
+  /**
+   * Handler for a call to the /info endpoint
+   *
+   * @param request Request object containing parameters
+   * @param response Response object that is unused
+   * @return Json Object containing result of this request
+   */
+  @Override
+  public Object handle(Request request, Response response) throws Exception {
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">    if (sessionState.getRunning()) {</span>
+<span class="nc" id="L44">      return new FailureResponse(</span>
+              &quot;error_bad_request&quot;, &quot;Download data after session has finished running.&quot;)
+<span class="nc" id="L46">          .serialize();</span>
+    }
+<span class="fc" id="L48">    String info = request.queryParams(&quot;type&quot;);</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">    if (info == null) {</span>
+<span class="fc" id="L50">      return new FailureResponse(&quot;error_bad_request&quot;, &quot;Missing required parameter: type&quot;)</span>
+<span class="fc" id="L51">          .serialize();</span>
+    }
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">    if (info.equals(&quot;all&quot;)) {</span>
+<span class="nc" id="L54">      String filePath = &quot;data/all-attendance.csv&quot;;</span>
+<span class="nc" id="L55">      try (OutputStream outputStream = response.raw().getOutputStream()) {</span>
+<span class="nc" id="L56">        byte[] content = Files.readAllBytes(Paths.get(filePath));</span>
+<span class="nc" id="L57">        response.header(&quot;Content-Disposition&quot;, &quot;attachment; filename=all-attendance.csv&quot;);</span>
+<span class="nc" id="L58">        response.status(200);</span>
+<span class="nc" id="L59">        outputStream.write(content);</span>
+<span class="nc" id="L60">      } catch (Exception e) {</span>
+<span class="nc" id="L61">        return new FailureResponse(&quot;error_bad_request&quot;, &quot;File could not be downloaded&quot;).serialize();</span>
+<span class="nc" id="L62">      }</span>
+    }
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">    if (info.equals(&quot;debugging&quot;)) {</span>
+<span class="nc" id="L65">      try (OutputStream outputStream = response.raw().getOutputStream()) {</span>
+<span class="nc" id="L66">        String beginTime = this.sessionState.getBeginTime();</span>
+<span class="nc" id="L67">        String filePath = &quot;data/sessions/debugging-partner-attendance-&quot; + beginTime + &quot;.csv&quot;;</span>
+<span class="nc" id="L68">        byte[] content = Files.readAllBytes(Paths.get(filePath));</span>
+<span class="nc" id="L69">        response.header(</span>
+            &quot;Content-Disposition&quot;,
+            &quot;attachment; filename=debugging-attendance-&quot; + beginTime + &quot;.csv&quot;);
+<span class="nc" id="L72">        response.status(200);</span>
+<span class="nc" id="L73">        outputStream.write(content);</span>
+<span class="nc" id="L74">      } catch (Exception e) {</span>
+<span class="nc" id="L75">        return new FailureResponse(&quot;error_bad_request&quot;, &quot;File could not be downloaded&quot;).serialize();</span>
+<span class="nc" id="L76">      }</span>
+    }
+
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">    if (info.equals(&quot;helpRequester&quot;)) {</span>
+<span class="nc" id="L80">      String beginTime = this.sessionState.getBeginTime();</span>
+<span class="nc" id="L81">      String filePath = &quot;data/sessions/help-requester-attendance-&quot; + beginTime + &quot;.csv&quot;;</span>
+
+<span class="nc" id="L83">      byte[] content = Files.readAllBytes(Paths.get(filePath));</span>
+<span class="nc" id="L84">      response.header(</span>
+          &quot;Content-Disposition&quot;,
+          &quot;attachment; filename=help-requester-attendance-&quot; + beginTime + &quot;.csv&quot;);
+<span class="nc" id="L87">      response.status(200);</span>
+<span class="nc" id="L88">      try (OutputStream outputStream = response.raw().getOutputStream()) {</span>
+<span class="nc" id="L89">        outputStream.write(content);</span>
+<span class="nc" id="L90">      } catch (Exception e) {</span>
+<span class="nc" id="L91">        return new FailureResponse(&quot;error_bad_request&quot;, &quot;File could not be downloaded&quot;).serialize();</span>
+<span class="nc" id="L92">      }</span>
+    }
+<span class="fc" id="L94">    return new FailureResponse(</span>
+            &quot;error_bad_request&quot;, &quot;Please enter what type of info you would like to download&quot;)
+<span class="fc" id="L96">        .serialize();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

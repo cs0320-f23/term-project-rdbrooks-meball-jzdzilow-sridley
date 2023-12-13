@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SessionHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">s0</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs32.livecode.dispatcher.handlers</a> &gt; <span class="el_source">SessionHandler.java</span></div><h1>SessionHandler.java</h1><pre class="source lang-java linenums">package edu.brown.cs32.livecode.dispatcher.handlers;
+
+import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartnerQueue;
+import edu.brown.cs32.livecode.dispatcher.handlers.AddHelpRequesterHandler.FailureResponse;
+import edu.brown.cs32.livecode.dispatcher.handlers.AddHelpRequesterHandler.SuccessResponse;
+import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequesterQueue;
+import edu.brown.cs32.livecode.dispatcher.sessionState.CsvWriter;
+import edu.brown.cs32.livecode.dispatcher.sessionState.SessionState;
+import edu.brown.cs32.livecode.dispatcher.utils.Utils;
+import spark.Request;
+import spark.Response;
+import spark.Route;
+
+/**
+ * This class is the SessionHandler class, implements the Route interface such that it can be
+ * attached to the endpoint /session.
+ *
+ * &lt;p&gt;A call to the /session endpoint allows a HelpRequester to leave the queue once they are done
+ * getting debugged.
+ *
+ * @author sarahridley juliazdzilowska rachelbrooks meganball
+ * @version 1.0
+ */
+public class SessionHandler implements Route {
+  private final HelpRequesterQueue helpRequesterQueue;
+  private final DebuggingPartnerQueue debuggingPartnerQueue;
+  private final SessionState sessionState;
+
+  /**
+   * Constructor for the SessionHandler class
+   *
+   * @param helpRequesterQueue HelpRequesterQueue containing all HelpRequester info
+   * @param debuggingPartnerQueue DebuggingPartnerQueue containing all DebuggingPartner info
+   * @param sessionState SessionState representing the current state of the session
+   */
+  public SessionHandler(
+      HelpRequesterQueue helpRequesterQueue,
+      DebuggingPartnerQueue debuggingPartnerQueue,
+<span class="fc" id="L39">      SessionState sessionState) {</span>
+<span class="fc" id="L40">    this.helpRequesterQueue = helpRequesterQueue;</span>
+<span class="fc" id="L41">    this.debuggingPartnerQueue = debuggingPartnerQueue;</span>
+<span class="fc" id="L42">    this.sessionState = sessionState;</span>
+<span class="fc" id="L43">  }</span>
+
+  /**
+   * Handler for a call to the /session endpoint
+   *
+   * @param request Request object containing parameters
+   * @param response Response object that is unused
+   * @return Json Object containing result of this request
+   */
+  @Override
+  public Object handle(Request request, Response response) throws Exception {
+<span class="fc" id="L54">    String command = request.queryParams(&quot;command&quot;);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">    if (command == null) {</span>
+<span class="fc" id="L56">      return new FailureResponse(&quot;error_bad_request&quot;, &quot;Missing required parameter: command&quot;)</span>
+<span class="fc" id="L57">          .serialize();</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">    } else if (command.equals(&quot;end&quot;)) {</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">      if (sessionState.getRunning()) {</span>
+<span class="fc" id="L60">        sessionState.setEndTime(Utils.date());</span>
+<span class="fc" id="L61">        CsvWriter writer = new CsvWriter(helpRequesterQueue, debuggingPartnerQueue, sessionState);</span>
+<span class="fc" id="L62">        writer.write();</span>
+<span class="fc" id="L63">        sessionState.setRunning(false);</span>
+<span class="fc" id="L64">        return new SuccessResponse(&quot;Ended session!&quot;).serialize();</span>
+      } else {
+<span class="fc" id="L66">        return new FailureResponse(&quot;error_bad_request&quot;, &quot;Cannot end if no session is running.&quot;)</span>
+<span class="fc" id="L67">            .serialize();</span>
+      }
+<span class="fc bfc" id="L69" title="All 2 branches covered.">    } else if (command.equals(&quot;begin&quot;)) {</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">      if (!sessionState.getRunning()) {</span>
+<span class="fc" id="L71">        sessionState.setBeginTime(Utils.date());</span>
+<span class="fc" id="L72">        sessionState.setRunning(true);</span>
+<span class="fc" id="L73">        helpRequesterQueue.reset();</span>
+<span class="fc" id="L74">        debuggingPartnerQueue.reset();</span>
+<span class="fc" id="L75">        return new SuccessResponse(&quot;Began new session!&quot;).serialize();</span>
+      } else {
+<span class="fc" id="L77">        return new FailureResponse(</span>
+                &quot;error_bad_request&quot;, &quot;Cannot begin if session is already running.&quot;)
+<span class="fc" id="L79">            .serialize();</span>
+      }
+    } else {
+<span class="fc" id="L82">      return new FailureResponse(</span>
+              &quot;error_bad_request&quot;, &quot;Required parameter command must be end or begin.&quot;)
+<span class="fc" id="L84">          .serialize();</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

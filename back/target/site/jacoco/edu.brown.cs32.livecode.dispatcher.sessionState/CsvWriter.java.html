@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CsvWriter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">s0</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs32.livecode.dispatcher.sessionState</a> &gt; <span class="el_source">CsvWriter.java</span></div><h1>CsvWriter.java</h1><pre class="source lang-java linenums">package edu.brown.cs32.livecode.dispatcher.sessionState;
+
+import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartner;
+import edu.brown.cs32.livecode.dispatcher.debuggingPartner.DebuggingPartnerQueue;
+import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequester;
+import edu.brown.cs32.livecode.dispatcher.helpRequester.HelpRequesterQueue;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * This class is the CsvWriter class that handles writing attendance information to the data
+ * directory. It writes to CSVs for session HelpRequester data, session DebuggingPartner data, and
+ * contributes to a running all-attendance.csv file that keeps data from all sessions.
+ *
+ * @author sarahridley juliazdzilowska rachelbrooks meganball
+ * @version 1.0
+ */
+public class CsvWriter {
+  private final HelpRequesterQueue helpRequesterQueue;
+  private final DebuggingPartnerQueue debuggingPartnerQueue;
+  private final SessionState sessionState;
+
+  /**
+   * Constructor for the CSVWriter class
+   *
+   * @param helpRequesterQueue HelpRequesterQueue containing all HelpRequester info
+   * @param debuggingPartnerQueue DebuggingPartnerQueue containing all DebuggingPartner info
+   * @param sessionState SessionState representing the current state of the session
+   */
+  public CsvWriter(
+      HelpRequesterQueue helpRequesterQueue,
+      DebuggingPartnerQueue debuggingPartnerQueue,
+<span class="fc" id="L35">      SessionState sessionState) {</span>
+<span class="fc" id="L36">    this.helpRequesterQueue = helpRequesterQueue;</span>
+<span class="fc" id="L37">    this.debuggingPartnerQueue = debuggingPartnerQueue;</span>
+<span class="fc" id="L38">    this.sessionState = sessionState;</span>
+<span class="fc" id="L39">  }</span>
+
+  /** Helper function that writes to the all-attendance.csv file in the data directory */
+  public void writeAllAttendance(String allAttendanceFileName) {
+    try {
+<span class="fc" id="L44">      FileWriter myWriter = new FileWriter(allAttendanceFileName, true);</span>
+<span class="fc" id="L45">      String beginTime = sessionState.getBeginTime();</span>
+<span class="fc" id="L46">      String endTime = sessionState.getEndTime();</span>
+<span class="fc" id="L47">      List&lt;HelpRequester&gt; allHelpRequesters = helpRequesterQueue.getAllHelpRequesters();</span>
+<span class="fc" id="L48">      List&lt;String&gt; allHelpRequestersNames = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L49">      List&lt;String&gt; unseenHelpRequestersNames = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L50">      List&lt;DebuggingPartner&gt; allDebuggingPartners =</span>
+<span class="fc" id="L51">          debuggingPartnerQueue.getAllDebuggingPartnerList();</span>
+<span class="fc" id="L52">      List&lt;String&gt; allDebuggingPartnersNames = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L53">      List&lt;String&gt; unseenDebuggingPartnersNames = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">      for (DebuggingPartner debuggingPartner : allDebuggingPartners) {</span>
+<span class="fc" id="L55">        allDebuggingPartnersNames.add(</span>
+<span class="fc" id="L56">            debuggingPartner.getName() + &quot;: &quot; + debuggingPartner.getStudentsHelped());</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">        if (debuggingPartner.getStudentsHelped() == 0) {</span>
+<span class="fc" id="L58">          unseenDebuggingPartnersNames.add(debuggingPartner.getName());</span>
+        }
+<span class="fc" id="L60">      }</span>
+<span class="fc" id="L61">      List&lt;String&gt; pairs = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">      for (HelpRequester helpRequester : allHelpRequesters) {</span>
+<span class="fc" id="L63">        allHelpRequestersNames.add(helpRequester.getName());</span>
+<span class="fc" id="L64">        DebuggingPartner helper = helpRequester.getDebuggingPartner();</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        if (helper != null) {</span>
+<span class="nc" id="L66">          pairs.add(</span>
+              &quot;Help Requester: &quot;
+<span class="nc" id="L68">                  + helpRequester.getName()</span>
+                  + &quot;, Debugging Partner: &quot;
+<span class="nc" id="L70">                  + helper.getName());</span>
+        } else {
+<span class="fc" id="L72">          unseenHelpRequestersNames.add(helpRequester.getName());</span>
+        }
+<span class="fc" id="L74">      }</span>
+<span class="fc" id="L75">      String toWrite = beginTime + &quot;, &quot; + endTime + &quot;, &quot;;</span>
+<span class="fc" id="L76">      toWrite += String.join(&quot;; &quot;, allDebuggingPartnersNames) + &quot;, &quot;;</span>
+<span class="fc" id="L77">      toWrite += String.join(&quot;; &quot;, allHelpRequestersNames) + &quot;, &quot;;</span>
+<span class="fc" id="L78">      toWrite += String.join(&quot;; &quot;, pairs) + &quot;, &quot;;</span>
+<span class="fc" id="L79">      toWrite += String.join(&quot;; &quot;, unseenDebuggingPartnersNames) + &quot;, &quot;;</span>
+<span class="fc" id="L80">      toWrite += String.join(&quot;; &quot;, unseenHelpRequestersNames) + &quot;\n&quot;;</span>
+<span class="fc" id="L81">      myWriter.write(toWrite);</span>
+<span class="fc" id="L82">      myWriter.close();</span>
+<span class="nc" id="L83">    } catch (IOException e) {</span>
+<span class="nc" id="L84">      e.printStackTrace();</span>
+<span class="fc" id="L85">    }</span>
+<span class="fc" id="L86">  }</span>
+
+  /**
+   * Helper function that writes to a new HelpRequester file and a new DebuggingPartner file in the
+   * sessions directory inside the data directory
+   */
+  public void writeSessionAttendance(
+      String debuggingPartnerFileName, String helpRequesterFileName) {
+    try {
+<span class="fc" id="L95">      FileWriter dpWriter = new FileWriter(debuggingPartnerFileName, true);</span>
+<span class="fc" id="L96">      FileWriter hrWriter = new FileWriter(helpRequesterFileName, true);</span>
+<span class="fc" id="L97">      dpWriter.write(</span>
+          &quot;DebuggingPartnerName, DebuggingPartnerEmail, JoinedTime, LastPairedAtTime, HelpRequestersSeen\n&quot;);
+<span class="fc" id="L99">      hrWriter.write(</span>
+          &quot;HelpRequesterName, HelpRequesterEmail, JoinedTime, PairAtTime, AssignedDebuggingPartnerName\n&quot;);
+
+<span class="fc" id="L102">      List&lt;HelpRequester&gt; allHelpRequesters = helpRequesterQueue.getAllHelpRequesters();</span>
+<span class="fc" id="L103">      List&lt;DebuggingPartner&gt; allDebuggingPartners =</span>
+<span class="fc" id="L104">          debuggingPartnerQueue.getAllDebuggingPartnerList();</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">      for (DebuggingPartner debuggingPartner : allDebuggingPartners) {</span>
+<span class="fc" id="L106">        dpWriter.write(</span>
+<span class="fc" id="L107">            debuggingPartner.getName()</span>
+                + &quot;, &quot;
+<span class="fc" id="L109">                + debuggingPartner.getEmail()</span>
+                + &quot;, &quot;
+<span class="fc" id="L111">                + debuggingPartner.getJoinedTime()</span>
+                + &quot;, &quot;
+<span class="fc" id="L113">                + debuggingPartner.getPairedAtTime()</span>
+                + &quot;, &quot;
+<span class="fc" id="L115">                + debuggingPartner.getStudentsHelped()</span>
+                + &quot;\n&quot;);
+<span class="fc" id="L117">      }</span>
+<span class="fc" id="L118">      dpWriter.close();</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">      for (HelpRequester helpRequester : allHelpRequesters) {</span>
+<span class="fc" id="L120">        hrWriter.write(</span>
+<span class="fc" id="L121">            helpRequester.getName()</span>
+                + &quot;, &quot;
+<span class="fc" id="L123">                + helpRequester.getEmail()</span>
+                + &quot;, &quot;
+<span class="fc" id="L125">                + helpRequester.getJoinedTime()</span>
+                + &quot;, &quot;
+<span class="fc" id="L127">                + helpRequester.getPairedAtTime()</span>
+                + &quot;, &quot;
+<span class="fc" id="L129">                + helpRequester.getDebuggingPartner()</span>
+                + &quot;\n&quot;);
+<span class="fc" id="L131">      }</span>
+<span class="fc" id="L132">      hrWriter.close();</span>
+<span class="nc" id="L133">    } catch (IOException e) {</span>
+<span class="nc" id="L134">      e.printStackTrace();</span>
+<span class="fc" id="L135">    }</span>
+<span class="fc" id="L136">  }</span>
+
+  /** Main function that calls the helper functions to write all attendance information */
+  public void write() {
+<span class="fc" id="L140">    String beginTime = sessionState.getBeginTime();</span>
+<span class="fc" id="L141">    writeAllAttendance(&quot;data/all-attendance.csv&quot;);</span>
+<span class="fc" id="L142">    writeSessionAttendance(</span>
+        &quot;data/sessions/debugging-partner-attendance-&quot; + beginTime + &quot;.csv&quot;,
+        &quot;data/sessions/help-requester-attendance-&quot; + beginTime + &quot;.csv&quot;);
+<span class="fc" id="L145">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
