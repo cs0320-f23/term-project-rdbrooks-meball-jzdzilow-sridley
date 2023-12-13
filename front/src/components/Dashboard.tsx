@@ -445,8 +445,10 @@ const Dashboard = () => {
     if (bugCategory === "" || debuggingProcess === "") {
       return alert("Bug category and debugging process inputs required!");
     }
-    if (!singleSession.partner){
-      alert("You cannot submit this form until you have been matched with a help requester")
+    if (!singleSession.partner) {
+      alert(
+        "You cannot submit this form until you have been matched with a help requester"
+      );
     }
     if (userSession.user && singleSession.partner) {
       console.log(
