@@ -103,10 +103,10 @@ const LoginPage = () => {
           role: "",
         };
 
-        // defensive programming
-        if (!user?.email.includes("brown.edu")) {
-          return navigate("/failed-login");
-        }
+        // // defensive programming
+        // if (!user?.email.includes("brown.edu")) {
+        //   return navigate("/failed-login");
+        // }
 
         try {
           const roleFromBackend = await getRoleFromBackend(user.email);
