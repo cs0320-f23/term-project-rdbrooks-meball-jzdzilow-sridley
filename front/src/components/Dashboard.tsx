@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useRecoilValue, useRecoilState, useSetRecoilState } from "recoil";
+import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
 import {
   IssueType,
   UserRole,
@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import Timer from "./Timer";
 import "../styles/nightsky.scss";
 import { IUser } from "../types/IUser";
+//import * as FileSaver from "file-saver";
 
 const Dashboard = () => {
   const [userSession, setUserSession] = useRecoilState(userSessionState);
@@ -192,7 +193,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const getInfoResponse = await fetch("http://localhost:3333/getInfo")
+        await fetch("http://localhost:3333/getInfo")
           .then((response) => response.json())
           .then((data) => {
             // if successfully can get info (and thus session is running), set values appropriately
@@ -237,7 +238,7 @@ const Dashboard = () => {
     const fetchUserData = async () => {
       try {
         if (userSession.role === UserRole.DebuggingPartner) {
-          const getInfoResponse = await fetch(
+          await fetch(
             "http://localhost:3333/getInfo?role=debuggingPartner&name=" +
               userSession.user?.name +
               "&email=" +
@@ -313,7 +314,7 @@ const Dashboard = () => {
             });
         }
         if (userSession.role === UserRole.HelpRequester) {
-          const getInfoResponse = await fetch(
+          await fetch(
             "http://localhost:3333/getInfo?role=helpRequester&name=" +
               userSession.user?.name +
               "&email=" +
@@ -588,13 +589,41 @@ const Dashboard = () => {
   // ends the session by calling backend
   const handleEnd = async () => {
     try {
+      // end session
       await fetch("http://localhost:3333/session?command=end");
+
+      const downloadInfoResponse = await fetch(
+        "http://localhost:3333/downloadInfo?type=debugging"
+      );
+
+      if (downloadInfoResponse.ok) {
+        // if success response
+        const csvBlob = await downloadInfoResponse.blob(); // create blob element
+        const downloadLink = document.createElement("a"); // create link
+        downloadLink.href = URL.createObjectURL(csvBlob); // url for blob, set as href attribute
+
+        // get current date for filename
+        const currentDate = new Date();
+        const formattedDateTime =
+          currentDate.toLocaleDateString() +
+          "-" +
+          currentDate.toLocaleTimeString();
+
+        // Set file name for download
+        downloadLink.download =
+          "debugging-attendance-" + formattedDateTime + ".csv";
+        document.body.appendChild(downloadLink); // add link to document body
+        downloadLink.click(); // trigger click on link
+        document.body.removeChild(downloadLink); // remove link from document body
+      } else {
+        console.log("ERROR: could not download");
+      }
     } catch (error) {
-      console.error("ERROR: " + error);
+      console.log("ERROR: " + error);
       // TODO: Handle errors as needed
     }
     setSessionStarted(false);
-  }; // TODO: bring everybody back to login page when session ended
+  };
 
   // removes a debugging partner from attendance (button accessible to instructors)
   const handleRemove = (name: string, email: string) => async () => {
@@ -641,6 +670,35 @@ const Dashboard = () => {
 
   console.log("session started " + sessionStarted);
 
+  const handleDownloadAll = async () => {
+    await fetch("http://localhost:3333/downloadInfo?type=all", {
+      method: "GET",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          alert("HTTP error! Status: " + response.status);
+        }
+        const filenameHeader = response.headers.get("Content-Disposition");
+        const filename = filenameHeader
+          ? filenameHeader.split("=")[1]
+          : "all-attendance.csv";
+        console.log(filename);
+        console.log(filenameHeader);
+        return response.blob().then((blob) => ({ blob, filename }));
+      })
+      .then(({ blob, filename }) => {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch((error) => {
+        alert("Error: " + error);
+      });
+  }
+
   /* ----------------------- end of handlers / below rendering ---------------------------*/
 
   const renderHeaderBasedOnRole = (role: UserRole) => {
@@ -648,6 +706,7 @@ const Dashboard = () => {
       case UserRole.Instructor:
         return (
           <header className="instructor-header">
+          <button className="download-button" onClick={handleDownloadAll}>Download All Data</button>
             {!sessionStarted ? (
               <button className="start-button" onClick={handleStart}>
                 Start Session
