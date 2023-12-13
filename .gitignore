@@ -11,3 +11,5 @@ back/.idea/
 back/.mvn
 back/.mvn-classpath
 back/pom.xml.bak
+
+node_modules/
