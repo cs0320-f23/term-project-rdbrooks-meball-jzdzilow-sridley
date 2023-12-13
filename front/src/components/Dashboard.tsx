@@ -298,6 +298,14 @@ const Dashboard = () => {
 
               // does the help requester need access to the debugging partner's email?
               const partnerName = data.debuggingPartnerName;
+
+              if (partnerName === "") {
+                setSingleSession({
+                  partner: null,
+                  issueType: IssueType.NoneSelected,
+                });
+              }
+
               if (partnerName !== "") {
                 var partner: IUser = {
                   email: "",
