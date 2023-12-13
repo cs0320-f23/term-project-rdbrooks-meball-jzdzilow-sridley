@@ -539,7 +539,7 @@ const Dashboard = () => {
         .then((response) => response.json())
         .then((data) => {
           if (data.result === "success") {
-            setEscalationResult("Your help requester has been escalated");
+            setEscalationResult("Escalation Success");
           } else {
             setEscalationResult("Escalation failed");
           }
