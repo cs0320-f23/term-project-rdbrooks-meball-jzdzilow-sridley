@@ -43,7 +43,6 @@ export function checkSessionStarted(): Promise<boolean> {
         return true;
       } else {
         // error with getting info means session not successful started
-        alert("ERROR: " + data["result"] + ", " + data["error_message"]);
         return false;
       }
     })
