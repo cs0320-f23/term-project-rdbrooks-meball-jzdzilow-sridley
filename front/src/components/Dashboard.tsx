@@ -164,7 +164,9 @@ const Dashboard = () => {
     const millisecondsInSecond = 1000; // 1 sec in milliseconds
 
     const currTimeMilis =
-      currentHour * millisecondsHour + currentMin * millisecondsInMinute + currentSec * millisecondsInSecond;
+      currentHour * millisecondsHour +
+      currentMin * millisecondsInMinute +
+      currentSec * millisecondsInSecond;
 
     // change userSession.time.getTime() to something that changes when people are matched
     console.log(currTimeMilis, pairedTime);
@@ -260,8 +262,8 @@ const Dashboard = () => {
                 .split(":")
                 .map(Number);
 
-              console.log(data.pairedAtTime)
-              console.log(pairedAtTimeString)
+              console.log(data.pairedAtTime);
+              console.log(pairedAtTimeString);
 
               const millisecondsInHour = 60 * 60 * 1000; // 1 hour in milliseconds
               const millisecondsInMinute = 60 * 1000; // 1 minute in milliseconds
@@ -271,9 +273,9 @@ const Dashboard = () => {
               var adjustHours = hours;
 
               // add 12 hours to the hours from the backend when in the 24 hr clock it's 13+
-              if(new Date().getHours() > 12){
+              if (new Date().getHours() > 12) {
                 adjustHours += 12;
-              } 
+              }
 
               // adjust hours will be the hours when 0-12
               // adjust hours will add 12 hours to backend when 13-24
@@ -281,8 +283,6 @@ const Dashboard = () => {
                 adjustHours * millisecondsInHour +
                 minutes * millisecondsInMinute +
                 seconds * millisecondsInSecond;
-
-              
 
               if (partnerName === "") {
                 setSingleSession({
@@ -323,8 +323,13 @@ const Dashboard = () => {
             .then((data) => {
               console.log(data.debuggingPartnerName);
 
-              // does the help requester need access to the debugging partner's email?
               const partnerName = data.debuggingPartnerName;
+
+              const escalated = data.escalated;
+              if (escalated) {
+                setEscalationResult("You have been escalated");
+              }
+              console.log(escalated);
 
               if (partnerName === "") {
                 setSingleSession({
@@ -440,6 +445,9 @@ const Dashboard = () => {
     if (bugCategory === "" || debuggingProcess === "") {
       return alert("Bug category and debugging process inputs required!");
     }
+    if (!singleSession.partner){
+      alert("You cannot submit this form until you have been matched with a help requester")
+    }
     if (userSession.user && singleSession.partner) {
       console.log(
         userSession.user.email,
@@ -531,7 +539,7 @@ const Dashboard = () => {
         .then((response) => response.json())
         .then((data) => {
           if (data.result === "success") {
-            setEscalationResult("You have been escalated");
+            setEscalationResult("Escalation Success");
           } else {
             setEscalationResult("Escalation failed");
           }
@@ -961,6 +969,9 @@ const Dashboard = () => {
                     : "No one yet!"}
                 </b>{" "}
               </p>
+            </div>
+            <div className="escalation-content">
+              {escalationResult && <p>{escalationResult}</p>}
             </div>
           </div>
         );
