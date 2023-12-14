@@ -5,22 +5,12 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { mockedMode, userSessionState } from "../recoil/atoms";
 import { UserRole } from "../recoil/atoms";
 import { IUser } from "../types/IUser";
+import { firebaseConfig } from "../private/FirebaseAPI";
 
 // Used the following video for firebase authentication: https://www.youtube.com/watch?v=vDT7EnUpEoo
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 // Import functions needed from appropriate SDKs
 import { initializeApp } from "firebase/app";
-
-// Web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyCpEp6SMcO3hen7UKMeR-NNEy7ySSWStYI",
-  authDomain: "collab-section-manager.firebaseapp.com",
-  projectId: "collab-section-manager",
-  storageBucket: "collab-section-manager.appspot.com",
-  messagingSenderId: "682750943740",
-  appId: "1:682750943740:web:36bb8a15ff7bea374fd279",
-  measurementId: "G-1FFWDE2HTT",
-};
 
 // using login email, determine if instructor by calling backend
 function getRoleFromBackend(email: string): Promise<string> {
