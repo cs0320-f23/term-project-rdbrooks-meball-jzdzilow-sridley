@@ -28,5 +28,7 @@ export const singleSessionState = atom({
   default: { partner: null as IUser | null, issueType: IssueType.NoneSelected },
 });
 
-// allows changing between modes
-export const mockedMode: boolean = false;
+export const mockedMode = atom<boolean>({
+  key: "mockedMode",
+  default: false,
+});

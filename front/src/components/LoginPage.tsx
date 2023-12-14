@@ -57,6 +57,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const setUserSession = useSetRecoilState(userSessionState);
+  const [isMockedMode, setMockedMode] = useRecoilState(mockedMode);
 
   // MOCKED LOGIN - uses mocked data to determine user role and navigate to appropriate page
   const handleLoginMocked = async () => {
@@ -76,6 +77,10 @@ const LoginPage = () => {
     } else {
       return navigate("/failed-login");
     }
+  };
+
+  const handleMockedMode = (ifMocked: boolean) => {
+    setMockedMode(ifMocked);
   };
 
   // initialize Firebase login and redirect to appropriate page
@@ -163,7 +168,7 @@ const LoginPage = () => {
   };
 
   // two different displays depending on if mocked mode
-  if (!mockedMode) {
+  if (!isMockedMode) {
     return (
       <div className="login-body">
         <div className="login-container">
@@ -172,6 +177,12 @@ const LoginPage = () => {
             Sign In With Google
           </button>
         </div>
+        <button
+          onClick={() => handleMockedMode(true)}
+          className="mocked-button"
+        >
+          Mocked Mode
+        </button>
       </div>
     );
   } else {
@@ -199,6 +210,12 @@ const LoginPage = () => {
             Login
           </button>
         </div>
+        <button
+          onClick={() => handleMockedMode(false)}
+          className="mocked-button"
+        >
+          Regular Mode
+        </button>
       </div>
     );
   }

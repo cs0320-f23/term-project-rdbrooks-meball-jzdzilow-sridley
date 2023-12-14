@@ -3,6 +3,7 @@
     "axios": "^1.6.2",
     "csv": "^6.3.5",
     "file-saver": "^2.0.5",
+    "playwright": "^1.40.1",
     "react-modal": "^3.16.1",
     "react-tooltip": "^5.24.0",
     "sass": "^1.69.5"

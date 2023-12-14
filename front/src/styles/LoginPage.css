@@ -85,3 +85,29 @@
   background-color: var(--landing-background-color);
   color: white;
 }
+
+.mocked-button {
+  position: absolute;
+  text-align: center;
+  margin-bottom: -700px;
+  margin-right: -1200px;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background: var(--landing-background-color);
+  color: #ffffff;
+  border-radius: 40px;
+  font-size: 8px;
+  font-weight: 600;
+  width: 130px;
+  height: 30px;
+  white-space: nowrap;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+  transition: 0.5s ease;
+}
+
+.mocked-button:hover {
+  background-color: white;
+  color: black;
+}
