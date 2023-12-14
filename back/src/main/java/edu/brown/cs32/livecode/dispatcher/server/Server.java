@@ -38,17 +38,18 @@ public class Server {
       HelpRequesterQueue helpRequesterQueue, DebuggingPartnerQueue debuggingPartnerQueue) {
     this.sessionState = new SessionState(false);
     Spark.port(port);
-    before((requester, response) -> {
-      response.header("Access-Control-Allow-Origin", "*");
-      response.header("Access-Control-Allow-Methods", "*");
-      //response.header("Access-Control-Allow-Headers", "Content-Type");
-    });
+    before(
+        (requester, response) -> {
+          response.header("Access-Control-Allow-Origin", "*");
+          response.header("Access-Control-Allow-Methods", "*");
+          // response.header("Access-Control-Allow-Headers", "Content-Type");
+        });
 
     after(
         (request, response) -> {
           // commented this out for being able to download info
-          //response.header("Access-Control-Allow-Origin", "*");
-          //response.header("Access-Control-Allow-Methods", "*");
+          // response.header("Access-Control-Allow-Origin", "*");
+          // response.header("Access-Control-Allow-Methods", "*");
         });
 
     // parse csv of instructors (to avoid repetition everytime endpoint called)
