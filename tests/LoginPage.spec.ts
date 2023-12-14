@@ -4,6 +4,19 @@ test.beforeEach(async ({ page }) => {
   await page.goto("http://localhost:3000/");
 });
 
+test("Landing page has the required UI components", async ({ page }) => {
+  const logoVisible = await page.isVisible(".pulsing-logo");
+  expect(logoVisible).toBeTruthy();
+  const transitionClassNotApplied = await page.isVisible(".transition");
+  expect(transitionClassNotApplied).toBeFalsy();
+  // during initial 2.5 seconds
+  await page.waitForTimeout(2500);
+
+  // Check if the transition class is applied
+  const transitionClassApplied = await page.isVisible(".transition");
+  expect(transitionClassApplied).toBeTruthy();
+});
+
 test("LoginPage has the required ui components on regular mode", async ({
   page,
 }) => {
@@ -66,11 +79,11 @@ test("LoginPage's incorrect mocked login is functional", async ({ page }) => {
   await expect(page.locator(".login-container")).toBeVisible();
 });
 
-test("LoginPage's incorrect mocked login with proper email is functional", async ({
+test("LoginPage's incorrect mocked login with proper (brown) email is functional", async ({
   page,
 }) => {
   await page.click('button:has-text("Mocked Mode")');
-  await page.fill('input[type="email"]', "josiah_carberry@brown.edu");
+  await page.fill('input[type="email"]', "josiah_carberry@gmail.com");
   await page.fill('input[type="password"]', "wrong");
   await page.click('button:has-text("Login")');
   await expect(page.locator(".role-body")).toBeHidden();

@@ -6,6 +6,7 @@ front/node_modules/
 
 # backend ignored folders
 back/.idea/
+back/node_modules/
 
 # Maven
 back/.mvn
@@ -13,3 +14,6 @@ back/.mvn-classpath
 back/pom.xml.bak
 
 node_modules/
+
+#playwright 
+test-results/
