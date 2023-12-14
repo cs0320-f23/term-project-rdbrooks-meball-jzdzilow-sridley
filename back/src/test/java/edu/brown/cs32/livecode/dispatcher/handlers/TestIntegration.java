@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import okio.Buffer;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import spark.Spark;
 
 public class TestIntegration implements Runnable {
@@ -51,7 +52,7 @@ public class TestIntegration implements Runnable {
   private SessionState sessionState = new SessionState(true);
 
   // @Test
-  public void testIntegration() throws IOException, InterruptedException {
+  public void testFlagIntegration() throws IOException, InterruptedException {
     Server server = new Server(helpRequesterQueue, debuggingPartnerQueue);
     new Thread(this).start();
     HttpURLConnection beginConnection = tryRequest("session?command=begin");
@@ -104,6 +105,77 @@ public class TestIntegration implements Runnable {
     pairs = body.get("pairs").toString();
     Assertions.assertEquals(
         "[[[Sally, sally@gmail.com], [Sarah, sarah@gmail.com], [", pairs.substring(0, 55));
+  }
+
+  //@Test
+  public void testRepairingMany() throws IOException, InterruptedException {
+    Server server = new Server(helpRequesterQueue, debuggingPartnerQueue);
+    new Thread(this).start();
+    HttpURLConnection beginConnection = tryRequest("session?command=begin");
+    Assertions.assertEquals(200, beginConnection.getResponseCode());
+    Map<String, Object> body =
+        adapter.fromJson(new Buffer().readFrom(beginConnection.getInputStream()));
+    Assertions.assertEquals("success", body.get("result"));
+    Assertions.assertEquals("Began new session!", body.get("message"));
+    HttpURLConnection addConnection =
+        tryRequest("addHelpRequester?name=HRone&email=HRone@gmail.com&bugType=bug");
+    Assertions.assertEquals(200, addConnection.getResponseCode());
+    body = adapter.fromJson(new Buffer().readFrom(addConnection.getInputStream()));
+    Assertions.assertEquals("success", body.get("result"));
+    Assertions.assertEquals("Help Requester HRone was added to the queue.", body.get("message"));
+    HttpURLConnection addAnotherConnection =
+        tryRequest("addHelpRequester?name=HRtwo&email=HRtwo@gmail.com&bugType=bug");
+    Assertions.assertEquals(200, addAnotherConnection.getResponseCode());
+    body = adapter.fromJson(new Buffer().readFrom(addAnotherConnection.getInputStream()));
+    Assertions.assertEquals("success", body.get("result"));
+    Assertions.assertEquals("Help Requester HRtwo was added to the queue.", body.get("message"));
+    addAnotherConnection =
+        tryRequest("addHelpRequester?name=HRthree&email=HRthree@gmail.com&bugType=bug");
+    Assertions.assertEquals(200, addAnotherConnection.getResponseCode());
+    body = adapter.fromJson(new Buffer().readFrom(addAnotherConnection.getInputStream()));
+    Assertions.assertEquals("success", body.get("result"));
+    Assertions.assertEquals("Help Requester HRthree was added to the queue.", body.get("message"));
+    HttpURLConnection addConnectionAgain =
+        tryRequest("addDebuggingPartner?name=DBone&email=DBone@gmail.com");
+    Assertions.assertEquals(200, addConnectionAgain.getResponseCode());
+    body = adapter.fromJson(new Buffer().readFrom(addConnectionAgain.getInputStream()));
+    Assertions.assertEquals("success", body.get("result"));
+    Assertions.assertEquals(
+        "Debugging Partner DBone was added to the queue.", body.get("message"));
+    HttpURLConnection addConnectionThird =
+        tryRequest("addDebuggingPartner?name=DBtwo&email=DBtwo@gmail.com");
+    Assertions.assertEquals(200, addConnectionThird.getResponseCode());
+    body = adapter.fromJson(new Buffer().readFrom(addConnectionThird.getInputStream()));
+    Assertions.assertEquals("success", body.get("result"));
+    Assertions.assertEquals("Debugging Partner DBtwo was added to the queue.", body.get("message"));
+    Thread.sleep(4000);
+    // Check to ensure correct pairings
+    HttpURLConnection getInfoConnection = tryRequest("getInfo");
+    Assertions.assertEquals(200, getInfoConnection.getResponseCode());
+    body = adapter.fromJson(new Buffer().readFrom(getInfoConnection.getInputStream()));
+    Assertions.assertEquals("success", body.get("result"));
+    String pairs = body.get("pairs").toString();
+    Assertions.assertEquals(
+        "[[[DBone, DBone@gmail.com], [HRone, HRone@gmail.com], [", pairs.substring(0, 55));
+    Assertions.assertEquals(
+        "[[DBtwo, DBtwo@gmail.com], [HRtwo, HRtwo@gmail.com], [", pairs.substring(67, 121));
+    HttpURLConnection hrDoneConnection = tryRequest("helpRequesterDone?name=HRone&email=HRone@gmail.com");
+    Assertions.assertEquals(200, hrDoneConnection.getResponseCode());
+    body = adapter.fromJson(new Buffer().readFrom(hrDoneConnection.getInputStream()));
+    Assertions.assertEquals("success", body.get("result"));
+    Assertions.assertEquals(
+        "Help Requester HRone has been debugged and allowed to leave!", body.get("message"));
+    Thread.sleep(4000);
+    // Check to ensure correct pairings
+    getInfoConnection = tryRequest("getInfo");
+    Assertions.assertEquals(200, getInfoConnection.getResponseCode());
+    body = adapter.fromJson(new Buffer().readFrom(getInfoConnection.getInputStream()));
+    Assertions.assertEquals("success", body.get("result"));
+    pairs = body.get("pairs").toString();
+    Assertions.assertEquals(
+        "[[[DBtwo, DBtwo@gmail.com], [HRtwo, HRtwo@gmail.com], [", pairs.substring(0, 55));
+    Assertions.assertEquals(
+        "[[DBone, DBone@gmail.com], [HRthree, HRthree@gmail.com], [", pairs.substring(67, 125));
   }
 
   @Override

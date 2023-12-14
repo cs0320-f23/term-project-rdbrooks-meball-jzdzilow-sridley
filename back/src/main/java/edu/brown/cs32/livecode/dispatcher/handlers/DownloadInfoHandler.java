@@ -2,25 +2,12 @@ package edu.brown.cs32.livecode.dispatcher.handlers;
 
 import edu.brown.cs32.livecode.dispatcher.handlers.AddHelpRequesterHandler.FailureResponse;
 import edu.brown.cs32.livecode.dispatcher.sessionState.SessionState;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import javax.servlet.http.HttpServletResponse;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.io.OutputStream;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * This class is the DownloadInfoHandler class, implements the Route interface such that it can be
