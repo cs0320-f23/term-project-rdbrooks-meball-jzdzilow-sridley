@@ -12,6 +12,7 @@ back/node_modules/
 back/.mvn
 back/.mvn-classpath
 back/pom.xml.bak
+back/target
 
 node_modules/
 
