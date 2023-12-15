@@ -30,7 +30,9 @@ function getRoleFromBackend(email: string): Promise<string> {
       return data["message"]; // either student or instructor
     })
     .catch((error) => {
-      return alert("ERROR: " + error);
+      console.log(
+        "Error encountered when fetching role from backend: " + error
+      );
     });
 }
 
@@ -137,7 +139,7 @@ const LoginPage = () => {
               }
             })
             .catch((error) => {
-              return alert("ERROR: " + error);
+              console.log("Error encountered: " + error);
             });
         } else if (user.role === "instructor") {
           checkSessionStarted()
@@ -158,12 +160,12 @@ const LoginPage = () => {
               }
             })
             .catch((error) => {
-              return alert("ERROR: " + error);
+              console.log("Error encountered: " + error);
             });
         }
       }
     } catch (error) {
-      return alert("ERROR: " + error);
+      console.log("Error encountered during user authentication: " + error);
     }
   };
 
@@ -172,7 +174,7 @@ const LoginPage = () => {
     return (
       <div className="login-body">
         <div className="login-container">
-          <h1>Welcome to Debugging Helper</h1>
+          <h1>Welcome to Collab Section</h1>
           <button onClick={signInWithGoogle} className="btn">
             Sign In With Google
           </button>
@@ -189,7 +191,7 @@ const LoginPage = () => {
     return (
       <div className="login-body">
         <div className="login-container">
-          <h1>Welcome to Debugging Helper</h1>
+          <h1>Welcome to Collab Section</h1>
           <div className="input-box">
             <input
               type="email"

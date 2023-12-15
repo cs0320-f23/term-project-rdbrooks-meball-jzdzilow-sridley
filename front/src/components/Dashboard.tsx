@@ -80,7 +80,7 @@ const Dashboard = () => {
               }
             });
         } catch (error) {
-          return alert("ERROR: " + error);
+          console.log("Error encountered: " + error);
         }
       };
       // fetches data initally
@@ -114,14 +114,10 @@ const Dashboard = () => {
             });
           }
         } catch (error) {
-          return alert("ERROR: " + error);
+          console.log("Error encountered in mocked mode: " + error);
         }
       };
       fetchPartner();
-      console.log(
-        "issue " + singleSession.issueType,
-        "partner " + singleSession.partner
-      );
     }
   }, []);
 
@@ -215,7 +211,7 @@ const Dashboard = () => {
             }
           });
       } catch (error) {
-        return alert("ERROR: " + error);
+        console.log("Error encountered when fetching session data: " + error);
       }
     };
 
@@ -260,10 +256,6 @@ const Dashboard = () => {
               const [hours, minutes, seconds] = pairedAtTimeString
                 .split(":")
                 .map(Number);
-
-              console.log(data.pairedAtTime);
-              console.log(pairedAtTimeString);
-
               const millisecondsInHour = 60 * 60 * 1000; // 1 hour in milliseconds
               const millisecondsInMinute = 60 * 1000; // 1 minute in milliseconds
               const millisecondsInSecond = 1000; // 1 second in milliseconds
@@ -320,16 +312,11 @@ const Dashboard = () => {
           )
             .then((response) => response.json())
             .then((data) => {
-              console.log(data.debuggingPartnerName);
-
               const partnerName = data.debuggingPartnerName;
-
               const escalated = data.escalated;
               if (escalated) {
                 setEscalationResult("You have been escalated");
               }
-              console.log(escalated);
-
               if (partnerName === "") {
                 setSingleSession({
                   partner: null,
@@ -352,7 +339,7 @@ const Dashboard = () => {
             });
         }
       } catch (error) {
-        return alert("ERROR: " + error);
+        console.log("Error encountered during fetching user data" + error);
       }
     };
 
@@ -370,7 +357,6 @@ const Dashboard = () => {
     role: UserRole
   ): Promise<String> {
     if (role === UserRole.DebuggingPartner) {
-      console.log("about to fetch and remove debugging partner");
       return fetch(
         "http://localhost:3333/debuggingPartnerDone?name=" +
           name +
@@ -383,12 +369,14 @@ const Dashboard = () => {
           return data["result"];
         })
         .catch((error) => {
-          return alert("ERROR: " + error);
+          console.log(
+            "Error encountered when removing debugging partner from queue" +
+              error
+          );
         });
     }
     // if user is a help requester and they have been paired
     if (role === UserRole.HelpRequester && singleSession.partner) {
-      console.log(singleSession.partner);
       return fetch(
         "http://localhost:3333/helpRequesterDone?name=" +
           name +
@@ -406,8 +394,6 @@ const Dashboard = () => {
     }
     // if user is help requester and they haven't been paired
     if (role === UserRole.HelpRequester && singleSession.partner == null) {
-      console.log(singleSession.partner);
-      console.log("removing from help requester queue");
       return fetch(
         "http://localhost:3333/helpRequesterDone?name=" +
           name +
@@ -420,7 +406,9 @@ const Dashboard = () => {
           return data["result"];
         })
         .catch((error) => {
-          return alert("ERROR: " + error);
+          console.log(
+            "Error encountered when removing help requester from queue" + error
+          );
         });
     } else {
       return new Promise<String>((resolves) => {
@@ -522,13 +510,12 @@ const Dashboard = () => {
             });
         }
       } catch (error) {
-        alert("Error encountered: " + error);
+        console.log("Error encountered during form submission" + error);
       }
     }
   };
 
   const handleEscalate = async () => {
-    console.log("escalated");
     try {
       console.log(singleSession.partner?.name, singleSession.partner?.email);
       await fetch(
@@ -580,7 +567,7 @@ const Dashboard = () => {
     try {
       await fetch("http://localhost:3333/session?command=begin");
     } catch (error) {
-      return alert("ERROR: " + error);
+      console.log("Error encountered during session start: " + error);
     }
     setSessionStarted(true);
   };
@@ -618,7 +605,7 @@ const Dashboard = () => {
         console.log("ERROR: could not download");
       }
     } catch (error) {
-      return alert("ERROR: " + error);
+      console.log("Error encountered during session end" + error);
     }
     setSessionStarted(false);
   };
@@ -637,7 +624,9 @@ const Dashboard = () => {
         return data["message"];
       })
       .catch((error) => {
-        return alert("ERROR: " + error);
+        console.log(
+          "Error encountered during debugging partner removal: " + error
+        );
       });
   };
 
@@ -660,7 +649,7 @@ const Dashboard = () => {
           return data["message"];
         })
         .catch((error) => {
-          return alert("ERROR: " + error);
+          console.log("Error encountered during rematching: " + error);
         });
     };
 
@@ -691,9 +680,9 @@ const Dashboard = () => {
         document.body.removeChild(link);
       })
       .catch((error) => {
-        alert("Error: " + error);
+        console.log("Error encountered during data download: " + error);
       });
-  }
+  };
 
   /* ----------------------- end of handlers / below rendering ---------------------------*/
 
@@ -702,7 +691,9 @@ const Dashboard = () => {
       case UserRole.Instructor:
         return (
           <header className="instructor-header">
-          <button className="download-button" onClick={handleDownloadAll}>Download All Data</button>
+            <button className="download-button" onClick={handleDownloadAll}>
+              Download All Data
+            </button>
             {!sessionStarted ? (
               <button className="start-button" onClick={handleStart}>
                 Start Session

@@ -43,6 +43,7 @@ const RoleSelection = () => {
     } else if (role === UserRole.HelpRequester) {
       // if help requester must also select type of issue (created based on user research)
       navigate("/issue-type-selection");
+      console.log("ROLE" + userSession.role + "USER " + userSession.user);
     }
   };
 
