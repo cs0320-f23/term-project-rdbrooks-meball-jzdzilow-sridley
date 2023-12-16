@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
   IssueType,
   UserRole,
@@ -38,6 +38,7 @@ const Dashboard = () => {
   const [nonEscalatedPairs, setNonEscalatedPairs] = useState([]);
 
   const [escalationResult, setEscalationResult] = useState("");
+  const isMockedMode = useRecoilValue(mockedMode);
 
   // resets user session back to log in on unwanted backend interruptions
   useEffect(() => {
@@ -94,7 +95,7 @@ const Dashboard = () => {
   /* MOCKED BACKEND -------------------------------------- */
 
   useEffect(() => {
-    if (mockedMode) {
+    if (isMockedMode) {
       const fetchPartner = async () => {
         try {
           const response = await fetch("http://localhost:2000/getSession");
@@ -240,6 +241,13 @@ const Dashboard = () => {
           )
             .then((response) => response.json())
             .then((data) => {
+              if (data["result"] === "error_bad_request") {
+                setUserSession({
+                  user: null,
+                  role: UserRole.NoneSelected,
+                  time: null,
+                });
+              }
               // create partner
               const partnerName = data.helpRequesterName;
               const partnerEmail = data.helpRequesterEmail;
@@ -357,6 +365,8 @@ const Dashboard = () => {
     role: UserRole
   ): Promise<String> {
     if (role === UserRole.DebuggingPartner) {
+      console.log(name);
+      console.log(email);
       return fetch(
         "http://localhost:3333/debuggingPartnerDone?name=" +
           name +
@@ -429,6 +439,7 @@ const Dashboard = () => {
   /* ---------------------------------- handlers -----------------------------------------*/
 
   const handleFormSubmit = async () => {
+    console.log(mockedMode);
     if (bugCategory === "" || debuggingProcess === "") {
       return alert("Bug category and debugging process inputs required!");
     }
@@ -445,7 +456,7 @@ const Dashboard = () => {
         debuggingProcess
       );
       try {
-        if (mockedMode) {
+        if (isMockedMode) {
           const response = await fetch("http://localhost:2000/submitForm/", {
             method: "POST",
             headers: {
@@ -612,6 +623,7 @@ const Dashboard = () => {
 
   // removes a debugging partner from attendance (button accessible to instructors)
   const handleRemove = (name: string, email: string) => async () => {
+    console.log("TEST");
     return fetch(
       "http://localhost:3333/debuggingPartnerDone?name=" +
         name +
@@ -794,7 +806,7 @@ const Dashboard = () => {
                     <p className="time">Joined at {partner[2]}</p>
                   </div>
                   {/*button to remove from attendance*/}
-                  <button onClick={() => handleRemove(partner[0], partner[1])}>
+                  <button onClick={handleRemove(partner[0], partner[1])}>
                     Remove
                   </button>
                 </div>
