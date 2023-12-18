@@ -152,7 +152,7 @@ const Dashboard = () => {
     if (userSession.time === null) {
       return 0;
     }
-    const fifteenMinsInMillis = 15 * 60 * 1000; // 15 mins in milliseconds
+    const fifteenMinsInMillis = 1 * 60 * 1000; // 15 mins in milliseconds
     const currentHour = new Date().getHours();
     const currentMin = new Date().getMinutes();
     const currentSec = new Date().getSeconds();
@@ -320,6 +320,13 @@ const Dashboard = () => {
           )
             .then((response) => response.json())
             .then((data) => {
+              if (data["result"] === "error_bad_request") {
+                setUserSession({
+                  user: null,
+                  role: UserRole.NoneSelected,
+                  time: null,
+                });
+              }
               const partnerName = data.debuggingPartnerName;
               const escalated = data.escalated;
               if (escalated) {
