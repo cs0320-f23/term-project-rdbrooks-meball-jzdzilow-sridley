@@ -198,6 +198,7 @@ public class HelpRequesterQueue {
       if (helper != null
           && (helper.getName().equals(debuggingPartnerName))
           && helper.getEmail().equals(debuggingPartnerEmail)) {
+        helpRequester.setDebuggingPartner(null);
         toMove = helpRequester;
       }
     }
