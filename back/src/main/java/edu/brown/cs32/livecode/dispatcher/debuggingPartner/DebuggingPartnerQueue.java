@@ -126,7 +126,6 @@ public class DebuggingPartnerQueue {
     }
     if (toRemove != null) {
       debuggingPartnerList.remove(toRemove);
-      allDebuggingPartners.remove(toRemove);
     }
     return removed;
   }
